@@ -116,7 +116,8 @@ public class Main {
     }
 
     public static boolean verificarDatas(String data1, String data2) throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setLenient(false);
         Date dataObj1 = df.parse(data1);
         Date dataObj2 = df.parse(data2);
 
