@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
-    static final Scanner keyboardScanner = new Scanner(System.in);
+    static final Scanner kbScanner = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException {
         ArrayList<String> datas = new ArrayList<String>();
@@ -22,24 +22,80 @@ public class Main {
         ArrayList<Integer> acumuladoHospitalizados = new ArrayList<Integer>();
         ArrayList<Integer> acumuladoUCI = new ArrayList<Integer>();
         ArrayList<Integer> acumuladoMortes = new ArrayList<Integer>();
+        int selecaoUtilizador;
 
-        LerFicheiro(SelecionarFicheiro(), datas, acumuladoNaoInfetados, acumuladoInfetados, acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
+        // Início do programa
+        do {
+            selecaoUtilizador = menu();
 
-        for (int i = 0; i < datas.size(); i++) {
-            System.out.println(acumuladoMortes.get(i));
-        }
+            System.out.println();
+
+            switch (selecaoUtilizador) {
+                case 1:
+                    lerFicheiro(selecionarFicheiro(), datas, acumuladoNaoInfetados, acumuladoInfetados,
+                            acumuladoHospitalizados,
+                            acumuladoUCI, acumuladoMortes);
+
+                    for (int i = 0; i < datas.size(); i++) {
+                        System.out.println(acumuladoMortes.get(i));
+                    }
+
+                    pressioneEnterParaCont();
+                    break;
+
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                    System.out.println("Não implementado.");
+                    pressioneEnterParaCont();
+                    break;
+
+                case 0:
+                    // terminar a execução do programa
+                    break;
+
+                default:
+                    System.out.println("Opção inválida.");
+                    pressioneEnterParaCont();
+                    break;
+            }
+        } while (selecaoUtilizador != 0);
     }
 
-    public static void LerFicheiro(String filePath, ArrayList<String> datas, ArrayList<Integer> acumuladoNaoInfetados,
-                                   ArrayList<Integer> acumuladoInfetados, ArrayList<Integer> acumuladoHospitalizados,
-                                   ArrayList<Integer> acumuladoUCI, ArrayList<Integer> acumuladoMortes) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(filePath));
+    public static int menu() {
+        int selecaoUtilizador;
 
-        String linha = scanner.nextLine();
+        // Apresentação do menu
+        System.out.println("Bem-vindo! Por favor escolha uma opção:\n");
+        System.out.println("1. Carregar ficheiro");
+        System.out.println("2. Visualizar dados diários");
+        System.out.println("3. Visualizar dados semanais");
+        System.out.println("4. Visualizar dados mensais");
+        System.out.println("5. Comparar intervalo de datas");
+        System.out.println("0. Sair\n");
+
+        System.out.print("> ");
+
+        selecaoUtilizador = kbScanner.nextInt();
+        kbScanner.nextLine();
+        return selecaoUtilizador;
+    }
+
+    public static void pressioneEnterParaCont() {
+        System.out.print("\nPressione ENTER para continuar... ");
+        kbScanner.nextLine();
+    }
+
+    public static void lerFicheiro(String filePath, ArrayList<String> datas, ArrayList<Integer> acumuladoNaoInfetados,
+            ArrayList<Integer> acumuladoInfetados, ArrayList<Integer> acumuladoHospitalizados,
+            ArrayList<Integer> acumuladoUCI, ArrayList<Integer> acumuladoMortes) throws FileNotFoundException {
+        Scanner fileScanner = new Scanner(new File(filePath));
+        String linha = fileScanner.nextLine();
         String[] dados;
 
-        while (scanner.hasNextLine()) {
-            linha = scanner.nextLine();
+        while (fileScanner.hasNextLine()) {
+            linha = fileScanner.nextLine();
             dados = linha.split(",");
             datas.add(dados[0]);
             acumuladoNaoInfetados.add(Integer.parseInt(dados[1]));
@@ -50,9 +106,8 @@ public class Main {
         }
     }
 
-    public static String SelecionarFicheiro() {
+    public static String selecionarFicheiro() {
         System.out.print("Insira o caminho absoluto do ficheiro: ");
-        return keyboardScanner.nextLine();
+        return kbScanner.nextLine();
     }
 }
-
