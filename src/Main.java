@@ -9,7 +9,11 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
@@ -68,12 +72,12 @@ public class Main {
 
         // Apresentação do menu
         System.out.println("Bem-vindo! Por favor escolha uma opção:\n");
-        System.out.println("1. Carregar ficheiro");
-        System.out.println("2. Visualizar dados diários");
-        System.out.println("3. Visualizar dados semanais");
-        System.out.println("4. Visualizar dados mensais");
-        System.out.println("5. Comparar intervalo de datas");
-        System.out.println("0. Sair\n");
+        System.out.println("  1. Carregar ficheiro");
+        System.out.println("  2. Visualizar dados diários");
+        System.out.println("  3. Visualizar dados semanais");
+        System.out.println("  4. Visualizar dados mensais");
+        System.out.println("  5. Comparar intervalo de datas");
+        System.out.println("  0. Sair\n");
 
         System.out.print("> ");
 
@@ -109,5 +113,14 @@ public class Main {
     public static String selecionarFicheiro() {
         System.out.print("Insira o caminho absoluto do ficheiro: ");
         return kbScanner.nextLine();
+    }
+
+    public static boolean verificarDatas(String data1, String data2) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        df.setLenient(false);
+        Date dataObj1 = df.parse(data1);
+        Date dataObj2 = df.parse(data2);
+
+        return dataObj1.before(dataObj2);
     }
 }
