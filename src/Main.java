@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     static final Scanner kbScanner = new Scanner(System.in);
@@ -48,9 +49,37 @@ public class Main {
                 case 3:
                     mostrarDadosSemanais(leituraDeDatas(), datas);
                 case 4:
-                case 5:
                     System.out.println("Não implementado.");
                     pressioneEnterParaCont();
+                    break;
+
+                case 5:
+                    System.out.println("1º intervalo:");
+                    String[] intervalo1 = leituraDeDatas();
+                    String[] intervalo2;
+
+                    // calcular intervalo de dias do intervalo1
+                    long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+
+                    boolean flag;
+                    do {
+                        flag = true;
+                        System.out.println("\n2º intervalo:");
+                        intervalo2 = leituraDeDatas();
+
+                        // o intervalo de dias do intervalo2 tem de ser igual a 2
+                        long diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+
+                        if(diasIntervalo1 != diasIntervalo2) {
+                            flag = false;
+                            System.out.println("\nErro: O número de dias entre o intervalo 1 é diferente do intervalo 2!");
+                            pressioneEnterParaCont();
+                        }
+                    } while (!flag);
+
+                    // o intervalo1 e intervalo2 têm o mesmo número de dias
+                    // calcular as diferenças, a média e o desvio padrão para cada período
+
                     break;
 
                 case 0:
@@ -118,9 +147,9 @@ public class Main {
         boolean verificado;
 
         do {
-            System.out.println("Insira a data inicial:");
+            System.out.print("Insira a data inicial: ");
             leituraDatas[0] = kbScanner.nextLine();
-            System.out.println("Insira a data final:");
+            System.out.print("Insira a data final: ");
             leituraDatas[1] = kbScanner.nextLine();
             verificado = verificarDatas(leituraDatas[0], leituraDatas[1]);
 
@@ -163,7 +192,7 @@ public class Main {
     public static void mostrarDadosSemanais(String[] leituraDeDatas, ArrayList<String> datas) throws ParseException {
         // mostrar dados das semanas entre as datas pretendidas, ou seja, por exemplo:
         // dados da 1 semn, dados da 2 semn, dados da 3 semn
-        // 2020-04-01 2020-04-02 -> NÃ£o Ã© uma semana completa
+        // 2020-04-01 2020-04-02 -> Não é uma semana completa
         // 2020-04-1 2020-04-17 -> mostra 2 semanas 1-15
         // 1 semana, subtrair acumulado do ult dia semana com 1 dia semn
 
@@ -198,5 +227,16 @@ public class Main {
         Date dataObj2 = df.parse(data2);
 
         return dataObj1.before(dataObj2);
+    }
+
+    public static long calcularDiasEntreIntervalo(String[] intervalo) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date dataObj1 = sdf.parse(intervalo[0]);
+        Date dataObj2 = sdf.parse(intervalo[1]);
+
+        long msDif = Math.abs(dataObj2.getTime() - dataObj1.getTime());
+        long numDias = TimeUnit.DAYS.convert(msDif, TimeUnit.MILLISECONDS);
+
+        return numDias;
     }
 }
