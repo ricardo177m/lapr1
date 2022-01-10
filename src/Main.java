@@ -26,9 +26,9 @@ import java.util.Date;
 public class Main {
     static final Scanner kbScanner = new Scanner(System.in);
 
-    public static void main(String[] args) throws FileNotFoundException, ParseException {
+    public static void main(String[] args) throws FileNotFoundException {
 
-        int selecaoUtilizador;
+        String selecaoUtilizador;
         String[] datas;
         int[] acumuladoNaoInfetados;
         int[] acumuladoInfetados;
@@ -37,7 +37,7 @@ public class Main {
         int[] acumuladoMortes;
 
 
-        System.out.println("Bem Vindo! Por favor siga os passos abaixo:\n");
+        System.out.println("Bem-vindo! Para continuar, siga os seguintes passos:\n");
         String caminhoFicheiro = selecionarFicheiro();
         int numeroLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
         datas = new String[numeroLinhas];
@@ -50,6 +50,7 @@ public class Main {
                 acumuladoHospitalizados,
                 acumuladoUCI, acumuladoMortes);
 
+        System.out.println();
 
         // Início do programa
         do {
@@ -57,7 +58,7 @@ public class Main {
             System.out.println();
 
             switch (selecaoUtilizador) {
-                case 1:
+                case "1":
                     caminhoFicheiro = selecionarFicheiro();
                     lerFicheiro(caminhoFicheiro,datas, acumuladoNaoInfetados, acumuladoInfetados,
                             acumuladoHospitalizados,
@@ -66,11 +67,11 @@ public class Main {
 
                     break;
 
-                case 2:
-                    mostrarDadosDiarios(leituraDeDatas(),datas, acumuladoInfetados,  acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
+                case "2":
+                    mostrarDadosDiarios(leituraDeDatas(), datas, acumuladoInfetados,  acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
-                case 3:
+                case "3":
                     /*mostrarDadosSemanais(leituraDeDatas(), datas, acumuladoInfetados, acumuladoHospitalizados,
                             acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
@@ -109,16 +110,16 @@ public class Main {
                     break; */
 
 
-                case 0:
+                case "0":
                     // terminar a execução do programa
                     System.out.println("Obrigado pela preferência!");
                     break;
                 default:
-                    System.out.println("Opção inválida.");
+                    System.out.println("ERRO: Opção inválida. Por favor, digite uma opção válida.");
                     pressioneEnterParaCont();
                     break;
             }
-        } while (selecaoUtilizador != 0);
+        } while (!selecaoUtilizador.equals("0"));
 
     }
 
@@ -136,8 +137,8 @@ public class Main {
     }
 
 
-    public static int menu (){
-        int selecaoUtilizador;
+    public static String menu (){
+        String selecaoUtilizador;
         // Apresentação do menu
         System.out.println("Por favor escolha uma opção:\n");
         System.out.println("1. Carregar ficheiro");
@@ -149,8 +150,7 @@ public class Main {
 
         System.out.print("> ");
 
-        selecaoUtilizador = kbScanner.nextInt();
-        kbScanner.nextLine();
+        selecaoUtilizador = kbScanner.nextLine();
         return selecaoUtilizador;
     }
 
@@ -158,6 +158,7 @@ public class Main {
     public static void pressioneEnterParaCont() {
         System.out.print("\nPressione ENTER para continuar... ");
         kbScanner.nextLine();
+        System.out.println();
     }
 
     public static void lerFicheiro(String filePath, String[] datas, int[] acumuladoNaoInfetados,
@@ -180,31 +181,67 @@ public class Main {
 
             indice++;
         }
+
+        System.out.println("Ficheiro lido com sucesso!");
     }
 
     public static String selecionarFicheiro() {
-        System.out.print("Insira o caminho absoluto do ficheiro: ");
-        return kbScanner.nextLine();
+        String path;
+
+        do {
+            System.out.print("Insira o caminho absoluto do ficheiro: ");
+            path = kbScanner.nextLine();
+
+            if (!new File(path).isFile()) {
+                System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.\n");
+            }
+        } while (!(new File(path).isFile()));
+
+        return path;
     }
 
-    public static String[] leituraDeDatas () throws ParseException {
+    public static String[] leituraDeDatas() {
         String[] leituraDatas = new String[2];
-        boolean verificado;
-        do {
-            System.out.println("Insira a data inicial:");
-            leituraDatas[0] = kbScanner.nextLine();
-            System.out.println("Insira a data final:");
-            leituraDatas[1] = kbScanner.nextLine();
-            verificado = true;
+        boolean dataEValida = true;
+        boolean dataFinalDepoisQueInicial = true;
 
-            if (!verificado) {
-                System.out.println("\n----Introduza datas corretas----\n");
+        do {
+            do {
+                System.out.print("Insira a data inicial (AAAA-MM-DD): ");
+                leituraDatas[0] = kbScanner.nextLine();
+
+                if (!verificarData(leituraDatas[0])) {
+                    dataEValida = false;
+                    System.out.println("ERRO: Formato de data inválido. Por favor, insira a data no formato (AAAA-MM-DD).\n");
+                } else {
+                    dataEValida = true;
+                }
+            } while (!dataEValida);
+
+            do {
+                System.out.print("Insira a data final (AAAA-MM-DD): ");
+                leituraDatas[1] = kbScanner.nextLine();
+
+                if (!verificarData(leituraDatas[1])) {
+                    dataEValida = false;
+                    System.out.println("ERRO: Formato de data inválido. Por favor, insira a data no formato (AAAA-MM-DD).\n");
+                } else {
+                    dataEValida = true;
+                }
+            } while (!dataEValida);
+
+            if (stringParaDate(leituraDatas[0]).after(stringParaDate(leituraDatas[1]))) {
+                dataFinalDepoisQueInicial = false;
+                System.out.println("ERRO: Intervalo de datas impossível. Por favor, insira um intervalo válido.\n");
+            } else {
+                dataFinalDepoisQueInicial = true;
             }
 
-        } while (!verificado);
+        } while (!dataFinalDepoisQueInicial);
 
         return leituraDatas;
     }
+
 
 
     public static int indexData (String leituraDeDatas,String[] datas) {
@@ -239,7 +276,7 @@ public class Main {
         calendar.set(ano,mes-1,dia,0,0,0);
         calendar.set(Calendar.MILLISECOND,0);
 
-        return  calendar.getTime();
+        return calendar.getTime();
     }
 
     //--------------------------------------------Analise Diária------------------------------------------------------//
@@ -253,13 +290,14 @@ public class Main {
         int indexData1 = indexData(leituraDeDatas[0],datas);
         int indexData2 = indexData(leituraDeDatas[1],datas);
 
-        System.out.printf("Data %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
+        System.out.printf("\nData %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
+        int[] novosInfetados = dadosDiariosNovos(acumuladoInfetados,leituraDeDatas,datas);
+        int[] novosHospitalizacoes = dadosDiariosNovos(acumuladoHospitalizados, leituraDeDatas, datas);
+        int[] novosUCI = dadosDiariosNovos(acumuladoUCI, leituraDeDatas, datas);
+        int[] novosMortes = dadosDiariosNovos(acumuladoMortes, leituraDeDatas, datas);
+
         for (int i = 0; i <= indexData2-indexData1; i++) {
-            int[] novosInfetados = dadosDiariosNovos(acumuladoInfetados,leituraDeDatas,datas);
-            int[] novosHospitalizacoes = dadosDiariosNovos(acumuladoHospitalizados, leituraDeDatas, datas);
-            int[] novosUCI = dadosDiariosNovos(acumuladoUCI, leituraDeDatas, datas);
-            int[] novosMortes = dadosDiariosNovos(acumuladoMortes, leituraDeDatas, datas);
-            System.out.printf("%s %25s | %21.10s | %9.10s | %12.10s \n", datas[i+indexData1],novosInfetados[i],novosHospitalizacoes[i],novosUCI[i],novosMortes[i]);
+            System.out.printf("%s %25s | %21.10s | %9.10s | %12.10s \n", datas[i+indexData1], (novosInfetados[i] == -1 ? "N/A" : novosInfetados[i]), (novosHospitalizacoes[i] == -1 ? "N/A" : novosHospitalizacoes[i]), (novosUCI[i] == -1 ? "N/A" : novosUCI[i]), (novosMortes[i] == -1 ? "N/A" : novosMortes[i]));
         }
     }
 
@@ -271,7 +309,7 @@ public class Main {
 
         for (int i = indexData1; i <= indexData2; i++) {
             if (i-1<0) {
-                dadosNovos[i]=0;
+                dadosNovos[i]=-1;
             } else {
                 dadosNovos[i] = dados[i]-dados[i-1];
             }
@@ -406,8 +444,8 @@ public class Main {
     }
 
     // ------------------------------------------Analise Mensal-------------------------------------------------------//
-
-    /*public static void mostrarDadosMensais (String[] leituraDeDatas,String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
+/*
+    public static void mostrarDadosMensais (String[] leituraDeDatas,String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
                                             int[] acumuladoUCI, int[] acumuladoMortes) throws ParseException {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
@@ -453,8 +491,8 @@ public class Main {
         }
         return dadosNovos;
     }
-*/
-   /* public static long numeroMeses(int index1,int index2,String[] datas) throws ParseException {
+*//*
+    public static long numeroMeses(int index1,int index2,String[] datas) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         Calendar meses = Calendar.getInstance();
@@ -471,17 +509,16 @@ public class Main {
     }
 
 
-    public static String primeiroDiaMesValido (String[] leituraDeDatas) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    public static Date primeiroDiaMesValido (Date inicio) throws ParseException {
         Calendar data = Calendar.getInstance();
-        Date inicio = formatter.parse(leituraDeDatas[0]);
+
         data.setTime(inicio);
 
         while (data.get(Calendar.DAY_OF_MONTH) != 1) {
             data.add(Calendar.DAY_OF_MONTH,1);
         }
 
-        return leituraDeDatas[0] = formatter.format((data.getTime()));
+        return  ((data.getTime()));
     }
 
     public static String ultimoDiaMesValido (String[] leituraDeDatas) throws ParseException{
@@ -497,7 +534,7 @@ public class Main {
         }
 
         return leituraDeDatas[1] = formatter.format(dataFinal.getTime());
-    } */
+    }*/
 
     public static int anoDaData(String data) {
         System.out.println(data.substring(0,4));
@@ -516,29 +553,12 @@ public class Main {
         return Integer.parseInt(data.substring(8));
 
     }
-/*
+
 
 
     //-----------------------------------------------------------------------------------------------------------------//
 
-    public static boolean verificarDatas(String data1, String data2) throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        df.setLenient(false);
-
-        Date dataObj1 = df.parse(data1);
-        Date dataObj2 = df.parse(data2);
-
-        return dataObj1.before(dataObj2);
+    public static boolean verificarData(String data) {
+        return data.matches("\\d{4}-\\d{2}-\\d{2}");
     }
-
-    public static long calcularDiasEntreIntervalo(String[] intervalo) throws ParseException {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date dataObj1 = sdf.parse(intervalo[0]);
-        Date dataObj2 = sdf.parse(intervalo[1]);
-
-        long msDif = Math.abs(dataObj2.getTime() - dataObj1.getTime());
-        long numDias = TimeUnit.DAYS.convert(msDif, TimeUnit.MILLISECONDS);
-
-        return numDias;
-    } */
 }
