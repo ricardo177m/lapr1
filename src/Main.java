@@ -9,14 +9,18 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.text.ParseException;
 import java.util.Calendar;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+
+//import java.time.LocalDate;
+//import java.time.YearMonth;
+//import java.time.temporal.ChronoUnit;
+//import java.text.DateFormat;
+//import java.text.SimpleDateFormat;
+//import java.util.concurrent.TimeUnit;
 
 
 public class Main {
@@ -54,6 +58,7 @@ public class Main {
 
             switch (selecaoUtilizador) {
                 case 1:
+                    caminhoFicheiro = selecionarFicheiro();
                     lerFicheiro(caminhoFicheiro,datas, acumuladoNaoInfetados, acumuladoInfetados,
                             acumuladoHospitalizados,
                             acumuladoUCI, acumuladoMortes);
@@ -66,21 +71,21 @@ public class Main {
                     pressioneEnterParaCont();
                     break;
                 case 3:
-                    mostrarDadosSemanais(leituraDeDatas(), datas, acumuladoInfetados, acumuladoHospitalizados,
+                    /*mostrarDadosSemanais(leituraDeDatas(), datas, acumuladoInfetados, acumuladoHospitalizados,
                             acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
                 case 4:
-                    mostrarDadosMensais(leituraDeDatas(),datas,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
+                    //mostrarDadosMensais(leituraDeDatas(),datas,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
-                case 5:
+                /*case 5:
                     System.out.println("1º intervalo:");
                     String[] intervalo1 = leituraDeDatas();
                     String[] intervalo2;
 
                     // calcular intervalo de dias do intervalo1
-                    long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+                   // long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
 
                     boolean flag;
                     do {
@@ -101,7 +106,7 @@ public class Main {
                     // o intervalo1 e intervalo2 têm o mesmo número de dias
                     // calcular as diferenças, a média e o desvio padrão para cada período
 
-                    break;
+                    break; */
 
 
                 case 0:
@@ -190,7 +195,7 @@ public class Main {
             leituraDatas[0] = kbScanner.nextLine();
             System.out.println("Insira a data final:");
             leituraDatas[1] = kbScanner.nextLine();
-            verificado = verificarDatas(leituraDatas[0],leituraDatas[1]);
+            verificado = true;
 
             if (!verificado) {
                 System.out.println("\n----Introduza datas corretas----\n");
@@ -201,13 +206,52 @@ public class Main {
         return leituraDatas;
     }
 
+
+    public static int indexData (String leituraDeDatas,String[] datas) {
+
+        // find length of array
+        int len = datas.length;
+        int i = 0;
+
+        // traverse in the array
+        while (i < len) {
+
+            // if the i-th element is t
+            // then return the index
+            if (leituraDeDatas.equals(datas[i])) {
+                return i;
+            }
+            else {
+                i = i + 1;
+            }
+        }
+        return -1;
+    }
+
+    public static Date stringParaDate (String leituraDeData) {
+        String[] date = leituraDeData.split("-");
+
+        int ano = Integer.parseInt(date[0]);
+        int mes = Integer.parseInt(date[1]);
+        int dia = Integer.parseInt(date[2]);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(ano,mes-1,dia,0,0,0);
+        calendar.set(Calendar.MILLISECOND,0);
+
+        return  calendar.getTime();
+    }
+
     //--------------------------------------------Analise Diária------------------------------------------------------//
+    // fazer um metodo calcular index (feito)
+    // fazer um metodo para dar return de Dates (feito)
+    // fazer um metodo ?
 
     public static void mostrarDadosDiarios(String[] leituraDeDatas, String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
                                            int[] acumuladoUCI, int[] acumuladoMortes) {
 
-        int indexData1 = Arrays.asList(datas).indexOf(leituraDeDatas[0]);
-        int indexData2 = Arrays.asList(datas).indexOf(leituraDeDatas[1]);
+        int indexData1 = indexData(leituraDeDatas[0],datas);
+        int indexData2 = indexData(leituraDeDatas[1],datas);
 
         System.out.printf("Data %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
         for (int i = 0; i <= indexData2-indexData1; i++) {
@@ -220,8 +264,8 @@ public class Main {
     }
 
     public static int[] dadosDiariosNovos (int[] dados,String[] leituraDeDatas, String[] datas) {
-        int indexData1 = Arrays.asList(datas).indexOf(leituraDeDatas[0]);
-        int indexData2 = Arrays.asList(datas).indexOf(leituraDeDatas[1]);
+        int indexData1 = indexData(leituraDeDatas[0],datas);
+        int indexData2 = indexData(leituraDeDatas[1],datas);
 
         int[] dadosNovos =  new int[indexData2-indexData1+1];
 
@@ -245,7 +289,7 @@ public class Main {
         // 1 semana, subtrair acumulado do ult dia semana com 1 dia semn
         int indexData1 = Arrays.asList(datas).indexOf(verificarSemanaSegunda(leituraDeDatas));
         int indexData2 = Arrays.asList(datas).indexOf(verificarSemanaDomingo(leituraDeDatas));
-        int numeroSemanas = numeroSemanas(indexData1,indexData2,datas);
+        int numeroSemanas = numeroSemanas(indexData1,indexData2,leituraDeDatas);
 
         if (numeroSemanas == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
@@ -276,101 +320,154 @@ public class Main {
         return dadosNovos;
     }
 
-    public static String verificarSemanaSegunda (String[] leituraDeDatas) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    public static String verificarSemanaSegunda (String[] leituraDeDatas) {
+        int month=mesDaData(leituraDeDatas[0]);
+        int day=diaDaData(leituraDeDatas[0]);
+        int year=anoDaData(leituraDeDatas[0]);
 
-        Calendar data = Calendar.getInstance();
-        Date inicio = formatter.parse(leituraDeDatas[0]);
-        data.setTime(inicio);
+        Calendar data = Calendar.getInstance() ;
 
-        while ( data.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+        while (data.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
             data.add(Calendar.DAY_OF_WEEK,1);
         }
 
-        return leituraDeDatas[0] = formatter.format((data.getTime()));
+        return String.valueOf(data.getTime());
     }
 
-    public static String verificarSemanaDomingo (String[] leituraDeDatas) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
+    public static String verificarSemanaDomingo (String[] leituraDeDatas)  {
         Calendar dataFinal =  Calendar.getInstance();
+        int month=mesDaData(leituraDeDatas[1]);
+        int day=diaDaData(leituraDeDatas[1]);
+        int year=anoDaData(leituraDeDatas[1]);
 
-        Date fim = formatter.parse(leituraDeDatas[1]);
-        dataFinal.setTime(fim);
+        dataFinal.set(year,month,day);
 
         while (dataFinal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
             dataFinal.add(Calendar.DAY_OF_WEEK,-(dataFinal.get(Calendar.DAY_OF_WEEK)-1));
         }
 
-        return leituraDeDatas[1] = formatter.format(dataFinal.getTime());
+        return String.valueOf(dataFinal.getTime());
     }
 
-    public static int numeroSemanas(int index1,int index2,String[] datas) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-
-
-        Date inicio = formatter.parse(Arrays.asList(datas).get(index1));
-        Date fim = formatter.parse(Arrays.asList(datas).get(index2));
+    public static int numeroSemanas(int index1,int index2,String[] leituraDeDatas)  {
 
         Calendar semanas = Calendar.getInstance();
+        int month1=mesDaData(leituraDeDatas[index1]);
+        int day1=diaDaData(leituraDeDatas[index1]);
+        int year1=anoDaData(leituraDeDatas[index1]);
+        semanas.set(year1,month1,day1);
+        Date inicio = semanas.getTime();
+
+        int month2=mesDaData(leituraDeDatas[index2]);
+        int day2=diaDaData(leituraDeDatas[index2]);
+        int year2=anoDaData(leituraDeDatas[index2]);
+        semanas.set(year2,month2,day2);
+        Date fim = semanas.getTime();
 
         semanas.setTimeInMillis(fim.getTime()-inicio.getTime());
-
 
         return semanas.get(Calendar.WEEK_OF_YEAR)-1;
     }
 
+    public static int calcularNumSemanas(Date inicio, Date fim) {
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+
+        cal1.setTime(inicio);
+        cal2.setTime(fim);
+
+        limparHoras(cal1);
+        limparHoras(cal2);
+
+        inicioDaSemana(cal1);
+        inicioDaSemana(cal2);
+
+        int numSemanas = 0;
+
+        while (cal1.compareTo(cal2) < 0) {
+            cal1.add(Calendar.WEEK_OF_YEAR, 1);
+            numSemanas++;
+        }
+
+        return numSemanas;
+    }
+
+    public static int inicioDaSemana(Calendar calendar) {
+        int primeiroDiaSemana = calendar.getFirstDayOfWeek();
+        calendar.set(Calendar.DAY_OF_WEEK, primeiroDiaSemana);
+        return primeiroDiaSemana;
+    }
+
+    public static void limparHoras(Calendar cal) {
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+    }
+
     // ------------------------------------------Analise Mensal-------------------------------------------------------//
 
-    public static void mostrarDadosMensais (String[] leituraDeDatas,String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
+    /*public static void mostrarDadosMensais (String[] leituraDeDatas,String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
                                             int[] acumuladoUCI, int[] acumuladoMortes) throws ParseException {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
         int indexData1 = Arrays.asList(datas).indexOf(primeiroDiaMesValido(leituraDeDatas));
         int indexData2 = Arrays.asList(datas).indexOf(ultimoDiaMesValido(leituraDeDatas));
-        int numeroMeses = numeroMeses(indexData1,indexData2,datas);
+        int numeroMeses = (int) numeroMeses(indexData1,indexData2,datas);
 
         if (numeroMeses == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 mês");
         } else {
             System.out.printf("%16s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
             for (int i = 0; i < numeroMeses; i++) {
-                int[] novosInfetados = dadosMensaisNovos(acumuladoInfetados,numeroMeses,indexData2,indexData1);
-                int[] novosHospitalizacoes = dadosMensaisNovos(acumuladoHospitalizados,numeroMeses,indexData2,indexData1);
-                int[] novosUCI = dadosMensaisNovos(acumuladoUCI, numeroMeses,indexData2,indexData1);
-                int[] novosMortes = dadosMensaisNovos(acumuladoMortes,numeroMeses,indexData2,indexData1);
+                int[] novosInfetados = dadosMensaisNovos(acumuladoInfetados,numeroMeses,indexData2,indexData1,datas);
+                int[] novosHospitalizacoes = dadosMensaisNovos(acumuladoHospitalizados,numeroMeses,indexData2,indexData1,datas);
+                int[] novosUCI = dadosMensaisNovos(acumuladoUCI, numeroMeses,indexData2,indexData1,datas);
+                int[] novosMortes = dadosMensaisNovos(acumuladoMortes,numeroMeses,indexData2,indexData1,datas);
                 System.out.printf("Mês " + (1+i) + ": %25s | %21.10s | %9.10s | %12.10s \n", novosInfetados[i],novosHospitalizacoes[i],novosUCI[i],novosMortes[i]);
             }
         }
     }
 
-    public static int[] dadosMensaisNovos (int[] dados,int numeroMeses,int index2,int index1) {
+    public static int[] dadosMensaisNovos (int[] dados,int numeroMeses,int index2,int index1,String[] datas) {
         int[] dadosNovos =  new int[numeroMeses];
+        // Get the number of days in that month
+        String data1 = datas[index1];
+
+        YearMonth yearMonthObject = YearMonth.of(anoDaData(data1),mesDaData(data1));
+        int daysInMonth = yearMonthObject.lengthOfMonth(); //28
 
         if (numeroMeses==1){
             dadosNovos[0]=dados[index2]-dados[index1];
         } else {
             for (int i = 0; i < numeroMeses; i++) {
                 if(index1<=index2) {
-                    dadosNovos[i] = dados[index1 + 29] - dados[index1];
-                    index1 = index1 + 29;
+                    dadosNovos[i] = dados[index1 + (daysInMonth)-1] - dados[index1];
+                    data1 = datas[index1+daysInMonth];
+                    yearMonthObject = YearMonth.of(anoDaData(data1),mesDaData(data1));
+                    daysInMonth=yearMonthObject.lengthOfMonth();
+                    index1 = index1 + daysInMonth;
+
                 }
             }
         }
         return dadosNovos;
     }
-
-    public static int numeroMeses(int index1,int index2,String[] datas) throws ParseException {
+*/
+   /* public static long numeroMeses(int index1,int index2,String[] datas) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
         Calendar meses = Calendar.getInstance();
+
+        long monthsBetween = ChronoUnit.MONTHS.between(
+                YearMonth.from(LocalDate.parse(datas[index1])), YearMonth.from(LocalDate.parse(datas[index2])));
 
         Date inicio = formatter.parse(Arrays.asList(datas).get(index1));
         Date fim = formatter.parse(Arrays.asList(datas).get(index2));
 
         meses.setTimeInMillis(fim.getTime()-inicio.getTime());
 
-        return meses.get(Calendar.MONTH)+1;
+        return monthsBetween+1;
     }
 
 
@@ -400,8 +497,26 @@ public class Main {
         }
 
         return leituraDeDatas[1] = formatter.format(dataFinal.getTime());
+    } */
+
+    public static int anoDaData(String data) {
+        System.out.println(data.substring(0,4));
+        return Integer.parseInt(data.substring(0, 4));
+
     }
 
+    public static int mesDaData(String data) {
+        System.out.println(data.substring(5,7));
+        return Integer.parseInt(data.substring(5,7));
+
+    }
+
+    public static int diaDaData(String data) {
+        System.out.println(data.substring(8));
+        return Integer.parseInt(data.substring(8));
+
+    }
+/*
 
 
     //-----------------------------------------------------------------------------------------------------------------//
@@ -425,5 +540,5 @@ public class Main {
         long numDias = TimeUnit.DAYS.convert(msDif, TimeUnit.MILLISECONDS);
 
         return numDias;
-    }
+    } */
 }
