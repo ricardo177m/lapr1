@@ -1,4 +1,4 @@
-012020data,diario_nao_infetado,acumulado_infetado,acumulado_hospitalizado,acumulado_internadoUCI,acumulado_mortes
+data,diario_nao_infetado,acumulado_infetado,acumulado_hospitalizado,acumulado_internadoUCI,acumulado_mortes
 2020-04-01,10170223,8251,5664,1293,187
 2020-04-02,10170850,9034,6706,1533,209
 2020-04-03,10171394,9886,7764,1778,246
@@ -60,4 +60,3 @@
 2020-05-29,10197500,31946,58422,10710,1383
 2020-05-30,10197785,32203,58936,10773,1396
 2020-05-31,10198053,32500,59410,10837,1410
-2020-06-01,10198053,32500,59410,10837,1410
