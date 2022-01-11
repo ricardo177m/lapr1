@@ -62,36 +62,36 @@ public class Main {
     //-------------------------------------------Funcionamento Aplicação----------------------------------------------//
 
     public static void funcionamentoProgramaOpcao1 (String file,String[] datas,int[] acumuladoNaoInfetados,int[] acumuladoInfetados,int[] acumuladoHospitalizados,int[] acumuladoUCI,int[] acumuladoMortes,int tipoFicheiro) throws FileNotFoundException, ParseException {
-        int selecaoUtilizador;
+        String selecaoUtilizador;
         String caminhoFicheiro = file;
         lerFicheiro(caminhoFicheiro,datas,acumuladoNaoInfetados,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
         do {
             selecaoUtilizador = menu();
             switch (selecaoUtilizador) {
-                case 1:
+                case "1":
                     caminhoFicheiro = selecionarFicheiro();
                     lerFicheiro(caminhoFicheiro,datas, acumuladoNaoInfetados, acumuladoInfetados,
                             acumuladoHospitalizados,
                             acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
-                case 2:
+                case "2":
                     mostrarDadosDiarios(leituraDeDatas(),datas, acumuladoInfetados,  acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
 
-                case 3:
+                case "3":
                     mostrarDadosSemanais(leituraDeDatas(), datas, acumuladoInfetados, acumuladoHospitalizados,
                             acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
 
-                case 4:
+                case "4":
                     mostrarDadosMensais(leituraDeDatas(),datas,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
 
-                case 5:
+                case "5":
                     System.out.println("1º intervalo:");
                     String[] intervalo1 = leituraDeDatas();
                     String[] intervalo2;
@@ -115,17 +115,17 @@ public class Main {
                     // o intervalo1 e intervalo2 têm o mesmo número de dias
                     // calcular as diferenças, a média e o desvio padrão para cada período
                     break;
-                case 6:
+                case "6":
                     System.out.println("");
                     pressioneEnterParaCont();
                     break;
-                case 7:
+                case "7":
                     int count=1;
                    tipoFicheiro = menuInicial(count);
                     kbScanner.nextLine();
                    pressioneEnterParaCont();
                    break;
-                case 0:
+                case "0":
                     // terminar a execução do programa
                     System.out.println("Obrigado pela preferência!");
                     break;
@@ -134,41 +134,41 @@ public class Main {
                     pressioneEnterParaCont();
                     break;
             }
-        } while (selecaoUtilizador!=0);
+        } while (selecaoUtilizador.equals("0"));
     }
 
      public static void funcionamentoProgramaOpcao2 (String file,String[] datas,int[] totaisNaoInfetados,int[] totaisInfetado, int[] totaisHospitalizados,int[] totaisUCI,int[] obitos) throws FileNotFoundException {
-        int selecaoUtilizador;
+        String selecaoUtilizador;
         String caminhoFicheiro = file;
         lerFicheiro(caminhoFicheiro,datas,totaisNaoInfetados,totaisInfetado,totaisHospitalizados,totaisUCI,obitos);
         do {
             selecaoUtilizador = menu();
             switch (selecaoUtilizador) {
-                case 1:
+                case "1":
                     caminhoFicheiro = selecionarFicheiro();
                     lerFicheiro(caminhoFicheiro,datas,totaisNaoInfetados,totaisInfetado,
                             totaisHospitalizados,
                             totaisUCI, obitos);
                     pressioneEnterParaCont();
                     break;
-                case 2:
+                case "2":
                     mostrarDadosTotaisDiarios(leituraDeDatas(),datas, totaisInfetado, totaisHospitalizados, totaisUCI, obitos );
                     pressioneEnterParaCont();
                     break;
 
-                case 3:
+                case "3":
                     mostrarDadosTotaisSemanais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
                             totaisUCI, obitos);
                     pressioneEnterParaCont();
                     break;
 
-                case 4:
+                case "4":
                     mostrarDadosTotaisMensais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
                             totaisUCI, obitos);
                     pressioneEnterParaCont();
                     break;
 
-                case 5:
+                case "5":
                     System.out.println("1º intervalo:");
                     String[] intervalo1 = leituraDeDatas();
                     String[] intervalo2;
@@ -192,7 +192,7 @@ public class Main {
                     // o intervalo1 e intervalo2 têm o mesmo número de dias
                     // calcular as diferenças, a média e o desvio padrão para cada período
                     break;
-                case 0:
+                case "0":
                     // terminar a execução do programa
                     System.out.println("Obrigado pela preferência!");
                     break;
@@ -201,7 +201,7 @@ public class Main {
                     pressioneEnterParaCont();
                     break;
             }
-        } while (selecaoUtilizador!=0);
+        } while (!selecaoUtilizador.equals("0"));
     }
 
     public static int menuInicial(int count) {
@@ -256,8 +256,8 @@ public class Main {
         return linhas - 1;
     }
 
-    public static int menu (){
-        int selecaoUtilizador;
+    public static String menu (){
+        String selecaoUtilizador;
         // Apresentação do menu
         System.out.println("\nPor favor escolha uma opção:\n");
         System.out.println("1. Carregar ficheiro");
@@ -270,7 +270,7 @@ public class Main {
         System.out.println("0. Sair\n");
         System.out.print("> ");
 
-        selecaoUtilizador = kbScanner.nextInt();
+        selecaoUtilizador = kbScanner.nextLine();
         kbScanner.nextLine();
         return selecaoUtilizador;
     }
