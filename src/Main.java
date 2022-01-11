@@ -14,20 +14,10 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-//import java.time.LocalDate;
-//import java.time.YearMonth;
-//import java.time.temporal.ChronoUnit;
-//import java.text.DateFormat;
-//import java.text.SimpleDateFormat;
-//import java.util.concurrent.TimeUnit;
-
-
 public class Main {
     static final Scanner kbScanner = new Scanner(System.in);
 
     public static void main(String[] args) throws FileNotFoundException, ParseException {
-
-        int selecaoUtilizador;
         String[] datas;
         int[] acumuladoNaoInfetados;
         int[] acumuladoInfetados;
@@ -35,114 +25,48 @@ public class Main {
         int[] acumuladoUCI;
         int[] acumuladoMortes;
         int numeroLinhas;
+        String caminhoFicheiro;
 
         int tipoFicheiro = menuInicial();
+
         do {
             if (tipoFicheiro == 1) {
-                String caminhoFicheiro = selecionarFicheiro();
-                tamanhoLinhasFicheiro(caminhoFicheiro);
-                do {
-                    numeroLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                    datas = new String[numeroLinhas];
-                    acumuladoNaoInfetados = new int[numeroLinhas];
-                    acumuladoInfetados = new int[numeroLinhas];
-                    acumuladoHospitalizados = new int[numeroLinhas];
-                    acumuladoUCI = new int[numeroLinhas];
-                    acumuladoMortes = new int[numeroLinhas];
-                    selecaoUtilizador = menu();
-                    lerFicheiro(caminhoFicheiro,datas, acumuladoNaoInfetados, acumuladoInfetados,
-                            acumuladoHospitalizados,
-                            acumuladoUCI, acumuladoMortes);
-                    pressioneEnterParaCont();
-                    switch (selecaoUtilizador) {
-                        case 1:
-                            caminhoFicheiro = selecionarFicheiro();
-                            lerFicheiro(caminhoFicheiro,datas, acumuladoNaoInfetados, acumuladoInfetados,
-                                    acumuladoHospitalizados,
-                                    acumuladoUCI, acumuladoMortes);
-                            pressioneEnterParaCont();
-                            break;
-
-                        case 2:
-                            mostrarDadosDiarios(leituraDeDatas(),datas, acumuladoInfetados,  acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
-                            pressioneEnterParaCont();
-                            break;
-
-                        case 3:
-                            mostrarDadosSemanais(leituraDeDatas(), datas, acumuladoInfetados, acumuladoHospitalizados,
-                                    acumuladoUCI, acumuladoMortes);
-                            pressioneEnterParaCont();
-                            break;
-
-                        case 4:
-                            mostrarDadosMensais(leituraDeDatas(),datas,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
-                            pressioneEnterParaCont();
-                            break;
-
-                /*case 5:
-                    System.out.println("1º intervalo:");
-                    String[] intervalo1 = leituraDeDatas();
-                    String[] intervalo2;
-
-                    // calcular intervalo de dias do intervalo1
-                   // long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-
-                    boolean flag;
-                    do {
-                        flag = true;
-                        System.out.println("\n2º intervalo:");
-                        intervalo2 = leituraDeDatas();
-
-                        // o intervalo de dias do intervalo2 tem de ser igual a 2
-                        long diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
-
-                        if(diasIntervalo1 != diasIntervalo2) {
-                            flag = false;
-                            System.out.println("\nErro: O número de dias entre o intervalo 1 é diferente do intervalo 2!");
-                            pressioneEnterParaCont();
-                        }
-                    } while (!flag);
-
-                    // o intervalo1 e intervalo2 têm o mesmo número de dias
-                    // calcular as diferenças, a média e o desvio padrão para cada período
-
-                    break; */
-
-                        case 0:
-                            // terminar a execução do programa
-                            System.out.println("Obrigado pela preferência!");
-                            break;
-                        default:
-                            System.out.println("Opção inválida.");
-                            pressioneEnterParaCont();
-                            break;
-                    }
-                } while (selecaoUtilizador != 0);
+                caminhoFicheiro = selecionarFicheiro();
+                numeroLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                datas = new String[numeroLinhas];
+                acumuladoNaoInfetados = new int[numeroLinhas];
+                acumuladoInfetados = new int[numeroLinhas];
+                acumuladoHospitalizados = new int[numeroLinhas];
+                acumuladoUCI = new int[numeroLinhas];
+                acumuladoMortes = new int[numeroLinhas];
+                funcionamentoProgramaOpcao1(caminhoFicheiro,datas, acumuladoNaoInfetados,acumuladoInfetados, acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
 
             } else if (tipoFicheiro == 2) {
-                String caminhoFicheiro = selecionarFicheiro();
+                caminhoFicheiro = selecionarFicheiro();
                 numeroLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                datas = new String[numeroLinhas];
+                int[] totaisNaoInfetado = new int[numeroLinhas];
+                int[] totaisInfetado = new int[numeroLinhas];
+                int[] totaisUCI = new int[numeroLinhas];
+                int[] totaisHospitalizados = new int[numeroLinhas];
+                int[] obitos = new int[numeroLinhas];
+                funcionamentoProgramaOpcao2(caminhoFicheiro,datas,totaisNaoInfetado,totaisInfetado,totaisHospitalizados,totaisUCI,obitos);
+
             } else {
                 System.out.println("Inválido");
-                tipoFicheiro=menuInicial();
+                tipoFicheiro = menuInicial();
             }
-        } while (tipoFicheiro!=1 && tipoFicheiro!=2);
+        } while (tipoFicheiro != 1 && tipoFicheiro != 2);
+    }
 
-        /*numeroLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-        datas = new String[numeroLinhas];
-        acumuladoNaoInfetados = new int[numeroLinhas];
-        acumuladoInfetados = new int[numeroLinhas];
-        acumuladoHospitalizados = new int[numeroLinhas];
-        acumuladoUCI = new int[numeroLinhas];
-        acumuladoMortes = new int[numeroLinhas];
+    //-------------------------------------------Funcionamento Aplicação----------------------------------------------//
 
-
-
-        // Início do programa
+    public static void funcionamentoProgramaOpcao1 (String file,String[] datas,int[] acumuladoNaoInfetados,int[] acumuladoInfetados,int[] acumuladoHospitalizados,int[] acumuladoUCI,int[] acumuladoMortes) throws FileNotFoundException, ParseException {
+        int selecaoUtilizador;
+        String caminhoFicheiro = file;
+        lerFicheiro(caminhoFicheiro,datas,acumuladoNaoInfetados,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
         do {
             selecaoUtilizador = menu();
-            System.out.println();
-
             switch (selecaoUtilizador) {
                 case 1:
                     caminhoFicheiro = selecionarFicheiro();
@@ -151,7 +75,6 @@ public class Main {
                             acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
-
                 case 2:
                     mostrarDadosDiarios(leituraDeDatas(),datas, acumuladoInfetados,  acumuladoHospitalizados, acumuladoUCI, acumuladoMortes);
                     pressioneEnterParaCont();
@@ -167,15 +90,13 @@ public class Main {
                     mostrarDadosMensais(leituraDeDatas(),datas,acumuladoInfetados,acumuladoHospitalizados,acumuladoUCI,acumuladoMortes);
                     pressioneEnterParaCont();
                     break;
-                */
-                /*case 5:
+
+                case 5:
                     System.out.println("1º intervalo:");
                     String[] intervalo1 = leituraDeDatas();
                     String[] intervalo2;
-
                     // calcular intervalo de dias do intervalo1
-                   // long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-
+                   long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
                     boolean flag;
                     do {
                         flag = true;
@@ -191,12 +112,9 @@ public class Main {
                             pressioneEnterParaCont();
                         }
                     } while (!flag);
-
                     // o intervalo1 e intervalo2 têm o mesmo número de dias
                     // calcular as diferenças, a média e o desvio padrão para cada período
-
-                    break; */
-            /*
+                    break;
                 case 0:
                     // terminar a execução do programa
                     System.out.println("Obrigado pela preferência!");
@@ -206,12 +124,78 @@ public class Main {
                     pressioneEnterParaCont();
                     break;
             }
-        } while (selecaoUtilizador != 0); */
+        } while (selecaoUtilizador!=0);
+    }
 
+     public static void funcionamentoProgramaOpcao2 (String file,String[] datas,int[] totaisNaoInfetados,int[] totaisInfetado, int[] totaisHospitalizados,int[] totaisUCI,int[] obitos) throws FileNotFoundException {
+        int selecaoUtilizador;
+        String caminhoFicheiro = file;
+        lerFicheiro(caminhoFicheiro,datas,totaisNaoInfetados,totaisInfetado,totaisHospitalizados,totaisUCI,obitos);
+        do {
+            selecaoUtilizador = menu();
+            switch (selecaoUtilizador) {
+                case 1:
+                    caminhoFicheiro = selecionarFicheiro();
+                    lerFicheiro(caminhoFicheiro,datas,totaisNaoInfetados,totaisInfetado,
+                            totaisHospitalizados,
+                            totaisUCI, obitos);
+                    pressioneEnterParaCont();
+                    break;
+                case 2:
+                    mostrarDadosTotaisDiarios(leituraDeDatas(),datas, totaisInfetado, totaisHospitalizados, totaisUCI, obitos );
+                    pressioneEnterParaCont();
+                    break;
+
+                case 3:
+                    mostrarDadosTotaisSemanais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
+                            totaisUCI, obitos);
+                    pressioneEnterParaCont();
+                    break;
+
+                /*case 4:
+                    mostrarDadosTotaisMensais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
+                            totaisUCI, obito);
+                    pressioneEnterParaCont();
+                    break;
+
+                case 5:
+                    System.out.println("1º intervalo:");
+                    String[] intervalo1 = leituraDeDatas();
+                    String[] intervalo2;
+                    // calcular intervalo de dias do intervalo1
+                    // long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+                    boolean flag;
+                    do {
+                        flag = true;
+                        System.out.println("\n2º intervalo:");
+                        intervalo2 = leituraDeDatas();
+
+                        // o intervalo de dias do intervalo2 tem de ser igual a 2
+                        long diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+
+                        if(diasIntervalo1 != diasIntervalo2) {
+                            flag = false;
+                            System.out.println("\nErro: O número de dias entre o intervalo 1 é diferente do intervalo 2!");
+                            pressioneEnterParaCont();
+                        }
+                    } while (!flag);
+                    // o intervalo1 e intervalo2 têm o mesmo número de dias
+                    // calcular as diferenças, a média e o desvio padrão para cada período
+                    break; */
+                case 0:
+                    // terminar a execução do programa
+                    System.out.println("Obrigado pela preferência!");
+                    break;
+                default:
+                    System.out.println("Opção inválida.");
+                    pressioneEnterParaCont();
+                    break;
+            }
+        } while (selecaoUtilizador!=0);
     }
 
     public static int menuInicial() {
-        System.out.println("Bem Vindo! Por favor siga os passos abaixo:\n");
+        System.out.println("\n\nBem Vindo! Por favor siga os passos abaixo:\n");
         System.out.println("Introduza o tipo de dados que pretende analisar:");
         System.out.println("1. Acumulados");
         System.out.println("2. Totais");
@@ -253,14 +237,13 @@ public class Main {
     public static int menu (){
         int selecaoUtilizador;
         // Apresentação do menu
-        System.out.println("Por favor escolha uma opção:\n");
+        System.out.println("\nPor favor escolha uma opção:\n");
         System.out.println("1. Carregar ficheiro");
         System.out.println("2. Visualizar dados diários");
         System.out.println("3. Visualizar dados semanais");
         System.out.println("4. Visualizar dados mensais");
         System.out.println("5. Comparar intervalo de datas");
         System.out.println("0. Sair\n");
-
         System.out.print("> ");
 
         selecaoUtilizador = kbScanner.nextInt();
@@ -300,7 +283,7 @@ public class Main {
         String caminho;
         do {
             kbScanner.nextLine();
-            System.out.print("Insira o caminho absoluto do ficheiro: ");
+            System.out.print("\nInsira o caminho absoluto do ficheiro: ");
             caminho = kbScanner.nextLine();
             if (!(new File(caminho)).isFile()) {
                 System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.\n");
@@ -354,7 +337,6 @@ public class Main {
         int i = 0;
 
         while (i < len) {
-
             if (leituraDeDatas.equals(stringParaDate(datas[i]))) {
                 return i;
             }
@@ -397,7 +379,7 @@ public class Main {
         int indexData1 = indexData(stringParaDate(leituraDeDatas[0]),datas);
         int indexData2 = indexData(stringParaDate(leituraDeDatas[1]),datas);
 
-        System.out.printf("Data %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
+        System.out.printf("\nData %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
         for (int i = 0; i <= indexData2-indexData1; i++) {
             int[] novosInfetados = dadosDiariosNovos(acumuladoInfetados,leituraDeDatas,datas);
             int[] novosHospitalizacoes = dadosDiariosNovos(acumuladoHospitalizados, leituraDeDatas, datas);
@@ -431,10 +413,10 @@ public class Main {
 
     //--------------------------------------------Analise Diária Total Casos------------------------------------------//
 
-    public static void dadosTotais (String[] leituraDeDatas,String[] datas, int[] dadosInfetados, int[] dadosHospitalizados, int[] dadosUCI, int[] dadosMortes) {
+    public static void mostrarDadosTotaisDiarios (String[] leituraDeDatas,String[] datas, int[] dadosInfetados, int[] dadosHospitalizados, int[] dadosUCI, int[] dadosMortes) {
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDate(leituraDeDatas[0])),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDate(leituraDeDatas[1])),datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDate(leituraDeDatas[0]),stringParaDate(leituraDeDatas[1]));
+
         System.out.printf("Data %15s Total Infetados | Total Hospitalizações | Total UCI | Total Mortes\n" , "" );
         for (int i = 0; i <= indexData2-indexData1; i++) {
             System.out.printf("%s %25s | %21.10s | %9.10s | %12.10s \n", datas[i+indexData1],dadosInfetados[i],dadosHospitalizados[i],dadosUCI[i],dadosMortes[i]);
@@ -470,7 +452,6 @@ public class Main {
     public static int[] dadosSemanaisNovos (int[] dados, int numeroSemanas,int indexData2,int indexData1) {
 
         int[] dadosNovos =  new int[numeroSemanas];
-
 
         for (int j = 0; j < numeroSemanas ; j++) {
             if (indexData1<=indexData2) {
@@ -541,6 +522,41 @@ public class Main {
         cal.set(Calendar.MILLISECOND, 0);
     }
 
+    //--------------------------------------------Analise Semanal Total Casos-----------------------------------------//
+
+    public static void mostrarDadosTotaisSemanais (String[] leituraDeDatas,String[] datas, int[] dadosInfetados, int[] dadosHospitalizados, int[] dadosUCI, int[] dadosMortes){
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDate(leituraDeDatas[0])),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDate(leituraDeDatas[1])),datas);
+        int numeroSemanas = calcularNumSemanas(stringParaDate(leituraDeDatas[0]),stringParaDate(leituraDeDatas[1]));
+
+        if (numeroSemanas == 0) {
+            System.out.println("Introduza datas que contenham pelo menos 1 semana");
+        } else {
+            System.out.printf("%19s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
+            for (int i = 0; i < numeroSemanas; i++) {
+                int[] totaisInfetados = dadosTotaisSemanaisNovos(dadosInfetados,numeroSemanas,indexData2,indexData1);
+                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dadosHospitalizados,numeroSemanas,indexData2,indexData1);
+                int[] totaisUCI = dadosTotaisSemanaisNovos(dadosUCI, numeroSemanas,indexData2,indexData1);
+                int[] totaisMortes = dadosTotaisSemanaisNovos(dadosMortes,numeroSemanas,indexData2,indexData1);
+                System.out.printf("Semana " + (1+i) + ": %25s | %21.10s | %9.10s | %12.10s \n", totaisInfetados[i],totaisHospitalizacoes[i],totaisUCI[i],totaisMortes[i]);
+            }
+        }
+    }
+
+    public static int[] dadosTotaisSemanaisNovos (int[] dados, int numeroSemanas,int indexData2,int indexData1) {
+
+        int[] dadosNovos =  new int[numeroSemanas];
+
+        for (int j = 0; j < numeroSemanas ; j++) {
+            if (indexData1<=indexData2) {
+                dadosNovos[j] = dados[indexData1 + 6] - dados[indexData1];
+                indexData1 = indexData1 + 7;
+            }
+        }
+        return dadosNovos;
+    }
+
+
     // ------------------------------------------Analise Mensal Novos Casos-------------------------------------------------------//
 
     public static void mostrarDadosMensais (String[] leituraDeDatas,String[] datas, int[] acumuladoInfetados, int[] acumuladoHospitalizados,
@@ -567,16 +583,15 @@ public class Main {
 
     public static int[] dadosMensaisNovos (int[] dados,int numeroMeses,int index2,int index1,String[] datas) {
         int[] dadosNovos =  new int[numeroMeses];
-        // Get the number of days in that month
-        String data1 = datas[index1];
+
         Calendar calendar = Calendar.getInstance();
-        int diasNoMes = calendar.get(Calendar.MONTH);
+        int diasNoMes = calendar.getActualMaximum(Calendar.MONTH);
 
         if (numeroMeses==1){
             dadosNovos[0]=dados[index2]-dados[index1];
         } else {
             for (int i = 0; i < numeroMeses; i++) {
-                calendar.set(Calendar.MONTH,1);
+                calendar.add(Calendar.MONTH,1);
                 if(index1<=index2) {
                     dadosNovos[i] = dados[index1 + (diasNoMes)-1] - dados[index1];
                     index1 = index1 + diasNoMes;
@@ -588,13 +603,18 @@ public class Main {
 
     public static int numeroMeses(String[] leituraDeDatas)  {
 
-        Calendar meses = Calendar.getInstance();
+        Calendar mesesInicial = Calendar.getInstance();
+        Calendar mesFinal = Calendar.getInstance();
         Date inicio = primeiroDiaMesValido(stringParaDate(leituraDeDatas[0]));
         Date fim = ultimoDiaMesValido(stringParaDate(leituraDeDatas[1]));
+        mesesInicial.setTime(inicio);
+        mesFinal.setTime(fim);
 
-        meses.setTimeInMillis(fim.getTime()-inicio.getTime());
+        int diferencaDeAnos = mesFinal.get(Calendar.YEAR)-mesesInicial.get(Calendar.YEAR);
+        int diferencaDeMeses = mesFinal.get(Calendar.MONTH)-mesesInicial.get(Calendar.MONTH);
 
-        return meses.get(Calendar.MONTH)+1;
+        int numeroMeses = diferencaDeAnos*12 + diferencaDeMeses;
+        return numeroMeses+1;
     }
 
 
@@ -623,25 +643,6 @@ public class Main {
         return dataFinal.getTime();
     }
 
-    public static int anoDaData(String data) {
-        System.out.println(data.substring(0,4));
-        return Integer.parseInt(data.substring(0, 4));
-
-    }
-
-    public static int mesDaData(String data) {
-        System.out.println(data.substring(5,7));
-        return Integer.parseInt(data.substring(5,7));
-
-    }
-
-    public static int diaDaData(String data) {
-        System.out.println(data.substring(8));
-        return Integer.parseInt(data.substring(8));
-
-    }
-
-
 
     //-----------------------------------------------------------------------------------------------------------------//
 
@@ -649,14 +650,17 @@ public class Main {
         return data.matches("\\d{4}-\\d{2}-\\d{2}");
     }
 
-    /* public static long calcularDiasEntreIntervalo(String[] intervalo) throws ParseException {
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date dataObj1 = sdf.parse(intervalo[0]);
-        Date dataObj2 = sdf.parse(intervalo[1]);
+     public static long calcularDiasEntreIntervalo(String[] intervalo)  {
 
-        long msDif = Math.abs(dataObj2.getTime() - dataObj1.getTime());
-        long numDias = TimeUnit.DAYS.convert(msDif, TimeUnit.MILLISECONDS);
+         Date inicio = primeiroDiaMesValido(stringParaDate(intervalo[0]));
+         Date fim = ultimoDiaMesValido(stringParaDate(intervalo[1]));
 
-        return numDias;
-    } */
+         int daysdiff = 0;
+         long diff = fim.getTime() - inicio.getTime();
+         long diffDays = diff / (24 * 60 * 60 * 1000) + 1;
+         daysdiff = (int) diffDays;
+
+         System.out.println(daysdiff);
+         return daysdiff;
+    }
 }
