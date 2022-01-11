@@ -13,9 +13,9 @@ import java.util.Scanner;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-
 public class Main {
     static final Scanner kbScanner = new Scanner(System.in);
+    static final int NUMERO_DADOS_COMPARAÇÃO = 2;
 
     public static void main(String[] args) throws FileNotFoundException, ParseException {
         String[] datas;
@@ -92,28 +92,23 @@ public class Main {
                     break;
 
                 case "5":
-                    System.out.println("1º intervalo:");
-                    String[] intervalo1 = leituraDeDatas();
+                    long diasIntervalo1;
+                    long diasIntervalo2;
+                    String[] intervalo1;
                     String[] intervalo2;
-                    // calcular intervalo de dias do intervalo1
-                   long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-                    boolean flag;
                     do {
-                        flag = true;
+                        System.out.println("1º intervalo:");
+                        intervalo1 = leituraDeDatas();
+                        // calcular intervalo de dias do intervalo1
+                        diasIntervalo1=calcularDiasEntreIntervalo(intervalo1);
                         System.out.println("\n2º intervalo:");
+                        // calcular intervalo de dias do intervalo2
                         intervalo2 = leituraDeDatas();
-
-                        // o intervalo de dias do intervalo2 tem de ser igual a 2
-                        long diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
-
-                        if(diasIntervalo1 != diasIntervalo2) {
-                            flag = false;
-                            System.out.println("\nErro: O número de dias entre o intervalo 1 é diferente do intervalo 2!");
-                            pressioneEnterParaCont();
-                        }
-                    } while (!flag);
-                    // o intervalo1 e intervalo2 têm o mesmo número de dias
-                    // calcular as diferenças, a média e o desvio padrão para cada período
+                        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+                    } while (diasIntervalo1 <0 && diasIntervalo2<0);
+                    analiseComparativaNovosCasos(diasIntervalo1,diasIntervalo2,datas,intervalo1,intervalo2,acumuladoInfetados,  acumuladoHospitalizados,  acumuladoUCI,  acumuladoMortes);
+                    pressioneEnterParaCont();
+                    //calcular as diferenças, media e desvio padrao
                     break;
                 case "6":
                     System.out.println("");
@@ -163,34 +158,28 @@ public class Main {
                     break;
 
                 case "4":
-                    mostrarDadosTotaisMensais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
-                            totaisUCI, obitos);
+                    //mostrarDadosTotaisMensais(leituraDeDatas(), datas, totaisNaoInfetados, totaisInfetado,
+                         //   totaisUCI, obitos);
                     pressioneEnterParaCont();
                     break;
 
                 case "5":
-                    System.out.println("1º intervalo:");
-                    String[] intervalo1 = leituraDeDatas();
+                   /* long diasIntervalo1;
+                    long diasIntervalo2;
+                    String[] intervalo1;
                     String[] intervalo2;
-                    // calcular intervalo de dias do intervalo1
-                    long diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-                    boolean flag;
                     do {
-                        flag = true;
+                        System.out.println("1º intervalo:");
+                        intervalo1 = leituraDeDatas();
+                        // calcular intervalo de dias do intervalo1
+                        diasIntervalo1=calcularDiasEntreIntervalo(intervalo1);
                         System.out.println("\n2º intervalo:");
                         intervalo2 = leituraDeDatas();
-
-                        // o intervalo de dias do intervalo2 tem de ser igual a 2
-                        long diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
-
-                        if(diasIntervalo1 != diasIntervalo2) {
-                            flag = false;
-                            System.out.println("\nErro: O número de dias entre o intervalo 1 é diferente do intervalo 2!");
-                            pressioneEnterParaCont();
-                        }
-                    } while (!flag);
-                    // o intervalo1 e intervalo2 têm o mesmo número de dias
-                    // calcular as diferenças, a média e o desvio padrão para cada período
+                        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+                    } while (diasIntervalo1 <0 && diasIntervalo2<0);
+                    analiseComparativaNovosCasos(diasIntervalo1,diasIntervalo2,datas,intervalo1,intervalo2,acumuladoInfetados,  acumuladoHospitalizados,  acumuladoUCI,  acumuladoMortes);
+                    pressioneEnterParaCont();
+                    //calcular as diferenças, media e desvio padrao*/
                     break;
                 case "0":
                     // terminar a execução do programa
@@ -596,16 +585,16 @@ public class Main {
         } else {
             System.out.printf("%16s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
             for (int i = 0; i < numeroMeses; i++) {
-                int[] novosInfetados = dadosMensaisNovos(acumuladoInfetados,numeroMeses,indexData2,indexData1,datas);
-                int[] novosHospitalizacoes = dadosMensaisNovos(acumuladoHospitalizados,numeroMeses,indexData2,indexData1,datas);
-                int[] novosUCI = dadosMensaisNovos(acumuladoUCI, numeroMeses,indexData2,indexData1,datas);
-                int[] novosMortes = dadosMensaisNovos(acumuladoMortes,numeroMeses,indexData2,indexData1,datas);
+                int[] novosInfetados = dadosMensaisNovos(acumuladoInfetados,numeroMeses,indexData2,indexData1);
+                int[] novosHospitalizacoes = dadosMensaisNovos(acumuladoHospitalizados,numeroMeses,indexData2,indexData1);
+                int[] novosUCI = dadosMensaisNovos(acumuladoUCI, numeroMeses,indexData2,indexData1);
+                int[] novosMortes = dadosMensaisNovos(acumuladoMortes,numeroMeses,indexData2,indexData1);
                 System.out.printf("Mês " + (1+i) + ": %25s | %21.10s | %9.10s | %12.10s \n", novosInfetados[i],novosHospitalizacoes[i],novosUCI[i],novosMortes[i]);
             }
         }
     }
 
-    public static int[] dadosMensaisNovos (int[] dados,int numeroMeses,int index2,int index1,String[] datas) {
+    public static int[] dadosMensaisNovos (int[] dados,int numeroMeses,int index2,int index1) {
         int[] dadosNovos =  new int[numeroMeses];
 
         Calendar calendar = Calendar.getInstance();
@@ -667,7 +656,7 @@ public class Main {
         return dataFinal.getTime();
     }
 
-   public static void mostrarDadosTotaisMensais(String[] leituraDeDatas,String[] datas,int[] totaisInfetados,int[] totaisHospitalizados,
+/*   public static void mostrarDadosTotaisMensais(String[] leituraDeDatas,String[] datas,int[] totaisInfetados,int[] totaisHospitalizados,
     int[]totaisUCI,int[] obito) {
        int indexData1 = indexData(primeiroDiaMesValido(stringParaDate(leituraDeDatas[0])),datas);
        int indexData2 = indexData(ultimoDiaMesValido(stringParaDate(leituraDeDatas[1])),datas);
@@ -678,16 +667,72 @@ public class Main {
        } else {
            System.out.printf("%16s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
            for (int i = 0; i < numeroMeses; i++) {
-               int[] novosInfetados = dadosMensaisNovos(totaisInfetados,numeroMeses,indexData2,indexData1,datas);
-               int[] novosHospitalizacoes = dadosMensaisNovos(totaisHospitalizados,numeroMeses,indexData2,indexData1,datas);
-               int[] novosUCI = dadosMensaisNovos(totaisUCI, numeroMeses,indexData2,indexData1,datas);
-               int[] novosMortes = dadosMensaisNovos(obito,numeroMeses,indexData2,indexData1,datas);
+               int[] novosInfetados = dadosMensaisTotaisNovos(totaisInfetados,numeroMeses,indexData2,indexData1,datas);
+               int[] novosHospitalizacoes = dadosMensaisTotaisNovos(totaisHospitalizados,numeroMeses,indexData2,indexData1,datas);
+               int[] novosUCI = dadosMensaisTotaisNovos(totaisUCI, numeroMeses,indexData2,indexData1,datas);
+               int[] novosMortes = dadosMensaisTotaisNovos(obito,numeroMeses,indexData2,indexData1,datas);
                System.out.printf("Mês " + (1+i) + ": %25s | %21.10s | %9.10s | %12.10s \n", novosInfetados[i],novosHospitalizacoes[i],novosUCI[i],novosMortes[i]);
            }
        }
+    } */
+
+    public static int dadosMensaisTotaisNovos () {
+        int a=0;
+        return a;
     }
 
-    //-----------------------------------------------------------------------------------------------------------------//
+    //----------------------------------------------------------------------------------------------------------------//
+        public static void analiseComparativaNovosCasos (long intervalo,long intervalo2,String[] datas,String[] intervaloinicial,String[] intervaloFinal,int[] acumuladoInfetados, int[] acumuladoHospitalizados, int[] acumuladoUCI, int[] acumuladoMortes) {
+            // primeiro dia do primeiro intervalo
+            // primeiro dia do segundo intervalo
+            // numero de dias a comparar
+            // fazer contas
+
+            int numeroDiasAComparar = (int) intervalo;
+            if(intervalo < intervalo2) {
+                numeroDiasAComparar = (int) intervalo;
+            } else if (intervalo2<intervalo) {
+                numeroDiasAComparar = (int) intervalo2;
+            }
+            int indexData1 = indexData(stringParaDate(intervaloinicial[0]),datas);
+            int indexData2 = indexData(stringParaDate(intervaloFinal[1]),datas);
+
+            System.out.printf("\nDados %15s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
+            for (int i = 0; i < NUMERO_DADOS_COMPARAÇÃO; i++) {
+                int[][] comparacaoNovosInfetados = comparacaoDadosDiariosNovos(indexData1,indexData2,acumuladoInfetados,numeroDiasAComparar);
+                int[][] comparacaoNovosHospitalizacoes = comparacaoDadosDiariosNovos(indexData1,indexData2,acumuladoHospitalizados,numeroDiasAComparar);
+                int[][] comparacaoNovosUCI = comparacaoDadosDiariosNovos(indexData1,indexData2, acumuladoUCI,numeroDiasAComparar);
+                int[][] comparacaoNovosMortes = comparacaoDadosDiariosNovos(indexData1,indexData2, acumuladoMortes,numeroDiasAComparar);
+                if (comparacaoNovosInfetados[i][i]==-1 && comparacaoNovosHospitalizacoes[i][i]==-1 && comparacaoNovosUCI[i][i]==-1 && comparacaoNovosMortes[i][i]==-1) {
+                    System.out.printf("%s %25s | %21.10s | %9.10s | %12.10s \n", datas[i],"Sem dados","Sem dados","Sem dados","Sem dados");
+                    System.out.println();
+                } else {
+                    for (int j = 0; j <= numeroDiasAComparar; j++) {
+                        System.out.printf("%s 1ªIntervalo %25s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], comparacaoNovosInfetados[0][j], comparacaoNovosHospitalizacoes[0][j], comparacaoNovosUCI[0][j], comparacaoNovosMortes[0][j]);
+                        System.out.printf("%s 2ªIntervalo %25s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], comparacaoNovosInfetados[1][j], comparacaoNovosHospitalizacoes[1][j], comparacaoNovosUCI[1][j], comparacaoNovosMortes[1][j]);
+                        System.out.println();
+                    }
+                }
+            }
+        }
+
+    public static int[][] comparacaoDadosDiariosNovos (int indexData1,int indexData2, int[] dados, int numeroDias) {
+        int indice1 = 0;
+        int indice2 = 0;
+        int[][] dadosNovos =  new int[NUMERO_DADOS_COMPARAÇÃO][numeroDias];
+
+        for (int j = indexData1; j <= numeroDias ; j++) {
+            dadosNovos[0][indice1] = dados[j]-dados[j-1];
+            indice1++;
+        }
+        for (int i = indexData2; i <= numeroDias; i++) {
+            dadosNovos[1][indice2]= dados[i]-dados[i-1];
+            indice2++;
+        }
+        return dadosNovos;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------//
 
     public static boolean verificarData(String data) {
         return data.matches("\\d{4}-\\d{2}-\\d{2}");
@@ -695,15 +740,15 @@ public class Main {
 
      public static long calcularDiasEntreIntervalo(String[] intervalo)  {
 
-         Date inicio = primeiroDiaMesValido(stringParaDate(intervalo[0]));
-         Date fim = ultimoDiaMesValido(stringParaDate(intervalo[1]));
+         Date inicio = stringParaDate(intervalo[0]);
+         Date fim = stringParaDate(intervalo[1]);
 
-         int daysdiff = 0;
+         int diffdias = 0;
          long diff = fim.getTime() - inicio.getTime();
-         long diffDays = diff / (24 * 60 * 60 * 1000) + 1;
-         daysdiff = (int) diffDays;
+         long diffDias = diff / (24 * 60 * 60 * 1000) + 1;
+         diffdias = (int) diffDias;
 
-         System.out.println(daysdiff);
-         return daysdiff;
+         System.out.println(diffdias);
+         return diffdias;
     }
 }
