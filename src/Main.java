@@ -30,6 +30,8 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
+        // Tests.runTestes();
+
         String[] acumuladoDatas;
         int[][] acumuladoDados;
 
@@ -54,7 +56,7 @@ public class Main {
                 totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 totalDados = lerDados(caminhoFicheiro,numLinhas,totalDados);
                 jaleuFicheiros[0] = true;
-                pressioneEnterParaCont();
+                // pressioneEnterParaCont();
                 opcaoTipoFicheiro=menu();
                 executaOpcao(opcaoTipoFicheiro,jaleuFicheiros,acumuladoDatas,acumuladoDados,totalDatas,totalDados);
                 break;
@@ -69,7 +71,7 @@ public class Main {
                 acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 acumuladoDados = lerDados(caminhoFicheiro,numLinhas,acumuladoDados);
                 jaleuFicheiros[1] = true;
-                pressioneEnterParaCont();
+                // pressioneEnterParaCont();
                 opcaoTipoFicheiro=menu();
                 executaOpcao(opcaoTipoFicheiro,jaleuFicheiros,acumuladoDatas,acumuladoDados,totalDatas,totalDados);
                 break;
@@ -92,7 +94,7 @@ public class Main {
         return datas;
     }
 
-    public static int[][] lerDados (String caminhoFicheiro,int numeroLinhas, int[][] dados) throws FileNotFoundException {
+    public static int[][] lerDados(String caminhoFicheiro,int numeroLinhas, int[][] dados) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
         int[][] dadosNovos = new int[NUMERO_DADOS_DIFERENTES][numeroLinhas];
         String[] dadosFicheiro;
@@ -136,7 +138,7 @@ public class Main {
                             jaLeuFicheiros[1] = true;
                             break;
                     }
-                    pressioneEnterParaCont();
+                    // pressioneEnterParaCont();
                     opcao=menu();
                     break;
                 case "2":
@@ -545,8 +547,7 @@ public class Main {
         }
     }
 
-    public static int[] dadosSemanaisNovos (int[] dados, int numeroSemanas,int indexData2,int indexData1) {
-
+    public static int[] dadosSemanaisNovos(int[] dados, int numeroSemanas,int indexData2,int indexData1) {
         int[] dadosNovos =  new int[numeroSemanas];
 
         for (int j = 0; j < numeroSemanas ; j++) {
@@ -559,15 +560,14 @@ public class Main {
     }
 
     public static Date verificarSemanaSegunda (Date inicio) {
-
-        Calendar data = Calendar.getInstance() ;
+        Calendar data = Calendar.getInstance();
         data.setTime(inicio);
 
         while (data.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-            data.add(Calendar.DAY_OF_WEEK,1);
+            data.add(Calendar.DAY_OF_WEEK, 1);
         }
 
-        return (data.getTime());
+        return data.getTime();
     }
 
     public static Date verificarSemanaDomingo (Date fim)  {
@@ -579,7 +579,7 @@ public class Main {
             dataFinal.add(Calendar.DAY_OF_WEEK,-(dataFinal.get(Calendar.DAY_OF_WEEK)-1));
         }
 
-        return (dataFinal.getTime());
+        return dataFinal.getTime();
     }
 
 
@@ -659,7 +659,17 @@ public class Main {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
+
+        // ! 2020-05-30
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
+
+        /**
+         * solução
+         * verificar se o dia é o último desse mês
+         * se não for retorna o último dia do mês do anterior
+         * e depois verificar se index
+         */
+
         int numeroMeses = numeroMeses(leituraDeDatas);
 
         if (numeroMeses == 0) {
@@ -676,7 +686,7 @@ public class Main {
         }
     }
 
-    public static int[] dadosMensaisNovos (String leituraDatas, int[] dados,int numeroMeses,int index2,int index1) {
+    public static int[] dadosMensaisNovos(String leituraDatas, int[] dados,int numeroMeses,int index2,int index1) {
         int[] dadosNovos =  new int[numeroMeses];
         Date data = stringParaDateEConverterDatas(leituraDatas);
         Calendar calendar = Calendar.getInstance();
@@ -700,8 +710,9 @@ public class Main {
         return dadosNovos;
     }
 
-    public static int numeroMeses(String[] leituraDeDatas)  {
+    // public static int[] dadosMensaisNovos_mod() {}
 
+    public static int numeroMeses(String[] leituraDeDatas) {
         Calendar mesesInicial = Calendar.getInstance();
         Calendar mesFinal = Calendar.getInstance();
         Date inicio = primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0]));
@@ -716,33 +727,36 @@ public class Main {
         return numeroMeses+1;
     }
 
-
-    public static Date primeiroDiaMesValido (Date inicio)  {
+    public static Date primeiroDiaMesValido(Date inicio) {
         Calendar data = Calendar.getInstance();
-
         data.setTime(inicio);
 
-        while (data.get(Calendar.DAY_OF_MONTH) != 1) {
-            data.add(Calendar.DAY_OF_MONTH,1);
+        if(data.get(Calendar.DAY_OF_MONTH) != 1) {
+            data.set(Calendar.DAY_OF_MONTH, 1);
+            data.add(Calendar.MONTH, 1);
         }
 
-        return  ((data.getTime()));
+        return data.getTime();
     }
 
-    public static Date ultimoDiaMesValido (Date fim) {
-
-        Calendar dataFinal =  Calendar.getInstance();
-
+    // * fixed
+    public static Date ultimoDiaMesValido(Date fim) {
+        Calendar dataFinal = Calendar.getInstance();
         dataFinal.setTime(fim);
 
-        while (dataFinal.get(Calendar.DAY_OF_MONTH) != 31 && dataFinal.get(Calendar.DAY_OF_MONTH) != 30 && dataFinal.get(Calendar.DAY_OF_MONTH) != 28 && dataFinal.get(Calendar.DAY_OF_MONTH)!=29) {
-            dataFinal.add(Calendar.DAY_OF_MONTH,-1);
+        int diaFinalMes = dataFinal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        if(diaFinalMes != dataFinal.get(Calendar.DAY_OF_MONTH)) {
+            // evitar bug: set fevereiro c/ dia 30
+            dataFinal.set(Calendar.DAY_OF_MONTH, 1);
+            dataFinal.add(Calendar.MONTH, -1);
+            dataFinal.set(Calendar.DAY_OF_MONTH, dataFinal.getActualMaximum(Calendar.DAY_OF_MONTH));
         }
 
         return dataFinal.getTime();
     }
 
-   public static void mostrarDadosTotaisMensais(String[] leituraDeDatas,String[] datas,int[][] dados) {
+    public static void mostrarDadosTotaisMensais(String[] leituraDeDatas,String[] datas,int[][] dados) {
        int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
        int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
        int numeroMeses = numeroMeses(leituraDeDatas);
