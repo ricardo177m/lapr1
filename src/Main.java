@@ -118,22 +118,43 @@ public class Main {
         return dadosNovos;
     }
 
-   /* public static int[][] lerDadosMatriz(String caminhoFicheiro,int numLinhas) throws FileNotFoundException {
+   public static double[][] lerDadosMatriz(String caminhoFicheiro,int numLinhas) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
-        int[][] dados = new int[NUMERO_ESTADOS_DIFERENTES][NUMERO_DADOS_DIFERENTES];
-        String linha;
+        double[][] dados = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
+        String[] dadosFicheiro;
+        String linha=scanner.nextLine();
         int indice=0;
         while (scanner.hasNextLine()) {
-            dados[0][indice] = Integer.parseInt(dadosFicheiro[1]);
-            dados[1][indice] = Integer.parseInt(dadosFicheiro[2]);
-            dados[2][indice] = Integer.parseInt(dadosFicheiro[3]);
-            dados[3][indice] = Integer.parseInt(dadosFicheiro[4]);
-            dados[4][indice] = Integer.parseInt(dadosFicheiro[5]);
-            linha = scanner.nextLine();
-            indice++;
+            dadosFicheiro = linha.split("=");
+            if (!linha.equals("")) {
+
+                dados[indice][0] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][1] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][2] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][3] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][4] = Double.parseDouble(dadosFicheiro[1]);
+                if (scanner.hasNextLine())
+                linha = scanner.nextLine();
+
+                indice++;
+            } else {
+                linha=scanner.nextLine();
+            }
         }
         return dados;
-    } */
+    }
 
     public static void executaOpcao(String opcao,boolean[] jaLeuFicheiros, String[] datasAcumulados,int[][] acumuladoDados, String[] datasTotais, int[][] dadosTotais) throws FileNotFoundException {
         do {
@@ -326,22 +347,26 @@ public class Main {
         boolean dataExiste;
         int indexData1;
         if  (jaLeuFicheiro[1]) {
-            System.out.print("Introduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
-            String data = kbScanner.nextLine();
-            dataExiste = verificarDiaExiste(datas,data);
-            indexData1 = indexData(stringParaDateEConverterDatas(data),datas);
             String matriz = selecionarMatriz();
+            System.out.print("Introduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
+            String dataEscolhe = kbScanner.nextLine();
+            dataExiste = verificarDiaExiste(datas,dataEscolhe);
+            indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe),datas);
+            String data;
             if (dataExiste) {
                 if((indexData1-1)==-1){
                     data=datas[0];
-                    mostrarPrevisao(data, datas, dados, matriz);
+                    Date data1 = stringParaDateEConverterDatas(data);
+                    mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
                 } else {
                     data = escolherDiaAnterior(indexData1, datas);
-                    mostrarPrevisao(data, datas, dados, matriz);
+                    Date data1 = stringParaDateEConverterDatas(data);
+                    mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
                 }
             } else {
-                data = escolherDiaMaisProximo(indexData1,datas);
-                mostrarPrevisao(data,datas,dados,matriz);
+                Date data1 = stringParaDateEConverterDatas(dataEscolhe);
+                data = escolherDiaMaisProximo(data1,datas);
+                mostrarPrevisao(data,datas,dados,matriz, dataEscolhe);
             }
         } else {
             System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -1238,7 +1263,6 @@ public class Main {
         return dadosNovos;
     }
 
-
     public static boolean verificarData1(String data) {
         return data.matches("\\d{2}-\\d{2}-\\d{4}");
     }
@@ -1257,7 +1281,6 @@ public class Main {
         long diffDias = diff / (24 * 60 * 60 * 1000) + 1;
         diffdias = (int) diffDias;
 
-        System.out.println(diffdias);
         return diffdias;
     }
 
@@ -1288,19 +1311,70 @@ public class Main {
     public static String escolherDiaAnterior(int index,String[] datas) {
         return datas[index-1];
     }
-    public static String escolherDiaMaisProximo (int index,String[] datas) {
+    public static String escolherDiaMaisProximo (Date data,String[] datas) {
         String diaMaisProximo="";
-        if (index > datas.length) {
+        Date dataFinal = stringParaDateEConverterDatas(datas[datas.length-1]);
+        Date dataInicial = stringParaDateEConverterDatas(datas[0]);
+        if (data.after(dataFinal)) {
             diaMaisProximo = datas[datas.length-1];
-        } else {
+        } else if (data.before(dataInicial)){
             diaMaisProximo = datas[0];
         }
        return diaMaisProximo;
     }
 
-    public static void mostrarPrevisao (String data,String[] datas, int[][] dados,String ficheiro) throws FileNotFoundException {
-        int[][] matriz = new int[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES] ;
-        //matriz = lerMatiz(ficheiro,NUMERO_ESTADOS_DIFERENTES);
-        System.out.println("previsao");
+    public static void mostrarPrevisao(String data, String[] datas, int[][] dados, String ficheiro, String dataEscolhida) throws FileNotFoundException {
+        double[][] matriz;
+        matriz = lerDadosMatriz(ficheiro, NUMERO_ESTADOS_DIFERENTES);
+        String[] intervalo = new String[2];
+        intervalo[0] = data;
+        intervalo[1] = dataEscolhida;
+        int index = indexData(stringParaDateEConverterDatas(data),datas);
+
+        long diasDiferenca = (int) Math.abs(calcularDiasEntreIntervalo(intervalo)) - 1;
+
+        double[][] matrizElevada = matrizElevada(matriz, diasDiferenca);
+
+        System.out.printf("\n%31s |Total Não Infetados | Total Infetados | Total Hospitalizações |    Total UCI    | Total Mortes\n","");
+        System.out.print("Previsão para o dia: "+dataEscolhida+" |");
+        double[][] previsao = multiplicarMatrizes(matrizElevada,preencherArray(dados,index));
+        System.out.printf("%19.4f | %15.4f | %21.4f | %15.4f | %12.4f\n",previsao[0][0],previsao[1][0],previsao[2][0],previsao[3][0],previsao[4][0]);
+
+        }
+
+
+    public static double[][] multiplicarMatrizes(double[][] matriz, double[][] matriz1) {
+        double[][] temp = new double[matriz.length][matriz[0].length];
+        double sum;
+
+        for (int i = 0; i < matriz.length; i++) {
+            temp[i] = new double[matriz[i].length];
+            for (int j = 0; j < matriz1[i].length; j++) {
+                sum = 0;
+                for (int l = 0; l < matriz.length; l++) {
+                    sum += matriz[i][l] * matriz1[l][j] ;
+                }
+                temp[i][j] = sum ;
+            }
+        }
+        matriz = temp;
+
+        return matriz;
+    }
+
+    public static double[][] matrizElevada (double[][] matriz,long xvezes) {
+        double[][] result = matriz;
+        for (int n = 1; n < xvezes; ++ n)
+            result = multiplicarMatrizes(result, matriz);
+        return result;
+    }
+
+    public static double[][] preencherArray(int[][] dados,int index) {
+        double[][] array = new double[NUMERO_ESTADOS_DIFERENTES][1];
+        for (int i = 0; i < array.length; i++) {
+            array[i][0]=(dados[i][index]);
+        }
+        return array;
     }
 }
+
