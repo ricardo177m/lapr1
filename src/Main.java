@@ -36,7 +36,7 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
-        // Tests.runTestes();
+        Tests.runTestes();
 
         String[] acumuladoDatas;
         int[][] acumuladoDados;
@@ -1374,7 +1374,7 @@ public class Main {
     public static String escolherDiaAnterior(int index,String[] datas) {
         return datas[index-1];
     }
-    
+
     public static String escolherDiaMaisProximo (Date data,String[] datas) {
         String diaMaisProximo="";
         Date dataFinal = stringParaDateEConverterDatas(datas[datas.length-1]);
