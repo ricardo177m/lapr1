@@ -9,8 +9,11 @@
  * Ricardo Moreira - 1211285
  */
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,8 +21,9 @@ import java.util.Date;
 public class Main {
     static final Scanner kbScanner = new Scanner(System.in);
     static final int NUMERO_DADOS_COMPARACAO = 2;
-    static final int NUMERO_FICHEIRO_DIFERENTE = 2;
+    static final int NUMERO_FICHEIRO_DIFERENTE = 3;
     static final int NUMERO_DADOS_DIFERENTES = 5;
+    static final int NUMERO_ESTADOS_DIFERENTES =5;
 
     public static void main(String[] args) throws FileNotFoundException {
         // Matriz de dados:
@@ -50,13 +54,13 @@ public class Main {
             case "1":
                 int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
                 acumuladoDatas = new String[numLinhas];
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas, acumuladoDatas);
+                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
                 acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas, acumuladoDados);
+                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                 totalDatas = new String[numLinhas];
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas, totalDatas);
+                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
                 totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                totalDados = lerDados(caminhoFicheiro, numLinhas, totalDados);
+                totalDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[0] = true;
                 // pressioneEnterParaCont();
                 opcaoTipoFicheiro = menu();
@@ -65,13 +69,13 @@ public class Main {
             case "2":
                 numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
                 totalDatas = new String[numLinhas];
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas, totalDatas);
+                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
                 totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                totalDados = lerDados(caminhoFicheiro, numLinhas, totalDados);
+                totalDados = lerDados(caminhoFicheiro, numLinhas);
                 acumuladoDatas = new String[numLinhas];
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas, acumuladoDatas);
+                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
                 acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas, acumuladoDados);
+                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[1] = true;
                 // pressioneEnterParaCont();
                 opcaoTipoFicheiro = menu();
@@ -82,22 +86,21 @@ public class Main {
 
     // -------------------------------------------Funcionamento Aplicação----------------------------------------------//
 
-    public static String[] lerDatas(String caminhoFicheiro, int numeroLinhas, String[] dadosFicheiro)
-            throws FileNotFoundException {
+    public static String[] lerDatas(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
         String[] datas = new String[numeroLinhas];
         String linha = scanner.nextLine();
         int indice = 0;
         while (scanner.hasNextLine()) {
             linha = scanner.nextLine();
-            dadosFicheiro = linha.split(",");
+            String[] dadosFicheiro = linha.split(",");
             datas[indice] = dadosFicheiro[0];
             indice++;
         }
         return datas;
     }
 
-    public static int[][] lerDados(String caminhoFicheiro, int numeroLinhas, int[][] dados) throws FileNotFoundException {
+    public static int[][] lerDados(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
         int[][] dadosNovos = new int[NUMERO_DADOS_DIFERENTES][numeroLinhas];
         String[] dadosFicheiro;
@@ -111,13 +114,52 @@ public class Main {
             dadosNovos[1][indice] = Integer.parseInt(dadosFicheiro[2]);
             dadosNovos[2][indice] = Integer.parseInt(dadosFicheiro[3]);
             dadosNovos[3][indice] = Integer.parseInt(dadosFicheiro[4]);
-            dadosNovos[4][indice] = Integer.parseInt(dadosFicheiro[NUMERO_DADOS_DIFERENTES]);
+            dadosNovos[4][indice] = Integer.parseInt(dadosFicheiro[5]);
             indice++;
         }
         return dadosNovos;
     }
 
-    public static void executaOpcao(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] acumuladoDados, String[] datasTotais, int[][] dadosTotais) throws FileNotFoundException {
+   public static double[][] lerDadosMatriz(String caminhoFicheiro, int numLinhas) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(caminhoFicheiro));
+        double[][] dados = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
+        String[] dadosFicheiro;
+        String linha=scanner.nextLine();
+        int indice=0;
+        
+        while (scanner.hasNextLine()) {
+            dadosFicheiro = linha.split("=");
+            if (!linha.equals("")) {
+
+                dados[indice][0] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][1] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][2] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][3] = Double.parseDouble(dadosFicheiro[1]);
+                linha = scanner.nextLine();
+                dadosFicheiro = linha.split("=");
+
+                dados[indice][4] = Double.parseDouble(dadosFicheiro[1]);
+                if (scanner.hasNextLine())
+                linha = scanner.nextLine();
+
+                indice++;
+            } else {
+                linha=scanner.nextLine();
+            }
+        }
+        return dados;
+    }
+
+    public static void executaOpcao(String opcao,boolean[] jaLeuFicheiros, String[] datasAcumulados,int[][] acumuladoDados, String[] datasTotais, int[][] dadosTotais) throws FileNotFoundException {
         do {
             switch (opcao) {
                 case "1":
@@ -128,20 +170,21 @@ public class Main {
                     switch (opcaoTipoFicheiro) {
                         case "1":
                             datasAcumulados = new String[numLinhas];
-                            datasAcumulados = lerDatas(caminhoFicheiro, numLinhas, datasAcumulados);
+                            datasAcumulados = lerDatas(caminhoFicheiro, numLinhas);
                             acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                            acumuladoDados = lerDados(caminhoFicheiro, numLinhas, acumuladoDados);
+                            acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[0] = true;
                             break;
                         case "2":
                             datasTotais = new String[numLinhas];
-                            datasTotais = lerDatas(caminhoFicheiro, numLinhas, datasTotais);
+                            datasTotais = lerDatas(caminhoFicheiro, numLinhas);
                             dadosTotais = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
-                            dadosTotais = lerDados(caminhoFicheiro, numLinhas, dadosTotais);
+                            dadosTotais = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[1] = true;
                             break;
                     }
-                    // pressioneEnterParaCont();
+                    System.out.println("Ficheiro lido com sucesso!");
+                    pressioneEnterParaCont();
                     opcao = menu();
                     break;
                 case "2":
@@ -161,6 +204,7 @@ public class Main {
                     opcao = menu();
                     break;
                 case "4":
+                    // Ver dados mensais
                     opcaoTipoFicheiro = selecionarTipoFicheiro();
                     verDadosMensais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais,
                             dadosTotais);
@@ -168,6 +212,7 @@ public class Main {
                     opcao = menu();
                     break;
                 case "5":
+                    // Ver analise comparativa
                     opcaoTipoFicheiro = selecionarTipoFicheiro();
                     verDadosComparativos(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados,
                             datasTotais, dadosTotais);
@@ -175,14 +220,15 @@ public class Main {
                     opcao = menu();
                     break;
                 case "6":
-                    verPrevisoes();
+                    // Ver previsoes
+                    verPrevisoes(jaLeuFicheiros, datasTotais, dadosTotais);
+                    pressioneEnterParaCont();
                     opcao = menu();
                     break;
                 case "0":
                     break;
                 default:
-                    System.out.println(
-                            "ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.\n");
+                    System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.\n");
                     pressioneEnterParaCont();
                     opcao = menu();
                     break;
@@ -195,7 +241,12 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
-                    mostrarDadosDiarios(leituraIntervaloDatas(), datasAcumulados, dadosAcumaldos);
+                    String[] leituraDatas = leituraIntervaloDatas();
+                    mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos);
+                    }
                 } else {
                     System.out.println(
                             "ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -203,7 +254,12 @@ public class Main {
                 break;
             case "2":
                 if (jaLeuFicheiros[1]) {
-                    mostrarDadosTotaisDiarios(leituraIntervaloDatas(), datasTotais, dadosTotais);
+                    String[] leituraDatas = leituraIntervaloDatas();
+                    mostrarDadosTotaisDiarios(leituraDatas,datasTotais,dadosTotais);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroTotalDiarios(diretorio,leituraDatas,datasTotais,dadosTotais);
+                    }
                 } else {
                     System.out.println(
                             "ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -219,7 +275,12 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
-                    mostrarDadosSemanais(leituraIntervaloDatas(), datasAcumulado, dadosAcumulado);
+                    String[] leituraDatas = leituraIntervaloDatas();
+                    mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroAcumuladoSemanais(diretorio,leituraDatas,datasAcumulado,dadosAcumulado);
+                    }
                 } else {
                     System.out.println(
                             "ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -227,7 +288,12 @@ public class Main {
                 break;
             case "2":
                 if (jaLeuFicheiros[1]) {
-                    mostrarDadosTotaisSemanais(leituraIntervaloDatas(), datasTotal, dadosTotal);
+                    String[] leituraDatas = leituraIntervaloDatas();
+                    mostrarDadosTotaisSemanais(leituraIntervaloDatas(), datasTotal,dadosTotal);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroTotalSemanais(diretorio,leituraDatas,datasAcumulado,dadosAcumulado);
+                    }
                 } else {
                     System.out.println(
                             "ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -287,7 +353,167 @@ public class Main {
         }
     }
 
-    // -------------------------------------------Menus da Aplicação---------------------------------------------------//
+    public static void verPrevisoes(boolean[] jaLeuFicheiro, String[] datas, int[][] dados) throws FileNotFoundException {
+        // ler matriz do ficheiro
+        // veririficar se o dia que ele introduziu pertence ao ficheiro
+        // Se nao existir, escolher o dia mais proximo
+        // Se existir, escolher o dia anterior
+        // matriz elevada a diferença do dia escolhido pelo utilizador a multiplicar pelo vetor do dia escolhido
+        boolean dataExiste;
+        int indexData1;
+        if  (jaLeuFicheiro[1]) {
+            String matriz = selecionarMatriz();
+            System.out.print("Introduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
+            String dataEscolhe = kbScanner.nextLine();
+            dataExiste = verificarDiaExiste(datas,dataEscolhe);
+            indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe),datas);
+            String data;
+            if (dataExiste) {
+                if((indexData1-1)==-1){
+                    data=datas[0];
+                    // Date data1 = stringParaDateEConverterDatas(data);
+                    mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
+                } else {
+                    data = escolherDiaAnterior(indexData1, datas);
+                    // Date data1 = stringParaDateEConverterDatas(data);
+                    mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
+                }
+            } else {
+                Date data1 = stringParaDateEConverterDatas(dataEscolhe);
+                data = escolherDiaMaisProximo(data1,datas);
+                mostrarPrevisao(data,datas,dados,matriz, dataEscolhe);
+            }
+        } else {
+            System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+        }
+    }
+
+    public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+        String nomeFicheiro = diretorio + "/dados_acumulados_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]),datas);
+
+        ficheiroEscrita.println("Data,Novos Infetados,Novas Hospitalizações,Novos UCI,Novas Mortes");
+
+        for (int i = 0; i <= indexData2-indexData1; i++) {
+            int[] novosInfetados = dadosDiariosNovos(dados[1],leituraDeDatas,datas);
+            int[] novosHospitalizacoes = dadosDiariosNovos(dados[2], leituraDeDatas, datas);
+            int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
+            int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
+            if (novosInfetados[i]==-1 && novosHospitalizacoes[i]==-1 && novosUCI[i]==-1 && novosMortes[i]==-1) {
+                ficheiroEscrita.println(datas[i] + "," + "Sem dados" + "," + "Sem dados" + "," + "Sem dados" + "," + "Sem dados");
+            } else {
+                ficheiroEscrita.println(datas[i + indexData1] + "," + novosInfetados[i] + "," + novosHospitalizacoes[i] + "," + novosUCI[i] + "," + novosMortes[i]);
+            }
+        }
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
+
+    public static void imprimirFicheiroTotalDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+        String nomeFicheiro = diretorio + "/dados_totais_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])),datas);
+
+        ficheiroEscrita.println("Data,Total Infetados,Total Hospitalizações,Total UCI,Total Mortes");
+
+        for (int i = 0; i <= indexData2-indexData1; i++) {
+            int[] dadosInfetados = dados[1];
+            int[] dadosHospitalizados = dados[2];
+            int[] dadosUCI = dados[3];
+            int[] dadosMortes = dados[4];
+            ficheiroEscrita.println(datas[i+indexData1] + "," + dadosInfetados[i] + "," + dadosHospitalizados[i] + "," + dadosUCI[i] + "," + dadosMortes[i]);
+        }
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
+
+    public static void imprimirFicheiroAcumuladoSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+        String nomeFicheiro = diretorio + "/dados_acumulados_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
+        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]),stringParaDateEConverterDatas(leituraDeDatas[1]));
+
+        if (numeroSemanas == 0) {
+            ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
+        } else {
+            ficheiroEscrita.println("Data,Novos Infetados,Novas Hospitalizações,Novos UCI,Novas Mortes");
+
+            for (int i = 0; i < numeroSemanas; i++) {
+                int[] novosInfetados = dadosSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                ficheiroEscrita.println(datas[i+indexData1+7] + "," + datas[indexData1+2*i+7] + "," + novosInfetados[i] + "," + novosHospitalizacoes[i] + "," + novosUCI[i] + "," + novosMortes[i]);
+            }
+        }
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
+
+    public static void imprimirFicheiroTotalSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+        String nomeFicheiro = diretorio + "/dados_totais_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
+        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])),stringParaDateEConverterDatas((leituraDeDatas[1])));
+
+        if (numeroSemanas == 0) {
+            ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
+        } else {
+            ficheiroEscrita.println("Data,Total Infetados,Total Hospitalizações,Total UCI,Total Mortes");
+            for (int i = 0; i < numeroSemanas; i++) {
+                int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                ficheiroEscrita.println("Semana " + (1+i) + "," + totaisInfetados[i] + "," + totaisHospitalizacoes[i] + "," + totaisUCI[i] + "," + totaisMortes[i]);
+            }
+        }
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
+
+    //-------------------------------------------Menus da Aplicação---------------------------------------------------//
     public static String selecionarTipoFicheiro() {
         String selecaoUtilizador;
         do {
@@ -392,6 +618,38 @@ public class Main {
         System.out.println();
     }
 
+    public static String guardarOuSair() {
+        System.out.print("\nDeseja guardar as informações apresentadas? (S/N): ");
+        String opcao = kbScanner.nextLine();
+        String diretorio = "";
+        do {
+            switch (opcao) {
+                case "S":
+                case "s":
+                    boolean eDiretorioValido = true;
+                    do {
+                        eDiretorioValido = true;
+                        System.out.print("\nInsira o caminho absoluto do diretório (pasta) onde deseja guardar o ficheiro: ");
+                        diretorio = kbScanner.nextLine();
+                        if (!(new File(diretorio).isDirectory())) {
+                            eDiretorioValido = false;
+                            System.out.println("ERRO: Diretório não encontrado. Por favor, insira um diretório existente.");
+                        }
+                    } while (!eDiretorioValido);
+                    break;
+                case "N":
+                case "n":
+                    System.out.println();
+                    break;
+                default:
+                    System.out.println("\nInsira uma opção correta.");
+                    System.out.print("\nDeseja guardar as informações apresentadas? (S/N): ");
+                    opcao= kbScanner.nextLine();
+            }
+        } while(!opcao.equals("S") && !opcao.equals("s") && !opcao.equals("N") && !opcao.equals("n"));
+        return diretorio;
+    }
+
     public static String selecionarFicheiro() {
         String caminho;
         do {
@@ -406,7 +664,19 @@ public class Main {
         return caminho;
     }
 
-    public static String[] leituraIntervaloDatas() {
+    public static String selecionarMatriz() {
+        String caminho;
+        do {
+            System.out.print("\nInsira o caminho absoluto do ficheiro que contém a matriz: ");
+            caminho = kbScanner.nextLine();
+            if (!(new File(caminho)).isFile()) {
+                System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.");
+            }
+        } while (!(new File(caminho).isFile()));
+        return caminho;
+    }
+
+    public static String[] leituraIntervaloDatas () {
         String[] leituraDatas = new String[2];
         boolean dataEValida;
         boolean dataFinalDepoisQueInicial;
@@ -560,15 +830,13 @@ public class Main {
         if (numeroSemanas == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
         } else {
-            System.out.printf("%19s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
+            System.out.printf("Semanas                 | %7s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n" , "" );
             for (int i = 0; i < numeroSemanas; i++) {
-                int[] novosInfetados = dadosSemanaisNovos(dados[1], numeroSemanas, indexData2, indexData1);
-                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2], numeroSemanas, indexData2, indexData1);
-                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas, indexData2, indexData1);
-                int[] novosMortes = dadosSemanaisNovos(dados[4], numeroSemanas, indexData2, indexData1);
-                System.out.printf("%s - %s  %25s | %21.10s | %9.10s | %12.10s \n", datas[i + indexData1 + 7],
-                        datas[indexData1 + 2 * i + 7], novosInfetados[i], novosHospitalizacoes[i], novosUCI[i],
-                        novosMortes[i]);
+                int[] novosInfetados = dadosSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                System.out.printf("%s - %s | %23s | %21.10s | %9.10s | %12.10s \n", datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], novosInfetados[i],novosHospitalizacoes[i],novosUCI[i],novosMortes[i]);
             }
         }
     }
@@ -699,8 +967,7 @@ public class Main {
         } else {
             System.out.printf("%16s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
             int[] novosInfetados = dadosMensaisNovos(primeiroDiaValido, dados[1], numeroMeses, indexData1, indexData2);
-            int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData1,
-                    indexData2);
+            int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData1,indexData2);
             int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData1, indexData2);
             int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData1, indexData2);
 
@@ -1057,7 +1324,6 @@ public class Main {
             }
             indice2++;
         }
-
         return dadosNovos;
     }
 
@@ -1078,18 +1344,74 @@ public class Main {
         long diffDias = diff / (24 * 60 * 60 * 1000) + 1;
         diffdias = (int) diffDias;
 
-        System.out.println(diffdias);
         return diffdias;
     }
 
     // (matriz identidade - matriz sem obito)inversa disto
 
-    public static void verPrevisoes() {
-        // ler matriz do ficheiro
-        // veririficar se o dia que ele introduziu pertence ao ficheiro
-        // Se nao existir, escolher o dia mais proximo
-        // Se existir, escolher o dia anterior
-        // matriz elevada a diferença do dia escolhido pelo utilizador a multiplicar
-        // pelo vetor do dia escolhido
+    public static boolean verificarDiaExiste(String[] datas,String data) {
+        boolean existe = false;
+        String[] date = data.split("-");
+        String ano = date[0];
+        String mes = date[1];
+        String dia = date[2];
+
+        if (date[2].length() == 4) {
+            ano=date[2];
+            mes=date[1];
+            dia=date[0];
+        }
+        data = dia + "-" + mes + "-" + ano;
+
+        for (int i = 0; i < datas.length; i++) {
+            if (data.equals(datas[i])) {
+                existe = true;
+            }
+        }
+        return  existe;
+    }
+
+    public static String escolherDiaAnterior(int index,String[] datas) {
+        return datas[index-1];
+    }
+    
+    public static String escolherDiaMaisProximo (Date data,String[] datas) {
+        String diaMaisProximo="";
+        Date dataFinal = stringParaDateEConverterDatas(datas[datas.length-1]);
+        Date dataInicial = stringParaDateEConverterDatas(datas[0]);
+        if (data.after(dataFinal)) {
+            diaMaisProximo = datas[datas.length-1];
+        } else if (data.before(dataInicial)){
+            diaMaisProximo = datas[0];
+        }
+       return diaMaisProximo;
+    }
+
+    public static void mostrarPrevisao(String data, String[] datas, int[][] dados, String ficheiro, String dataEscolhida) throws FileNotFoundException {
+        double[][] matriz;
+        matriz = lerDadosMatriz(ficheiro, NUMERO_ESTADOS_DIFERENTES);
+        String[] intervalo = new String[2];
+        intervalo[0] = data;
+        intervalo[1] = dataEscolhida;
+        int index = indexData(stringParaDateEConverterDatas(data),datas);
+
+        long diasDiferenca = (int) Math.abs(calcularDiasEntreIntervalo(intervalo)) - 1;
+
+        double[][] matrizElevada = Matrizes.elevarMatriz(matriz, diasDiferenca);
+
+        System.out.printf("\n%31s |Total Não Infetados | Total Infetados | Total Hospitalizações |    Total UCI    | Total Mortes\n","");
+        System.out.print("Previsão para o dia: "+dataEscolhida+" |");
+        double[][] previsao = Matrizes.multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
+        System.out.printf("%19.4f | %15.4f | %21.4f | %15.4f | %12.4f\n", previsao[0][0], previsao[1][0], previsao[2][0], previsao[3][0], previsao[4][0]);
+
+    }
+
+    public static double[][] preencherArray(int[][] dados,int index) {
+        double[][] array = new double[NUMERO_ESTADOS_DIFERENTES][1];
+        for (int i = 0; i < array.length; i++) {
+            array[i][0]=(dados[i][index]);
+        }
+        return array;
     }
 }
+
