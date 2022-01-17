@@ -1,17 +1,20 @@
-// Projeto LAPR1 - Aplicação para a empresa MSP
-// 2021-2022 LEI, Turma 1DI
-//
-// Realizado por:
-// André Barros - 1211299
-// Tomás Russo - 1211288
-// João Caseiro - 1211334
-// Ricardo Moreira - 1211285
+/**
+ * Projeto LAPR1 - Aplicação para a empresa MSP
+ * 2021-2022 LEI, Turma 1DI
+ *
+ * Realizado por:
+ * André Barros - 1211299
+ * Tomás Russo - 1211288
+ * João Caseiro - 1211334
+ * Ricardo Moreira - 1211285
+ */
 
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,7 +38,6 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
-        Tests.runTestes();
 
         String[] acumuladoDatas;
         int[][] acumuladoDados;
@@ -233,15 +235,16 @@ public class Main {
         System.out.println("\nOBRIGADO PELA PREFERENCIA!");
     }
 
-    public static void verDadosDiarios(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] dadosAcumaldos, String[] datasTotais, int[][] dadosTotais) {
+    public static void verDadosDiarios(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] dadosAcumaldos,String[] datasTotais, int[][] dadosTotais) {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
                     String[] leituraDatas = leituraIntervaloDatas();
-                    mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos);
+                    int[] colunas = menuEscolherQtdDados();
+                    mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
                     String diretorio = guardarOuSair();
                     if (!diretorio.equals("")) {
-                        imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos);
+                        imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
                     }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -250,10 +253,11 @@ public class Main {
             case "2":
                 if (jaLeuFicheiros[1]) {
                     String[] leituraDatas = leituraIntervaloDatas();
-                    mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais);
+                    int[] colunas = menuEscolherQtdDados();
+                    mostrarDadosTotaisDiarios(leituraDatas,datasTotais,dadosTotais, colunas);
                     String diretorio = guardarOuSair();
                     if (!diretorio.equals("")) {
-                        imprimirFicheiroTotalDiarios(diretorio, leituraDatas, datasTotais, dadosTotais);
+                        imprimirFicheiroTotalDiarios(diretorio,leituraDatas,datasTotais,dadosTotais, colunas);
                     }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -265,15 +269,16 @@ public class Main {
         }
     }
 
-    public static void verDadosSemanais(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
+    public static void verDadosSemanais (String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
                     String[] leituraDatas = leituraIntervaloDatas();
-                    mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado);
+                    int[] colunas = menuEscolherQtdDados();
+                    mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas);
                     String diretorio = guardarOuSair();
                     if (!diretorio.equals("")) {
-                        imprimirFicheiroAcumuladoSemanais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado);
+                        imprimirFicheiroAcumuladoSemanais(diretorio,leituraDatas,datasAcumulado,dadosAcumulado, colunas);
                     }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -282,10 +287,11 @@ public class Main {
             case "2":
                 if (jaLeuFicheiros[1]) {
                     String[] leituraDatas = leituraIntervaloDatas();
-                    mostrarDadosTotaisSemanais(leituraIntervaloDatas(), datasTotal, dadosTotal);
+                    int[] colunas = menuEscolherQtdDados();
+                    mostrarDadosTotaisSemanais(leituraDatas, datasTotal,dadosTotal, colunas);
                     String diretorio = guardarOuSair();
                     if (!diretorio.equals("")) {
-                        imprimirFicheiroTotalSemanais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado);
+                        imprimirFicheiroTotalSemanais(diretorio,leituraDatas,datasAcumulado,dadosAcumulado, colunas);
                     }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
@@ -377,7 +383,7 @@ public class Main {
         }
     }
 
-    public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_acumulados_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -387,20 +393,39 @@ public class Main {
             return;
         }
 
-        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]), datas);
-        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]), datas);
+        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]),datas);
 
-        ficheiroEscrita.println("Data,Novos Infetados,Novas Hospitalizações,Novos UCI,Novas Mortes");
+        String cabecalho = "Data";
 
-        for (int i = 0; i <= indexData2 - indexData1; i++) {
-            int[] novosInfetados = dadosDiariosNovos(dados[1], leituraDeDatas, datas);
+        for (int opcao : colunas) {
+            switch (opcao) {
+                case 1:
+                    cabecalho += ",Novos Infetados";
+                    break;
+                case 2:
+                    cabecalho += ",Novas Hospitalizações";
+                    break;
+                case 3:
+                    cabecalho += ",Novos UCI";
+                    break;
+                case 4:
+                    cabecalho += ",Novas Mortes";
+                    break;
+            }
+        }
+
+        ficheiroEscrita.println(cabecalho);
+
+        for (int i = 0; i <= indexData2-indexData1; i++) {
+            int[] novosInfetados = dadosDiariosNovos(dados[1],leituraDeDatas,datas);
             int[] novosHospitalizacoes = dadosDiariosNovos(dados[2], leituraDeDatas, datas);
             int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
             int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
-            if (novosInfetados[i] == -1 && novosHospitalizacoes[i] == -1 && novosUCI[i] == -1 && novosMortes[i] == -1) {
-                ficheiroEscrita.println(datas[i] + "," + "Sem dados" + "," + "Sem dados" + "," + "Sem dados" + "," + "Sem dados");
+            if (novosInfetados[i]==-1 && novosHospitalizacoes[i]==-1 && novosUCI[i]==-1 && novosMortes[i]==-1) {
+                ficheiroEscrita.println(datas[i] + mostraStrSeExistir(colunas, 1, ",Sem dados") + mostraStrSeExistir(colunas, 2, ",Sem dados") + mostraStrSeExistir(colunas, 3, ",Sem dados") + mostraStrSeExistir(colunas, 4, ",Sem dados"));
             } else {
-                ficheiroEscrita.println(datas[i + indexData1] + "," + novosInfetados[i] + "," + novosHospitalizacoes[i] + "," + novosUCI[i] + "," + novosMortes[i]);
+                ficheiroEscrita.println(datas[i + indexData1] + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
             }
         }
 
@@ -409,7 +434,7 @@ public class Main {
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroTotalDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void imprimirFicheiroTotalDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_totais_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -419,17 +444,36 @@ public class Main {
             return;
         }
 
-        int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])), datas);
-        int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])), datas);
+        int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])),datas);
 
-        ficheiroEscrita.println("Data,Total Infetados,Total Hospitalizações,Total UCI,Total Mortes");
+        String cabecalho = "Data";
 
-        for (int i = 0; i <= indexData2 - indexData1; i++) {
+        for (int opcao : colunas) {
+            switch (opcao) {
+                case 1:
+                    cabecalho += ",Total Infetados";
+                    break;
+                case 2:
+                    cabecalho += ",Total Hospitalizações";
+                    break;
+                case 3:
+                    cabecalho += ",Total UCI";
+                    break;
+                case 4:
+                    cabecalho += ",Total Mortes";
+                    break;
+            }
+        }
+
+        ficheiroEscrita.println(cabecalho);
+
+        for (int i = 0; i <= indexData2-indexData1; i++) {
             int[] dadosInfetados = dados[1];
             int[] dadosHospitalizados = dados[2];
             int[] dadosUCI = dados[3];
             int[] dadosMortes = dados[4];
-            ficheiroEscrita.println(datas[i + indexData1] + "," + dadosInfetados[i] + "," + dadosHospitalizados[i] + "," + dadosUCI[i] + "," + dadosMortes[i]);
+            ficheiroEscrita.println(datas[i+indexData1] + mostraStrSeExistir(colunas, 1, "," + dadosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + dadosHospitalizados[i]) + mostraStrSeExistir(colunas, 3, "," + dadosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + dadosMortes[i]));
         }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
@@ -437,7 +481,7 @@ public class Main {
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroAcumuladoSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void imprimirFicheiroAcumuladoSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_acumulados_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -447,21 +491,40 @@ public class Main {
             return;
         }
 
-        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
-        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]), stringParaDateEConverterDatas(leituraDeDatas[1]));
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
+        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]),stringParaDateEConverterDatas(leituraDeDatas[1]));
 
         if (numeroSemanas == 0) {
             ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
         } else {
-            ficheiroEscrita.println("Data,Novos Infetados,Novas Hospitalizações,Novos UCI,Novas Mortes");
+            String cabecalho = "Semana";
+
+            for (int opcao : colunas) {
+                switch (opcao) {
+                    case 1:
+                        cabecalho += ",Novos Infetados";
+                        break;
+                    case 2:
+                        cabecalho += ",Novas Hospitalizações";
+                        break;
+                    case 3:
+                        cabecalho += ",Novos UCI";
+                        break;
+                    case 4:
+                        cabecalho += ",Novas Mortes";
+                        break;
+                }
+            }
+
+            ficheiroEscrita.println(cabecalho);
 
             for (int i = 0; i < numeroSemanas; i++) {
-                int[] novosInfetados = dadosSemanaisNovos(dados[1], numeroSemanas, indexData2, indexData1);
-                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2], numeroSemanas, indexData2, indexData1);
-                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas, indexData2, indexData1);
-                int[] novosMortes = dadosSemanaisNovos(dados[4], numeroSemanas, indexData2, indexData1);
-                ficheiroEscrita.println(datas[i + indexData1 + 7] + "," + datas[indexData1 + 2 * i + 7] + "," + novosInfetados[i] + "," + novosHospitalizacoes[i] + "," + novosUCI[i] + "," + novosMortes[i]);
+                int[] novosInfetados = dadosSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
             }
         }
 
@@ -470,7 +533,7 @@ public class Main {
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroTotalSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void imprimirFicheiroTotalSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_totais_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -480,20 +543,39 @@ public class Main {
             return;
         }
 
-        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))), datas);
-        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))), datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])), stringParaDateEConverterDatas((leituraDeDatas[1])));
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
+        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])),stringParaDateEConverterDatas((leituraDeDatas[1])));
 
         if (numeroSemanas == 0) {
             ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
         } else {
-            ficheiroEscrita.println("Data,Total Infetados,Total Hospitalizações,Total UCI,Total Mortes");
+            String cabecalho = "Semana";
+
+            for (int opcao : colunas) {
+                switch (opcao) {
+                    case 1:
+                        cabecalho += ",Total Infetados";
+                        break;
+                    case 2:
+                        cabecalho += ",Total Hospitalizações";
+                        break;
+                    case 3:
+                        cabecalho += ",Total UCI";
+                        break;
+                    case 4:
+                        cabecalho += ",Total Mortes";
+                        break;
+                }
+            }
+
+            ficheiroEscrita.println(cabecalho);
             for (int i = 0; i < numeroSemanas; i++) {
-                int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1], numeroSemanas, indexData2, indexData1);
-                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2], numeroSemanas, indexData2, indexData1);
-                int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas, indexData2, indexData1);
-                int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4], numeroSemanas, indexData2, indexData1);
-                ficheiroEscrita.println("Semana " + (1 + i) + "," + totaisInfetados[i] + "," + totaisHospitalizacoes[i] + "," + totaisUCI[i] + "," + totaisMortes[i]);
+                int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraStrSeExistir(colunas, 1, "," + totaisInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + totaisHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + totaisUCI[i]) + mostraStrSeExistir(colunas, 4, "," + totaisMortes[i]));
             }
         }
 
@@ -501,6 +583,7 @@ public class Main {
 
         ficheiroEscrita.close();
     }
+
 
     //-------------------------------------------Menus da Aplicação---------------------------------------------------//
     public static String selecionarTipoFicheiro() {
@@ -548,22 +631,50 @@ public class Main {
         return selecaoUtilizador;
     }
 
-    public static void menuEscolherQtdDados() {
-        System.out.println("Introduza uma opção:\n");
-        System.out.println("1. Só um tipo de dados");
-        System.out.println("2. Todo o tipo de dados");
-        System.out.println("> ");
-        int opcao = kbScanner.nextInt();
+    public static int[] menuEscolherQtdDados () {
+        boolean todosInteiros = true;
+        int[] dadosInteiros;
 
-        if (opcao == 2) {
-            menu();
-        } else if (opcao == 1) {
-            System.out.println("Introduza o tipo de dados que quer visualizar:\n");
+        do {
+            todosInteiros = true;
+            System.out.println("\nIntroduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3)");
             System.out.println("1. Infetados");
             System.out.println("2. Hospitalizações");
             System.out.println("3. UCI");
             System.out.println("4. Mortes");
-            kbScanner.nextInt();
+            System.out.println("0. Todos");
+            System.out.print("\n> ");
+            String tiposDados = kbScanner.nextLine();
+
+            String[] dados = tiposDados.trim().split(",");
+            dadosInteiros = new int[dados.length];
+
+            try {
+                for (String opcao : dados) {
+                    if (Integer.parseInt(opcao) < 0 || Integer.parseInt(opcao) > 4) {
+                        todosInteiros = false;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                todosInteiros = false;
+            }
+
+            if (!todosInteiros) {
+                System.out.println("ERRO: Opções inválidas. Insira um conjunto de opções válido, separados apenas por vírgula (Ex.: 1,2,3).");
+            } else {
+                for (int i = 0; i < dados.length; i++) {
+                    dadosInteiros[i] = Integer.parseInt(dados[i]);
+                }
+            }
+        } while (!todosInteiros);
+
+        Arrays.sort(dadosInteiros);
+
+        if (dadosInteiros.length == 1 && dadosInteiros[0] == 0) {
+            int[] array = {1, 2, 3, 4};
+            return array;
+        } else {
+            return dadosInteiros;
         }
     }
 
@@ -717,6 +828,39 @@ public class Main {
         return -1;
     }
 
+    public static boolean existeNoArray(int[] array, int valor) {
+        for (int pos : array) {
+            if (pos == valor) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String mostraStrSeExistir (int[] array, int opcao, String texto) {
+        if (existeNoArray(array, opcao)) {
+            return texto;
+        } else {
+            return "";
+        }
+    }
+
+    public static String mostraIntSeExistir (int[] array, int opcao, int valor) {
+        if (existeNoArray(array, opcao)) {
+            return String.valueOf(valor);
+        } else {
+            return "";
+        }
+    }
+
+    public static String mostraDoubleSeExistir (int[] array, int opcao, double valor) {
+        if (existeNoArray(array, opcao)) {
+            return String.valueOf(valor);
+        } else {
+            return "";
+        }
+    }
+
     public static Date stringParaDateEConverterDatas(String leituraDeData) {
         String[] date = leituraDeData.split("-");
 
@@ -742,16 +886,6 @@ public class Main {
         return calendar.getTime();
     }
 
-    public static boolean existeNoArrayInt(int[] array, int valor) {
-        for (int pos : array) {
-            if (pos == valor) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public static boolean existeNoArrayString(String[] array, String valor) {
         for (String pos : array) {
             if (pos.equals(valor)) {
@@ -764,36 +898,67 @@ public class Main {
 
     //--------------------------------------------Analise Diária Novos Casos------------------------------------------//
 
-    public static void mostrarDadosDiarios(String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void mostrarDadosDiarios(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
 
-        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]), datas);
-        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]), datas);
+        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]),datas);
 
-        System.out.printf("\nData %5s | Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
-        for (int i = 0; i <= indexData2 - indexData1; i++) {
-            int[] novosInfetados = dadosDiariosNovos(dados[1], leituraDeDatas, datas);
+        String cabecalho = "Data %5s";
+        String impressao = "%s";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += " | Novos Infetados";
+                        impressao += " | %15s";
+                        break;
+                    case 2:
+                        cabecalho += " | Novas Hospitalizações";
+                        impressao += " | %21.10s";
+                        break;
+                    case 3:
+                        cabecalho += " | Novos UCI";
+                        impressao += " | %9.10s";
+                        break;
+                    case 4:
+                        cabecalho += " | Novas Mortes";
+                        impressao += " | %12.10s";
+                        break;
+                }
+            } else {
+                impressao += "%s";
+            }
+        }
+
+        cabecalho += "\n";
+        impressao += "\n";
+
+        System.out.printf(cabecalho, "");
+        for (int i = 0; i <= indexData2-indexData1; i++) {
+            int[] novosInfetados = dadosDiariosNovos(dados[1],leituraDeDatas,datas);
             int[] novosHospitalizacoes = dadosDiariosNovos(dados[2], leituraDeDatas, datas);
             int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
             int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
-            if (novosInfetados[i] == -1 && novosHospitalizacoes[i] == -1 && novosUCI[i] == -1 && novosMortes[i] == -1) {
-                System.out.printf("%s | %15s | %21.10s | %9.10s | %12.10s \n", datas[i], "Sem dados", "Sem dados", "Sem dados", "Sem dados");
+            if (novosInfetados[i]==-1 && novosHospitalizacoes[i]==-1 && novosUCI[i]==-1 && novosMortes[i]==-1) {
+                System.out.printf(impressao, datas[i], mostraStrSeExistir(colunas, 1, "Sem dados"),mostraStrSeExistir(colunas, 2, "Sem dados"),mostraStrSeExistir(colunas, 3, "Sem dados"),mostraStrSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s | %15s | %21.10s | %9.10s | %12.10s \n", datas[i + indexData1], novosInfetados[i], novosHospitalizacoes[i], novosUCI[i], novosMortes[i]);
+                System.out.printf(impressao, datas[i + indexData1], mostraIntSeExistir(colunas, 1, novosInfetados[i]), mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]), mostraIntSeExistir(colunas, 3, novosUCI[i]), mostraIntSeExistir(colunas, 4, novosMortes[i]));
             }
         }
     }
 
-    public static int[] dadosDiariosNovos(int[] dados, String[] leituraDeDatas, String[] datas) {
-        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]), datas);
-        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]), datas);
+    public static int[] dadosDiariosNovos (int[] dados,String[] leituraDeDatas, String[] datas) {
+        int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]),datas);
         int indice = 0;
-        int[] dadosNovos = new int[(indexData2 - indexData1) + 1];
+        int[] dadosNovos =  new int[(indexData2-indexData1)+1];
 
         for (int i = indexData1; i <= indexData2; i++) {
-            if (i - 1 < 0) {
-                dadosNovos[indice] = -1;
+            if (i-1<0) {
+                dadosNovos[indice]= -1;
             } else {
-                dadosNovos[indice] = dados[i] - dados[i - 1];
+                dadosNovos[indice] = dados[i]-dados[i-1];
 
             }
             indice++;
@@ -803,51 +968,114 @@ public class Main {
 
     //--------------------------------------------Analise Diária Total Casos------------------------------------------//
 
-    public static void mostrarDadosTotaisDiarios(String[] leituraDeDatas, String[] datas, int[][] dados) {
-        int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])), datas);
-        int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])), datas);
+    public static void mostrarDadosTotaisDiarios (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas) {
+        int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])),datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])),datas);
 
-        System.out.printf("\nData %5s | Total Infetados | Total Hospitalizações | Total UCI | Total Mortes\n", "");
-        for (int i = 0; i <= indexData2 - indexData1; i++) {
+        String cabecalho = "Data %5s";
+        String impressao = "%s";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += " | Total Infetados";
+                        impressao += " | %15s";
+                        break;
+                    case 2:
+                        cabecalho += " | Total Hospitalizações";
+                        impressao += " | %21.10s";
+                        break;
+                    case 3:
+                        cabecalho += " | Total UCI";
+                        impressao += " | %9.10s";
+                        break;
+                    case 4:
+                        cabecalho += " | Total Mortes";
+                        impressao += " | %12.10s";
+                        break;
+                }
+            } else {
+                impressao += "%s";
+            }
+        }
+
+        cabecalho += "\n";
+        impressao += "\n";
+
+        System.out.printf(cabecalho, "" );
+        for (int i = 0; i <= indexData2-indexData1; i++) {
             int[] dadosInfetados = dados[1];
             int[] dadosHospitalizados = dados[2];
             int[] dadosUCI = dados[3];
             int[] dadosMortes = dados[4];
-            System.out.printf("%s | %15s | %21.10s | %9.10s | %12.10s \n", datas[i + indexData1], dadosInfetados[i], dadosHospitalizados[i], dadosUCI[i], dadosMortes[i]);
+            System.out.printf(impressao, datas[i+indexData1], mostraIntSeExistir(colunas, 1, dadosInfetados[i]),mostraIntSeExistir(colunas, 2, dadosHospitalizados[i]),mostraIntSeExistir(colunas, 3, dadosUCI[i]),mostraIntSeExistir(colunas, 4, dadosMortes[i]));
         }
     }
 
+
     //--------------------------------------------Analise Semanal Novos Casos-----------------------------------------------------//
 
-    public static void mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados) {
+    public static void mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas)  {
         // mostrar dados das semanas entre as datas pretendidas, ou seja, por exemplo: dados da 1 semn, dados da 2 semn, dados da 3 semn
         // 2020-04-01 2020-04-02 -> Não é uma semana completa
         // 2020-04-1 2020-04-17 -> mostra 2 semanas 1-15
         // 1 semana, subtrair acumulado do ult dia semana com 1 dia semn
-        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
-        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
         int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]), stringParaDateEConverterDatas(leituraDeDatas[1]));
 
         if (numeroSemanas == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
         } else {
-            System.out.printf("Semanas                 | %7s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
+            String cabecalho = "Semanas                ";
+            String impressao = "%s - %s";
+
+            for (int i = 1; i <= 4; i++) {
+                if (existeNoArray(colunas, i)) {
+                    switch (i) {
+                        case 1:
+                            cabecalho += " | Novos Infetados";
+                            impressao += " | %15s";
+                            break;
+                        case 2:
+                            cabecalho += " | Novas Hospitalizações";
+                            impressao += " | %21.10s";
+                            break;
+                        case 3:
+                            cabecalho += " | Novos UCI";
+                            impressao += " | %9.10s";
+                            break;
+                        case 4:
+                            cabecalho += " | Novas Mortes";
+                            impressao += " | %12.10s";
+                            break;
+                    }
+                } else {
+                    impressao += "%s";
+                }
+            }
+
+            cabecalho += "\n";
+            impressao += "\n";
+
+            System.out.printf(cabecalho , "" );
             for (int i = 0; i < numeroSemanas; i++) {
-                int[] novosInfetados = dadosSemanaisNovos(dados[1], numeroSemanas, indexData2, indexData1);
-                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2], numeroSemanas, indexData2, indexData1);
-                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas, indexData2, indexData1);
-                int[] novosMortes = dadosSemanaisNovos(dados[4], numeroSemanas, indexData2, indexData1);
-                System.out.printf("%s - %s | %23s | %21.10s | %9.10s | %12.10s \n", datas[indexData1 + (7 * i)], datas[(indexData1 + (7 * i)) + 6], novosInfetados[i], novosHospitalizacoes[i], novosUCI[i], novosMortes[i]);
+                int[] novosInfetados = dadosSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraIntSeExistir(colunas, 1, novosInfetados[i]),mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, novosUCI[i]),mostraIntSeExistir(colunas, 4, novosMortes[i]));
             }
         }
     }
 
-    public static int[] dadosSemanaisNovos(int[] dados, int numeroSemanas, int indexData2, int indexData1) {
+    public static int[] dadosSemanaisNovos (int[] dados, int numeroSemanas,int indexData2,int indexData1) {
 
-        int[] dadosNovos = new int[numeroSemanas];
+        int[] dadosNovos =  new int[numeroSemanas];
 
-        for (int j = 0; j < numeroSemanas; j++) {
-            if (indexData1 <= indexData2) {
+        for (int j = 0; j < numeroSemanas ; j++) {
+            if (indexData1<=indexData2) {
                 dadosNovos[j] = dados[indexData1 + 6] - dados[indexData1];
                 indexData1 = indexData1 + 7;
             }
@@ -917,21 +1145,52 @@ public class Main {
 
     //--------------------------------------------Analise Semanal Total Casos-----------------------------------------//
 
-    public static void mostrarDadosTotaisSemanais(String[] leituraDeDatas, String[] datas, int[][] dados) {
-        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))), datas);
-        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))), datas);
+    public static void mostrarDadosTotaisSemanais (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas){
+        int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
+        int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
         int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])), stringParaDateEConverterDatas((leituraDeDatas[1])));
 
         if (numeroSemanas == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
         } else {
-            System.out.printf("%19s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
+            String cabecalho = "Semanas                ";
+            String impressao = "%s - %s";
+
+            for (int i = 1; i <= 4; i++) {
+                if (existeNoArray(colunas, i)) {
+                    switch (i) {
+                        case 1:
+                            cabecalho += " | Total Infetados";
+                            impressao += " | %15s";
+                            break;
+                        case 2:
+                            cabecalho += " | Total Hospitalizações";
+                            impressao += " | %21.10s";
+                            break;
+                        case 3:
+                            cabecalho += " | Total UCI";
+                            impressao += " | %9.10s";
+                            break;
+                        case 4:
+                            cabecalho += " | Total Mortes";
+                            impressao += " | %12.10s";
+                            break;
+                    }
+                } else {
+                    impressao += "%s";
+                }
+            }
+
+            cabecalho += "\n";
+            impressao += "\n";
+
+            System.out.printf(cabecalho , "" );
             for (int i = 0; i < numeroSemanas; i++) {
-                int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1], numeroSemanas, indexData2, indexData1);
-                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2], numeroSemanas, indexData2, indexData1);
-                int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas, indexData2, indexData1);
-                int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4], numeroSemanas, indexData2, indexData1);
-                System.out.printf("Semana " + (1 + i) + ": %25s | %21.10s | %9.10s | %12.10s \n", totaisInfetados[i], totaisHospitalizacoes[i], totaisUCI[i], totaisMortes[i]);
+                int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
+                int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
+                int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
+                int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
+                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraIntSeExistir(colunas, 1, totaisInfetados[i]),mostraIntSeExistir(colunas, 2, totaisHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, totaisUCI[i]),mostraIntSeExistir(colunas, 4, totaisMortes[i]));
             }
         }
     }
@@ -1062,7 +1321,6 @@ public class Main {
         calendar.set(Calendar.MILLISECOND, 0);
 
         int diasNoMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-
         int auxIndex = index1;
 
         if (numeroMeses == 1) {
@@ -1078,12 +1336,11 @@ public class Main {
                 index1 = auxIndex + diasNoMes;
                 for (int j = 0; j < diasNoMes; j++) {
                     if (index1 <= index2) {
-                        dadosNovos[i] = dadosNovos[i] + dados[index1];
                         index1 = index1 + j;
+                        dadosNovos[i] = dadosNovos[i] + dados[index1];
                     }
                 }
-                data = primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDatas));
-                calendar.setTime(data);
+                calendar.add(Calendar.MONTH, 1);
                 diasNoMes = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
             }
         }
@@ -1115,7 +1372,6 @@ public class Main {
         }
         int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
-        int diferenca;
         System.out.printf("\nDados                        | %5s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
         int[][] comparacaoInfet = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[1], numeroDiasAComparar);
         int[][] comparacaoHosp = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[2], numeroDiasAComparar);
