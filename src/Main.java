@@ -35,11 +35,7 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
-<<<<<<< HEAD
         // Tests.runTestes();
-=======
-        Tests.runTestes();
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
 
         String[] acumuladoDatas;
         int[][] acumuladoDados;
@@ -65,16 +61,10 @@ public class Main {
                 totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 totalDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[0] = true;
-<<<<<<< HEAD
-                // pressioneEnterParaCont();
-                opcaoTipoFicheiro=menu();
-                executaOpcao(opcaoTipoFicheiro,jaleuFicheiros,acumuladoDatas,acumuladoDados,totalDatas,totalDados);
-=======
                 System.out.println("Ficheiro lido com sucesso!");
                 pressioneEnterParaCont();
                 opcaoTipoFicheiro = menu();
                 executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
                 break;
             case "2":
                 numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
@@ -87,16 +77,10 @@ public class Main {
                 acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[1] = true;
-<<<<<<< HEAD
-                // pressioneEnterParaCont();
-                opcaoTipoFicheiro=menu();
-                executaOpcao(opcaoTipoFicheiro,jaleuFicheiros,acumuladoDatas,acumuladoDados,totalDatas,totalDados);
-=======
                 System.out.println("Ficheiro lido com sucesso!");
                 pressioneEnterParaCont();
                 opcaoTipoFicheiro = menu();
                 executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
                 break;
         }
     }
@@ -117,11 +101,7 @@ public class Main {
         return datas;
     }
 
-<<<<<<< HEAD
-    public static int[][] lerDados(String caminhoFicheiro,int numeroLinhas, int[][] dados) throws FileNotFoundException {
-=======
     public static int[][] lerDados(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
         int[][] dadosNovos = new int[NUMERO_DADOS_DIFERENTES][numeroLinhas];
         String[] dadosFicheiro;
@@ -203,14 +183,9 @@ public class Main {
                             jaLeuFicheiros[1] = true;
                             break;
                     }
-<<<<<<< HEAD
-                    // pressioneEnterParaCont();
-                    opcao=menu();
-=======
                     System.out.println("Ficheiro lido com sucesso!");
                     pressioneEnterParaCont();
                     opcao = menu();
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
                     break;
                 case "2":
                     // Ver dados diarios
@@ -867,14 +842,9 @@ public class Main {
         }
     }
 
-<<<<<<< HEAD
-    public static int[] dadosSemanaisNovos(int[] dados, int numeroSemanas,int indexData2,int indexData1) {
-        int[] dadosNovos =  new int[numeroSemanas];
-=======
     public static int[] dadosSemanaisNovos(int[] dados, int numeroSemanas, int indexData2, int indexData1) {
 
         int[] dadosNovos = new int[numeroSemanas];
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
 
         for (int j = 0; j < numeroSemanas; j++) {
             if (indexData1 <= indexData2) {
@@ -885,12 +855,8 @@ public class Main {
         return dadosNovos;
     }
 
-<<<<<<< HEAD
-    public static Date verificarSemanaSegunda (Date inicio) {
-=======
     public static Date verificarSemanaSegunda(Date inicio) {
 
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
         Calendar data = Calendar.getInstance();
         data.setTime(inicio);
 
@@ -988,23 +954,8 @@ public class Main {
     public static void mostrarDadosMensais(String[] leituraDeDatas, String[] datas, int[][] dados) {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
-<<<<<<< HEAD
-        int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
-
-        // ! 2020-05-30
-        int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
-
-        /**
-         * solução
-         * verificar se o dia é o último desse mês
-         * se não for retorna o último dia do mês do anterior
-         * e depois verificar se index
-         */
-
-=======
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
         int numeroMeses = numeroMeses(leituraDeDatas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
@@ -1023,14 +974,8 @@ public class Main {
         }
     }
 
-<<<<<<< HEAD
-    public static int[] dadosMensaisNovos(String leituraDatas, int[] dados,int numeroMeses,int index2,int index1) {
-        int[] dadosNovos =  new int[numeroMeses];
-        Date data = stringParaDateEConverterDatas(leituraDatas);
-=======
     public static int[] dadosMensaisNovos(Date primeiroDia, int[] dados, int numeroMeses, int index2, int index1) {
         int[] dadosNovos = new int[numeroMeses];
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(primeiroDia);
 
@@ -1045,11 +990,7 @@ public class Main {
         return dadosNovos;
     }
 
-<<<<<<< HEAD
     // public static int[] dadosMensaisNovos_mod() {}
-=======
-    public static int numeroMeses(String[] leituraDeDatas) {
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
 
     public static int numeroMeses(String[] leituraDeDatas) {
         Calendar mesesInicial = Calendar.getInstance();
@@ -1066,32 +1007,10 @@ public class Main {
         return numeroMeses + 1;
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
     public static Date primeiroDiaMesValido(Date inicio) {
         Calendar data = Calendar.getInstance();
         data.setTime(inicio);
 
-<<<<<<< HEAD
-        if(data.get(Calendar.DAY_OF_MONTH) != 1) {
-            data.set(Calendar.DAY_OF_MONTH, 1);
-            data.add(Calendar.MONTH, 1);
-        }
-
-        return data.getTime();
-    }
-
-    // * fixed
-    public static Date ultimoDiaMesValido(Date fim) {
-        Calendar dataFinal = Calendar.getInstance();
-        dataFinal.setTime(fim);
-
-        int diaFinalMes = dataFinal.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-        if(diaFinalMes != dataFinal.get(Calendar.DAY_OF_MONTH)) {
-=======
         while (data.get(Calendar.DAY_OF_MONTH) != 1) {
             data.set(Calendar.DAY_OF_MONTH,1);
             data.add(Calendar.DAY_OF_MONTH, 1);
@@ -1107,7 +1026,6 @@ public class Main {
         dataFinal.setTime(fim);
         int diaFinalMes = dataFinal.getActualMaximum(Calendar.DAY_OF_MONTH);
         if (diaFinalMes != dataFinal.get(Calendar.DAY_OF_MONTH)) {
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
             // evitar bug: set fevereiro c/ dia 30
             dataFinal.set(Calendar.DAY_OF_MONTH, 1);
             dataFinal.add(Calendar.MONTH, -1);
@@ -1116,17 +1034,10 @@ public class Main {
         return dataFinal.getTime();
     }
 
-<<<<<<< HEAD
-    public static void mostrarDadosTotaisMensais(String[] leituraDeDatas,String[] datas,int[][] dados) {
-       int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
-       int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
-       int numeroMeses = numeroMeses(leituraDeDatas);
-=======
     public static void mostrarDadosTotaisMensais(String[] leituraDeDatas, String[] datas, int[][] dados) {
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
         int numeroMeses = numeroMeses(leituraDeDatas);
->>>>>>> f36ad47aca7996a86ee3d308345b197bbdbe2b0d
 
         if (numeroMeses == 0) {
             System.out.println("Introduza datas que contenham pelo menos 1 mês");
