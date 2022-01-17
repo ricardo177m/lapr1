@@ -1,7 +1,26 @@
 public class Matrizes {
+    public static boolean compararMatrizes(double[][] matriz1, double[][] matriz2) {
+        boolean flag = true;
+
+        if(matriz1.length != matriz2.length || matriz1[0].length != matriz2[0].length) {
+            flag = false;
+        } else {
+            for (int i = 0; i < matriz1.length; i++) {
+                for (int j = 0; j < matriz1[0].length; j++) {
+                    if(matriz1[i][j] != matriz2[i][j]) {
+                        flag = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return flag;
+    }
+
     public static double[][] elevarMatriz(double[][] matriz, long nth) {
         double[][] result = matriz;
-        for (int n = 1; n < nth; ++ n)
+        for (int n = 1; n < nth; ++n)
             result = multiplicarMatrizes(result, matriz);
         return result;
     }
@@ -25,7 +44,6 @@ public class Matrizes {
         return matriz;
     }
 
-    // todo
     public static int[][] calcularInversa() {
         return null;
     }
