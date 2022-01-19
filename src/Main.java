@@ -9,7 +9,6 @@
  * Ricardo Moreira - 1211285
  */
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
-
+        Tests.runTestes();
 
         String[] acumuladoDatas;
         int[][] acumuladoDados;
@@ -1916,15 +1915,15 @@ public class Main {
 
         long diasDiferenca = (int) Math.abs(calcularDiasEntreIntervalo(intervalo)) - 1;
 
-        double[][] matrizElevada = matrizElevada(matriz, diasDiferenca);
+        double[][] matrizElevada = Matrizes.elevarMatriz(matriz, diasDiferenca);
 
         System.out.printf("\n%31s |Total Não Infetados | Total Infetados | Total Hospitalizações |    Total UCI    | Total Mortes\n", "");
         System.out.print("Previsão para o dia: " + dataEscolhida + " |");
-        double[][] previsao = multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
+        double[][] previsao = Matrizes.multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
         System.out.printf("%19.1f | %15.1f | %21.1f | %15.1f | %12.1f\n", previsao[0][0], previsao[1][0], previsao[2][0], previsao[3][0], previsao[4][0]);
 
         double[][] matrizSemObi = matrizSemObito(matriz);
-        double[][] matrizIdentidade = preencherDiagonalMatriz(1);
+        double[][] matrizIdentidade = Matrizes.preencherDiagonalMatriz(1);
         double[] iden = {1,0,0,0,1,0,0,0,1};
 
         //double[][] subtracaoIdenMatriz = subtrairMatrizes(matrizSemObi, matrizIdentidade);
@@ -1938,9 +1937,9 @@ public class Main {
         System.out.println("\n----------------------x---------------------------\n");
         double[][] matrizL = new double[3][3];
         double[][] matrizU;
-        matrizU = preencherDiagonalMatriz(1);
+        matrizU = Matrizes.preencherDiagonalMatriz(1);
         double[][] matrizTest = {{2,-1,3}, {-1,0,2},{-1,1,0}};
-        decomposicaoCrout(matrizL,matrizU,matrizTest);
+        Matrizes.decomposicaoCrout(matrizL,matrizU,matrizTest);
         String[][] stringMatriz = {{"a","0","0"},{"b","c","0"},{"d","e","f"}};
 
         System.out.println("\n----------------------string---------------------------\n");
@@ -1951,7 +1950,7 @@ public class Main {
             System.out.println();
         }
 
-        double[][] inversaL= matrizInversaL(matrizTest);
+        double[][] inversaL = Matrizes.matrizInversaL(matrizTest);
 
         System.out.println("\n--------------------U-----------------------------\n");
         for (int i = 0; i < matrizU.length; i++) {
@@ -1969,6 +1968,7 @@ public class Main {
         }
     }
 
+    // passar para o ficheiro Matrizes
     public static double[][] subtrairMatrizes(double[][] matriz, double[][] identidade) {
         double[][] sub = new double[NUMERO_ESTADOS_DIFERENTES - 1][NUMERO_ESTADOS_DIFERENTES - 1];
         for (int i = 0; i < sub.length; i++) {
@@ -1977,30 +1977,6 @@ public class Main {
             }
         }
         return sub;
-    }
-
-    public static double[][] multiplicarMatrizes(double[][] matriz, double[][] matriz1) {
-        double[][] temp = new double[matriz.length][matriz[0].length];
-        double sum;
-
-        for (int i = 0; i < matriz.length; i++) {
-            for (int j = 0; j < matriz1[i].length; j++) {
-                sum = 0;
-                for (int l = 0; l < matriz.length; l++) {
-                    sum += matriz[i][l] * matriz1[l][j];
-                }
-                temp[i][j] = sum;
-            }
-        }
-
-        return temp;
-    }
-
-    public static double[][] matrizElevada(double[][] matriz, long xvezes) {
-        double[][] result = matriz;
-        for (int n = 1; n < xvezes; ++n)
-            result = multiplicarMatrizes(result, matriz);
-        return result;
     }
 
     public static double[][] preencherArray(int[][] dados, int index) {
@@ -2021,59 +1997,6 @@ public class Main {
         return matrizSemObito;
     }
 
-    public static void decomposicaoCrout (double[][] matrizL,double[][] matrizU,double[][] matriz) {
-        for(int k=0;k<matriz.length;++k){
-            double suma=0;
-            for(int p=0;p<k;++p){
-                suma+=matrizL[k][p]*matrizU[p][k];
-            }
-            matrizL[k][k]=matriz[k][k]-suma;
-            for(int i=k+1;i<matriz.length;++i){
-                double suma2=0;
-                for(int p=0;p<k;++p){
-                    suma2+=matrizL[i][p]*matrizU[p][k];
-                }
-                matrizL[i][k]=(matriz[i][k]-suma2)/matrizU[k][k];
-            }
-            for(int j=k+1;j<matriz.length;++j){
-                double suma3=0;
-                for(int p=0;p<k;++p){
-                    suma3+=matrizL[k][p]*matrizU[p][j];
-                }
-                matrizU[k][j]=(matriz[k][j]-suma3)/matrizL[k][k];
-            }
-        }
-    }
-
-   public static double[][] preencherDiagonalMatriz (double dig){
-        double[][] matrizDiagonal = new double[3][3];
-        for(int i=0;i<matrizDiagonal.length;++i){
-            for(int j=0;j<matrizDiagonal[i].length;++j){
-                if(i==j){
-                    matrizDiagonal[i][j]=dig;
-                }else{
-                    matrizDiagonal[i][j]=0;
-                }
-            }
-        }
-        return matrizDiagonal;
-    }
-
-    public static double[][] matrizInversaL (double[][] matriz) {
-        double[][] inversaL=new double[3][3];
-        for (int i = 0; i < inversaL.length ; i++) {
-            for (int j = 0; j < inversaL[i].length; j++) {
-                inversaL[i][j]=0.0;
-            }
-        }
-        for (int i = inversaL.length-1; i >=0 ; i--) {
-            inversaL[i][i]=matriz[i][i];
-            for (int j = i; j >=0 ; j--) {
-                inversaL[i][j]=matriz[i][j]/inversaL[i][i];
-            }
-        }
-        return inversaL;
-        }
 /*
         public static String[][] matrizString (String[][] matriz,double[][] matrizDouble) {
             String [][] temp = new String[matriz.length][matriz[0].length];
