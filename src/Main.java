@@ -36,7 +36,12 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
+        // tests
+        boolean test = true;
         Tests.runTestes();
+        
+        if(test) return;
+        // end of tests
 
         String[] acumuladoDatas;
         int[][] acumuladoDados;
