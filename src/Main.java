@@ -36,9 +36,6 @@ public class Main {
         // 2 - hospitalizado
         // 3 - UCI
         // 4 - mortes
-
-
-
         String[] acumuladoDatas;
         int[][] acumuladoDados;
 
@@ -46,7 +43,6 @@ public class Main {
         int[][] totalDados;
 
         boolean[] jaleuFicheiros = new boolean[NUMERO_FICHEIRO_DIFERENTE];
-
         System.out.println("\n\n                      Bem-vindo!                                  ");
         System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
         String opcaoTipoFicheiro = selecionarTipoFicheiro();
@@ -1925,7 +1921,7 @@ public class Main {
 
         double[][] matrizSemObi = matrizSemObito(matriz);
         double[][] matrizIdentidade = preencherDiagonalMatriz(1);
-        double[] iden = {1,0,0,0,1,0,0,0,1};
+        double[][] iden = preencherDiagonalMatriz(1);
 
         //double[][] subtracaoIdenMatriz = subtrairMatrizes(matrizSemObi, matrizIdentidade);
         System.out.println("\n----------------------------------------------\n");
@@ -1939,19 +1935,19 @@ public class Main {
         double[][] matrizL = new double[3][3];
         double[][] matrizU;
         matrizU = preencherDiagonalMatriz(1);
-        double[][] matrizTest = {{2,-1,3}, {-1,0,2},{-1,1,0}};
-        decomposicaoCrout(matrizL,matrizU,matrizTest);
-        String[][] stringMatriz = {{"a","0","0"},{"b","c","0"},{"d","e","f"}};
+        double[][] matrizTest = {{2, -1, 3}, {-1, 0, 2}, {-1, 1, 0}};
+        decomposicaoCrout(matrizL, matrizU, matrizTest);
+        String[][] stringMatriz = {{"a", "0", "0"}, {"b", "c", "0"}, {"d", "e", "f"}};
+        double[][] inversa = inversaL(matrizL,iden);
 
         System.out.println("\n----------------------string---------------------------\n");
         for (int i = 0; i < stringMatriz.length; i++) {
-            for (int j = 0; j < stringMatriz[i].length ; j++) {
+            for (int j = 0; j < stringMatriz[i].length; j++) {
                 System.out.print(stringMatriz[i][j] + " ");
             }
             System.out.println();
         }
 
-        double[][] inversaL= matrizInversaL(matrizTest);
 
         System.out.println("\n--------------------U-----------------------------\n");
         for (int i = 0; i < matrizU.length; i++) {
@@ -1961,6 +1957,13 @@ public class Main {
             System.out.println();
         }
         System.out.println("\n--------------------L-----------------------------\n");
+        for (int i = 0; i < matrizL.length; i++) {
+            for (int j = 0; j < matrizL[i].length; j++) {
+                System.out.print(matrizL[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("\n--------------------inversaL-----------------------------\n");
         for (int i = 0; i < matrizL.length; i++) {
             for (int j = 0; j < matrizL[i].length; j++) {
                 System.out.print(matrizL[i][j] + " ");
@@ -2059,39 +2062,20 @@ public class Main {
         return matrizDiagonal;
     }
 
-    public static double[][] matrizInversaL (double[][] matriz) {
-        double[][] inversaL=new double[3][3];
-        for (int i = 0; i < inversaL.length ; i++) {
-            for (int j = 0; j < inversaL[i].length; j++) {
-                inversaL[i][j]=0.0;
+    public static double[][] inversaL (double[][] matriz,double[][] ident) {
+        double[][] inversa = new double[3][3];
+
+        // diagonal da inversa
+        for (int i = inversa.length-1; i >= 0; i--) {
+                inversa[i][i] = 1/matriz[i][i];
+        }
+        for (int i = 0; i < inversa.length; i++) {
+            for (int j = 0; j < inversa[i].length-1 ; j++) {
+                inversa[i][j+1]=-(matriz[i][j+1]*inversa[i][i])/matriz[i+1][j+1];
             }
         }
-        for (int i = inversaL.length-1; i >=0 ; i--) {
-            inversaL[i][i]=matriz[i][i];
-            for (int j = i; j >=0 ; j--) {
-                inversaL[i][j]=matriz[i][j]/inversaL[i][i];
-            }
-        }
-        return inversaL;
-        }
-/*
-        public static String[][] matrizString (String[][] matriz,double[][] matrizDouble) {
-            String [][] temp = new String[matriz.length][matriz[0].length];
-            String sum="";
-
-            for (int i = 0; i < matriz.length; i++) {
-                for (int j = 0; j < matriz[i].length; j++) {
-
-                    for (int l = 0; l < matriz.length; l++) {
-                        sum += matriz[i][l] *  String.valueOf(matrizDouble[l][j]);
-                    }
-                    temp[i][j] = sum;
-                }
-            }
-
-            return temp;
-
-        } */
+        return inversa;
+    }
 }
 
 
