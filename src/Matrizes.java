@@ -45,7 +45,7 @@ public class Matrizes {
     }
 
     // todo
-    public static double[][] inversaL(double[][] matriz, double[][] ident) {
+    public static double[][] calcularInversaL(double[][] matriz) {
         double[][] inversa = new double[3][3];
 
         // diagonal da inversa
@@ -97,5 +97,16 @@ public class Matrizes {
                 matrizU[k][j] = (matriz[k][j] - suma3) / matrizL[k][k];
             }
         }
+    }
+
+    public static double[][] subtrairIdentidadeComMatriz(double[][] matriz) {
+        double[][] sub = new double[matriz.length][matriz[0].length];
+        double[][] identidade = Matrizes.preencherDiagonalMatriz(1);
+        for (int i = 0; i < sub.length; i++) {
+            for (int j = 0; j < sub[i].length; j++) {
+                sub[i][j] = identidade[i][j] - matriz[i][j];
+            }
+        }
+        return sub;
     }
 }

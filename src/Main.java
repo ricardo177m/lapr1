@@ -40,7 +40,7 @@ public class Main {
         // boolean test = true;
         Tests.runTestes();
         
-        // if(test) return;
+        // if (test) return;
         // end of tests
 
         String[] acumuladoDatas;
@@ -2213,7 +2213,7 @@ public class Main {
         double[][] matrizIdentidade = Matrizes.preencherDiagonalMatriz(1);
         double[][] iden = Matrizes.preencherDiagonalMatriz(1);
 
-        //double[][] subtracaoIdenMatriz = subtrairMatrizes(matrizSemObi, matrizIdentidade);
+        //double[][] subtracaoIdenMatriz = Matrizes.subtrairMatrizes(matrizSemObi, matrizIdentidade);
         System.out.println("\n----------------------------------------------\n");
        /* for (int i = 0; i < subtracaoIdenMatriz.length; i++) {
             for (int j = 0; j < subtracaoIdenMatriz[i].length; j++) {
@@ -2228,7 +2228,7 @@ public class Main {
         double[][] matrizTest = {{2, -1, 3}, {-1, 0, 2}, {-1, 1, 0}};
         Matrizes.decomposicaoCrout(matrizL, matrizU, matrizTest);
         String[][] stringMatriz = {{"a", "0", "0"}, {"b", "c", "0"}, {"d", "e", "f"}};
-        double[][] inversa = Matrizes.inversaL(matrizL,iden);
+        double[][] inversa = Matrizes.calcularInversaL(matrizL);
 
         System.out.println("\n----------------------string---------------------------\n");
         for (int i = 0; i < stringMatriz.length; i++) {
@@ -2259,17 +2259,6 @@ public class Main {
             }
             System.out.println();
         }
-    }
-
-    // passar para o ficheiro Matrizes
-    public static double[][] subtrairMatrizes(double[][] matriz, double[][] identidade) {
-        double[][] sub = new double[matriz.length][matriz[0].length];
-        for (int i = 0; i < sub.length; i++) {
-            for (int j = 0; j < sub[i].length; j++) {
-                sub[i][j] = Math.abs(identidade[i][j] - matriz[i][j]);
-            }
-        }
-        return sub;
     }
 
     public static double[][] preencherArray(int[][] dados, int index) {

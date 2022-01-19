@@ -2,8 +2,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Tests {
-    private static int NUM_TESTS = 7;
-
     public static void main() {
         runTestes();
     }
@@ -26,8 +24,10 @@ public class Tests {
         return Matrizes.compararMatrizes(result, expectedRes);
     }
 
-    // todo
-    private static boolean test_matrizInversaL() {
+    // todo - função não está pronta
+    private static boolean test_matrizInversaL(double[][] matriz, double[][] expectedRes) {
+        // double[][] result = Matrizes.calcularInversaL(matriz);
+        // return Matrizes.compararMatrizes(result, expectedRes);
         return false;
     }
 
@@ -41,70 +41,122 @@ public class Tests {
         return false;
     }
 
+    private static boolean test_calcularDiasEntreInvervalo(String[] intervalo, long expectedRes) {
+        return Main.calcularDiasEntreIntervalo(intervalo) == expectedRes;
+    }
+
+    private static boolean test_validarDatas(String[] datas, boolean[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < datas.length; i++) {
+            if ((Main.verificarData1(datas[i]) || Main.verificarData2(datas[i])) != expectedRes[i]) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_subtrairIdentidadeComMatriz(double[][] matriz1, double[][] expectedRes) {
+        double[][] res = Matrizes.subtrairIdentidadeComMatriz(matriz1);
+        return Matrizes.compararMatrizes(res, expectedRes);
+    }
+
     public static void runTestes() {
-        int count = 0;
+        int testCount = 0;
+        int okCount = 0;
 
         System.out.println("\nTestes:");
+        System.out.println("- Matrizes");
 
-        // Teste 1 - calcular número de semanas
+        // Teste 1 - comparar matrizes
+        double[][] matriz1 = { { 1, 3, 2 }, { 4, 5, 3 }, { 9, 3, 1 } };
+        boolean test1 = test_compararMatrizes(matriz1);
+        printTestResult("compararMatrizes", ++testCount, test1);
+        if (test1)
+            okCount++;
+
+        // Teste 2 - multiplicar matrizes
+        double[][] matriz2 = { { 1, -3, 2 }, { 5, -1, 1 }, { 3, 0, 2 } };
+        double[][] matriz1Mult2 = { { 22, -6, 9 }, { 38, -17, 19 }, { 27, -30, 23 } };
+        boolean test2 = test_multiplicarMatrizes(matriz1, matriz2, matriz1Mult2);
+        printTestResult("multiplicarMatrizes", ++testCount, test2);
+        if (test2)
+            okCount++;
+
+        // Teste 3 - elevar matriz
+        double[][] matrizTest4_expectedRes = { { 244, 252, 147 }, { 469, 461, 266 }, { 462, 399, 223 } };
+        boolean test3 = test_elevarMatriz(matriz1, 3, matrizTest4_expectedRes);
+        printTestResult("elevarMatriz", ++testCount, test3);
+        if (test3)
+            okCount++;
+
+        // Teste 4 - matriz inversa L
+        double[][] inversaMatriz1 = { { 4, -3, 1 }, { -23, 17, -5 }, { 33, -24, 7 } };
+        boolean test4 = test_matrizInversaL(matriz1, inversaMatriz1);
+        printTestResult("matrizInversaL", ++testCount, test4);
+        if (test4)
+            okCount++;
+
+        // Teste 5 - preencher diagonal matriz
+        double[][] matrizTest6_expectedRes = { { 3, 0, 0 }, { 0, 3, 0 }, { 0, 0, 3 } };
+        boolean test5 = test_preencherDiagonalMatriz(3, matrizTest6_expectedRes);
+        printTestResult("preencherDiagonalMatriz", ++testCount, test5);
+        if (test5)
+            okCount++;
+
+        // todo Teste 6 - decomposição Crout
+        boolean test6 = test_decomposicaoCrout();
+        printTestResult("decomposicaoCrout", ++testCount, test6);
+        if (test6)
+            okCount++;
+
+        // Teste 7 - subtrair matrizes
+        double[][] test7_expectedRes = { { 0, 3, -2 }, { -5, 2, -1 }, { -3, 0, -1 } };
+        boolean test7 = test_subtrairIdentidadeComMatriz(matriz2, test7_expectedRes);
+        printTestResult("subtrairIdentidadeComMatriz", ++testCount, test7);
+        if (test7)
+            okCount++;
+
+        System.out.println("- Main");
+
+        // Teste 8 - calcular número de semanas
         Calendar cal1 = Calendar.getInstance();
         cal1.set(2021, 3, 6, 0, 0, 0);
         Calendar cal2 = Calendar.getInstance();
         cal2.set(2021, 5, 27, 0, 0, 0);
-        boolean test1 = test_calcularNumSemanas(cal1.getTime(), cal2.getTime(), 11);
-        System.out.println("[1] calcularNumSemanas: "
-                + (test1 ? "OK" : "NOT OK"));
-        if (test1) count++;
+        boolean test8 = test_calcularNumSemanas(cal1.getTime(), cal2.getTime(), 11);
+        printTestResult("calcularNumSemanas", ++testCount, test8);
+        if (test8)
+            okCount++;
 
-        // Teste 2 - comparar matrizes
-        double[][] matriz1 = { { 1, 3, 2 }, { 4, 5, 3 }, { 9, 3, 1 } };
-        boolean test2 = test_compararMatrizes(matriz1);
-        System.out.println("[2] compararMatrizes: " + (test2 ? "OK" : "NOT OK"));
-        if (test2) count++;
+        // Teste 9 - calcular dias entre intervalo
+        String[] intervalo = { "2020-01-02", "2021-01-03" };
+        boolean test9 = test_calcularDiasEntreInvervalo(intervalo, 368);
+        printTestResult("calcularDiasEntreIntervalo", ++testCount, test9);
+        if (test9)
+            okCount++;
 
-        // Teste 3 - multiplicar matrizes
-        double[][] matriz2 = { { 1, -3, 2 }, { 5, -1, 1 }, { 3, 0, 2 } };
-        double[][] matriz1Mult2 = { { 22, -6, 9 }, { 38, -17, 19 }, { 27, -30, 23 } };
-        boolean test3 = test_multiplicarMatrizes(matriz1, matriz2, matriz1Mult2);
-        System.out.println("[3] multiplicarMatrizes: "
-                + (test3 ? "OK" : "NOT OK"));
-        if (test3) count++;
+        // Teste 10 - validar datas
+        String[] datas = { "2020-01-02", "01-04-2020", "1-4-2020", "2020-04-051", "2020/01/04" };
+        boolean[] test10_expectedRes = { true, true, false, false, false };
+        boolean test10 = test_validarDatas(datas, test10_expectedRes);
+        printTestResult("validararDatas", ++testCount, test10);
+        if (test10)
+            okCount++;
 
-        // Teste 4 - elevar matriz
-        double[][] matrizTest4_expectedRes = { { 244, 252, 147 }, { 469, 461, 266 }, { 462, 399, 223 } };
-        boolean test4 = test_elevarMatriz(matriz1, 3, matrizTest4_expectedRes);
-        System.out.println(
-                "[4] elevarMatriz: " + (test4 ? "OK" : "NOT OK"));
-        if (test4) count++;
-
-        // todo Teste 5 - matriz inversa L
-        boolean test5 = test_matrizInversaL();
-        System.out.println("[5] matrizInversaL: " + (test5 ? "OK" : "NOT OK"));
-        if (test5) count++;
-
-        // Teste 6 - preencher diagonal matriz
-        double[][] matrizTest6_expectedRes = { { 3, 0, 0 }, { 0, 3, 0 }, { 0, 0, 3 } };
-        boolean test6 = test_preencherDiagonalMatriz(3, matrizTest6_expectedRes);
-        System.out.println("[6] preencherDiagonalMatriz: "
-                + (test6 ? "OK" : "NOT OK"));
-        if (test6) count++;
-
-
-        // todo Teste 7 - decomposição Crout
-        boolean test7 = test_decomposicaoCrout();
-        System.out.println("[7] decomposicaoCrout: " + (test7 ? "OK" : "NOT OK"));
-        if (test7) count++;
-
-        System.out.printf("\n%s/%s testes efetuados com sucesso.\n", count, NUM_TESTS);
+        System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 
-    private static void printMatriz(double[][] matriz) {
+    private static void printTestResult(String testName, int testCount, boolean testRes) {
+        System.out.printf("%5s %-30s %s\n", "[" + testCount + "]", testName, (testRes ? "OK" : "NOT OK"));
+    }
+
+    public static void printMatriz(double[][] matriz) {
         for (int i = 0; i < matriz.length; i++) {
             for (int j = 0; j < matriz[0].length; j++) {
-                System.out.printf("%4s", matriz[i][j]);
+                System.out.printf("%5s", matriz[i][j]);
             }
             System.out.println();
         }
     }
-
 }
