@@ -368,16 +368,32 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
+                    System.out.println("1º intervalo:");
+                    String[] intervalo1 = leituraIntervaloDatas();
+                    System.out.println("\n2º intervalo:");
+                    String[] intervalo2 = leituraIntervaloDatas();
                     int[] colunas = menuEscolherQtdDados();
-                    analiseComparativaNovosCasos(datasAcumulado, dadosAcumulado);
+                    analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroAcumuladosComparativos(diretorio, intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
+                    }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
                 break;
             case "2":
                 if (jaLeuFicheiros[1]) {
+                    System.out.println("1º intervalo:");
+                    String[] intervalo1 = leituraIntervaloDatas();
+                    System.out.println("\n2º intervalo:");
+                    String[] intervalo2 = leituraIntervaloDatas();
                     int[] colunas = menuEscolherQtdDados();
-                    analiseComparativaTotaisCasos(datasTotal, dadosTotal);
+                    analiseComparativaTotaisCasos(intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                        imprimirFicheiroTotaisComparativos(diretorio, intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
+                    }
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
@@ -425,7 +441,7 @@ public class Main {
     }
 
     public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
-        String nomeFicheiro = diretorio + "/dados_acumulados_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        String nomeFicheiro = diretorio + "/dados_novos_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
             ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
@@ -464,9 +480,9 @@ public class Main {
             int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
             int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
             if (novosInfetados[i]==-1 && novosHospitalizacoes[i]==-1 && novosUCI[i]==-1 && novosMortes[i]==-1) {
-                ficheiroEscrita.println(datas[i] + mostraStrSeExistir(colunas, 1, ",Sem dados") + mostraStrSeExistir(colunas, 2, ",Sem dados") + mostraStrSeExistir(colunas, 3, ",Sem dados") + mostraStrSeExistir(colunas, 4, ",Sem dados"));
+                ficheiroEscrita.println(datas[i] + mostraSeExistir(colunas, 1, ",Sem dados") + mostraSeExistir(colunas, 2, ",Sem dados") + mostraSeExistir(colunas, 3, ",Sem dados") + mostraSeExistir(colunas, 4, ",Sem dados"));
             } else {
-                ficheiroEscrita.println(datas[i + indexData1] + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
+                ficheiroEscrita.println(datas[i + indexData1] + mostraSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + novosUCI[i]) + mostraSeExistir(colunas, 4, "," + novosMortes[i]));
             }
         }
 
@@ -514,7 +530,7 @@ public class Main {
             int[] dadosHospitalizados = dados[2];
             int[] dadosUCI = dados[3];
             int[] dadosMortes = dados[4];
-            ficheiroEscrita.println(datas[i+indexData1] + mostraStrSeExistir(colunas, 1, "," + dadosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + dadosHospitalizados[i]) + mostraStrSeExistir(colunas, 3, "," + dadosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + dadosMortes[i]));
+            ficheiroEscrita.println(datas[i+indexData1] + mostraSeExistir(colunas, 1, "," + dadosInfetados[i]) + mostraSeExistir(colunas, 2, "," + dadosHospitalizados[i]) + mostraSeExistir(colunas, 3, "," + dadosUCI[i]) + mostraSeExistir(colunas, 4, "," + dadosMortes[i]));
         }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
@@ -523,7 +539,7 @@ public class Main {
     }
 
     public static void imprimirFicheiroAcumuladoSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
-        String nomeFicheiro = diretorio + "/dados_acumulados_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
+        String nomeFicheiro = diretorio + "/dados_novos_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
             ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
@@ -565,7 +581,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
+                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + novosUCI[i]) + mostraSeExistir(colunas, 4, "," + novosMortes[i]));
             }
         }
 
@@ -616,7 +632,7 @@ public class Main {
                 int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraStrSeExistir(colunas, 1, "," + totaisInfetados[i]) + mostraStrSeExistir(colunas, 2, "," + totaisHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + totaisUCI[i]) + mostraStrSeExistir(colunas, 4, "," + totaisMortes[i]));
+                ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraSeExistir(colunas, 1, "," + totaisInfetados[i]) + mostraSeExistir(colunas, 2, "," + totaisHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + totaisUCI[i]) + mostraSeExistir(colunas, 4, "," + totaisMortes[i]));
             }
         }
 
@@ -676,7 +692,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                ficheiroEscrita.println(datas[currIndex] + "-" + datas[currIndex+numDias]  + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2,"," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
+                ficheiroEscrita.println(datas[currIndex] + "-" + datas[currIndex+numDias]  + mostraSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraSeExistir(colunas, 2,"," + novosHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + novosUCI[i]) + mostraSeExistir(colunas, 4, "," + novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
             }
@@ -739,7 +755,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                ficheiroEscrita.println(datas[currIndex] + "-" + datas[currIndex+numDias]  + mostraStrSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraStrSeExistir(colunas, 2,"," + novosHospitalizacoes[i]) + mostraStrSeExistir(colunas, 3, "," + novosUCI[i]) + mostraStrSeExistir(colunas, 4, "," + novosMortes[i]));
+                ficheiroEscrita.println(datas[currIndex] + "-" + datas[currIndex+numDias]  + mostraSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraSeExistir(colunas, 2,"," + novosHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + novosUCI[i]) + mostraSeExistir(colunas, 4, "," + novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
             }
@@ -751,7 +767,203 @@ public class Main {
         ficheiroEscrita.close();
     }
 
+    public static void imprimirFicheiroAcumuladosComparativos(String diretorio, String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
+        String nomeFicheiro = diretorio + "/dados_novos_comparativos_entre_" + intervalo1[0] + "_a_" + intervalo1[1] + "_e_" + intervalo2[0] + "_a_" + intervalo2[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
 
+        long diasIntervalo1;
+        long diasIntervalo2;
+
+        // calcular intervalo de dias do intervalo1
+        diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+        // calcular intervalo de dias do intervalo2
+        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+
+        int numeroDiasAComparar = (int) diasIntervalo1;
+        if (diasIntervalo1 < diasIntervalo2) {
+            numeroDiasAComparar = (int) diasIntervalo1;
+        } else if (diasIntervalo2 < diasIntervalo1) {
+            numeroDiasAComparar = (int) diasIntervalo2;
+        }
+        int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
+
+        String cabecalho = "Datas";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += ",Novos Infetados";
+                        break;
+                    case 2:
+                        cabecalho += ",Novas Hospitalizações";
+                        break;
+                    case 3:
+                        cabecalho += ",Novos UCI";
+                        break;
+                    case 4:
+                        cabecalho += ",Novas Mortes";
+                        break;
+                }
+            }
+        }
+
+        ficheiroEscrita.println(cabecalho);
+        int[][] comparacaoInfet = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[1], numeroDiasAComparar);
+        int[][] comparacaoHosp = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[2], numeroDiasAComparar);
+        int[][] comparacaoUCI = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[3], numeroDiasAComparar);
+        int[][] comparacaoObi = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[4], numeroDiasAComparar);
+        for (int j = 0; j < numeroDiasAComparar; j++) {
+
+            if ((indexData1 + j) - 1 < 0) {
+                ficheiroEscrita.println(datas[j + indexData1] + " 1ªIntervalo" + mostraSeExistir(colunas, 1, ",Sem dados") + mostraSeExistir(colunas, 2, ",Sem dados") + mostraSeExistir(colunas, 3, ",Sem dados") + mostraSeExistir(colunas, 4, ",Sem dados"));
+            } else {
+                ficheiroEscrita.println(datas[j + indexData1] + " 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + comparacaoInfet[0][j]) + mostraSeExistir(colunas, 2, "," + comparacaoHosp[0][j]) + mostraSeExistir(colunas, 3, "," + comparacaoUCI[0][j]) + mostraSeExistir(colunas, 4, "," + comparacaoObi[0][j]));
+            }
+            if ((indexData2 + j) - 1 < 0) {
+                ficheiroEscrita.println(datas[j + indexData2] + " 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + "Sem dados") + mostraSeExistir(colunas, 2, "," + "Sem dados") + mostraSeExistir(colunas, 3, "," + "Sem dados") + mostraSeExistir(colunas, 4, "," + "Sem dados"));
+            } else {
+                ficheiroEscrita.println(datas[j + indexData2] + " 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + comparacaoInfet[1][j]) + mostraSeExistir(colunas, 2, "," + comparacaoHosp[1][j]) + mostraSeExistir(colunas, 3, "," + comparacaoUCI[1][j]) + mostraSeExistir(colunas, 4, "," + comparacaoObi[1][j]));
+            }
+
+            ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (comparacaoInfet[1][j]-comparacaoInfet[0][j])) + mostraSeExistir(colunas, 2, "," + (comparacaoHosp[1][j]-comparacaoHosp[0][j])) + mostraSeExistir(colunas, 3, "," + (comparacaoUCI[1][j]-comparacaoUCI[0][j])) + mostraSeExistir(colunas, 4, "," + (comparacaoObi[1][j]-comparacaoObi[0][j])));
+        }
+
+        // media e desvio Padrão dos novos casos
+        double mediaInfetado1 = mediaComparativa(comparacaoInfet[0]);
+        double mediaInfetado2 = mediaComparativa(comparacaoInfet[1]);
+        double mediaHosp1 = mediaComparativa(comparacaoHosp[0]);
+        double mediaHosp2 = mediaComparativa(comparacaoHosp[1]);
+        double mediaUCI1 = mediaComparativa(comparacaoUCI[0]);
+        double mediaUCI2 = mediaComparativa(comparacaoUCI[1]);
+        double mediaObitos1 = mediaComparativa(comparacaoObi[0]);
+        double mediaObitos2 = mediaComparativa(comparacaoObi[1]);
+        double desvioInfet1 = desvioPadrao(comparacaoInfet[0],mediaInfetado1);
+        double desvioInfet2 = desvioPadrao(comparacaoInfet[1],mediaInfetado2);
+        double desvioHosp1 = desvioPadrao(comparacaoHosp[0],mediaHosp1);
+        double desvioHosp2 = desvioPadrao(comparacaoHosp[1],mediaHosp2);
+        double desvioUCI1 = desvioPadrao(comparacaoUCI[0],mediaUCI1);
+        double desvioUCI2 = desvioPadrao(comparacaoUCI[0],mediaUCI2);
+        double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
+        double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
+
+        ficheiroEscrita.println("Media do 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + mediaInfetado1) + mostraSeExistir(colunas, 2, "," + mediaHosp1) + mostraSeExistir(colunas, 3, "," + mediaUCI1) + mostraSeExistir(colunas, 4, "," + mediaObitos1));
+        ficheiroEscrita.println("Media do 2ªIntervalo" + mostraSeExistir(colunas, 1, "," +  mediaInfetado2) + mostraSeExistir(colunas, 2, "," + mediaHosp2) + mostraSeExistir(colunas, 3, "," + mediaUCI2) + mostraSeExistir(colunas, 4, "," + mediaObitos2));
+        ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (mediaInfetado2-mediaInfetado1)) + mostraSeExistir(colunas, 2, "," + (mediaHosp2-mediaHosp1)) + mostraSeExistir(colunas, 3, "," + (mediaUCI2-mediaUCI1)) + mostraSeExistir(colunas, 4, "," + (mediaObitos2-mediaObitos1)));
+        ficheiroEscrita.println("Desvio Padrão do 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + desvioInfet1) + mostraSeExistir(colunas, 2, "," + "," + desvioHosp1) + mostraSeExistir(colunas, 3, "," + desvioUCI1) + mostraSeExistir(colunas, 4, "," + desvioObitos1));
+        ficheiroEscrita.println("Desvio Padrão do 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + desvioInfet2) + mostraSeExistir(colunas, 2, "," + desvioHosp2) + mostraSeExistir(colunas, 3, "," + desvioUCI2) + mostraSeExistir(colunas, 4,"," +  desvioObitos2));
+        ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (desvioInfet2-desvioInfet1)) + mostraSeExistir(colunas, 2, "," + (desvioHosp2-desvioHosp1)) + mostraSeExistir(colunas, 3, "," + (desvioUCI2-desvioUCI1)) + mostraSeExistir(colunas, 4, "," + (desvioObitos2-desvioObitos1)));
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
+
+    public static void imprimirFicheiroTotaisComparativos(String diretorio, String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
+        String nomeFicheiro = diretorio + "/dados_totais_comparativos_entre_" + intervalo1[0] + "_a_" + intervalo1[1] + "_e_" + intervalo2[0] + "_a_" + intervalo2[1] + ".csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        long diasIntervalo1;
+        long diasIntervalo2;
+
+        // calcular intervalo de dias do intervalo1
+        diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+        // calcular intervalo de dias do intervalo2
+        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
+
+        int numeroDiasAComparar = (int) diasIntervalo1;
+        if (diasIntervalo1 < diasIntervalo2) {
+            numeroDiasAComparar = (int) diasIntervalo1;
+        } else if (diasIntervalo2 < diasIntervalo1) {
+            numeroDiasAComparar = (int) diasIntervalo2;
+        }
+        int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
+        int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
+
+        String cabecalho = "Datas";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += ",Totais Infetados";
+                        break;
+                    case 2:
+                        cabecalho += ",Totais Hospitalizações";
+                        break;
+                    case 3:
+                        cabecalho += ",Totais UCI";
+                        break;
+                    case 4:
+                        cabecalho += ",Totais Mortes";
+                        break;
+                }
+            }
+        }
+
+        ficheiroEscrita.println(cabecalho);
+        int[][] comparacaoInfet = comparacaoTotaisCasos(indexData1, indexData2, dados[1], numeroDiasAComparar);
+        int[][] comparacaoHosp = comparacaoTotaisCasos(indexData1, indexData2, dados[2], numeroDiasAComparar);
+        int[][] comparacaoUCI = comparacaoTotaisCasos(indexData1, indexData2, dados[3], numeroDiasAComparar);
+        int[][] comparacaoObi = comparacaoTotaisCasos(indexData1, indexData2, dados[4], numeroDiasAComparar);
+        for (int j = 0; j < numeroDiasAComparar; j++) {
+
+            if ((indexData1 + j) - 1 < 0) {
+                ficheiroEscrita.println(datas[j + indexData1] + " 1ªIntervalo" + mostraSeExistir(colunas, 1, ",Sem dados") + mostraSeExistir(colunas, 2, ",Sem dados") + mostraSeExistir(colunas, 3, ",Sem dados") + mostraSeExistir(colunas, 4, ",Sem dados"));
+            } else {
+                ficheiroEscrita.println(datas[j + indexData1] + " 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + comparacaoInfet[0][j]) + mostraSeExistir(colunas, 2, "," + comparacaoHosp[0][j]) + mostraSeExistir(colunas, 3, "," + comparacaoUCI[0][j]) + mostraSeExistir(colunas, 4, "," + comparacaoObi[0][j]));
+            }
+            if ((indexData2 + j) - 1 < 0) {
+                ficheiroEscrita.println(datas[j + indexData2] + " 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + "Sem dados") + mostraSeExistir(colunas, 2, "," + "Sem dados") + mostraSeExistir(colunas, 3, "," + "Sem dados") + mostraSeExistir(colunas, 4, "," + "Sem dados"));
+            } else {
+                ficheiroEscrita.println(datas[j + indexData2] + " 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + comparacaoInfet[1][j]) + mostraSeExistir(colunas, 2, "," + comparacaoHosp[1][j]) + mostraSeExistir(colunas, 3, "," + comparacaoUCI[1][j]) + mostraSeExistir(colunas, 4, "," + comparacaoObi[1][j]));
+            }
+
+            ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (comparacaoInfet[1][j]-comparacaoInfet[0][j])) + mostraSeExistir(colunas, 2, "," + (comparacaoHosp[1][j]-comparacaoHosp[0][j])) + mostraSeExistir(colunas, 3, "," + (comparacaoUCI[1][j]-comparacaoUCI[0][j])) + mostraSeExistir(colunas, 4, "," + (comparacaoObi[1][j]-comparacaoObi[0][j])));
+        }
+
+        // media e desvio Padrão dos novos casos
+        double mediaInfetado1 = mediaComparativa(comparacaoInfet[0]);
+        double mediaInfetado2 = mediaComparativa(comparacaoInfet[1]);
+        double mediaHosp1 = mediaComparativa(comparacaoHosp[0]);
+        double mediaHosp2 = mediaComparativa(comparacaoHosp[1]);
+        double mediaUCI1 = mediaComparativa(comparacaoUCI[0]);
+        double mediaUCI2 = mediaComparativa(comparacaoUCI[1]);
+        double mediaObitos1 = mediaComparativa(comparacaoObi[0]);
+        double mediaObitos2 = mediaComparativa(comparacaoObi[1]);
+        double desvioInfet1 = desvioPadrao(comparacaoInfet[0],mediaInfetado1);
+        double desvioInfet2 = desvioPadrao(comparacaoInfet[1],mediaInfetado2);
+        double desvioHosp1 = desvioPadrao(comparacaoHosp[0],mediaHosp1);
+        double desvioHosp2 = desvioPadrao(comparacaoHosp[1],mediaHosp2);
+        double desvioUCI1 = desvioPadrao(comparacaoUCI[0],mediaUCI1);
+        double desvioUCI2 = desvioPadrao(comparacaoUCI[0],mediaUCI2);
+        double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
+        double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
+
+        ficheiroEscrita.println("Media do 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + mediaInfetado1) + mostraSeExistir(colunas, 2, "," + mediaHosp1) + mostraSeExistir(colunas, 3, "," + mediaUCI1) + mostraSeExistir(colunas, 4, "," + mediaObitos1));
+        ficheiroEscrita.println("Media do 2ªIntervalo" + mostraSeExistir(colunas, 1, "," +  mediaInfetado2) + mostraSeExistir(colunas, 2, "," + mediaHosp2) + mostraSeExistir(colunas, 3, "," + mediaUCI2) + mostraSeExistir(colunas, 4, "," + mediaObitos2));
+        ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (mediaInfetado2-mediaInfetado1)) + mostraSeExistir(colunas, 2, "," + (mediaHosp2-mediaHosp1)) + mostraSeExistir(colunas, 3, "," + (mediaUCI2-mediaUCI1)) + mostraSeExistir(colunas, 4, "," + (mediaObitos2-mediaObitos1)));
+        ficheiroEscrita.println("Desvio Padrão do 1ªIntervalo" + mostraSeExistir(colunas, 1, "," + desvioInfet1) + mostraSeExistir(colunas, 2, "," + desvioHosp1) + mostraSeExistir(colunas, 3, "," + desvioUCI1) + mostraSeExistir(colunas, 4, "," + desvioObitos1));
+        ficheiroEscrita.println("Desvio Padrão do 2ªIntervalo" + mostraSeExistir(colunas, 1, "," + desvioInfet2) + mostraSeExistir(colunas, 2, "," + desvioHosp2) + mostraSeExistir(colunas, 3, "," + desvioUCI2) + mostraSeExistir(colunas, 4,"," +  desvioObitos2));
+        ficheiroEscrita.println("Diferença entre dados" + mostraSeExistir(colunas, 1, "," + (desvioInfet2-desvioInfet1)) + mostraSeExistir(colunas, 2, "," + (desvioHosp2-desvioHosp1)) + mostraSeExistir(colunas, 3, "," + (desvioUCI2-desvioUCI1)) + mostraSeExistir(colunas, 4, "," + (desvioObitos2-desvioObitos1)));
+
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+
+        ficheiroEscrita.close();
+    }
 
     //-------------------------------------------Menus da Aplicação---------------------------------------------------//
     public static String selecionarTipoFicheiro() {
@@ -1004,7 +1216,7 @@ public class Main {
         return false;
     }
 
-    public static String mostraStrSeExistir (int[] array, int opcao, String texto) {
+    public static String mostraSeExistir (int[] array, int opcao, String texto) {
         if (existeNoArray(array, opcao)) {
             return texto;
         } else {
@@ -1012,7 +1224,7 @@ public class Main {
         }
     }
 
-    public static String mostraIntSeExistir (int[] array, int opcao, int valor) {
+    public static String mostraSeExistir (int[] array, int opcao, int valor) {
         if (existeNoArray(array, opcao)) {
             return String.valueOf(valor);
         } else {
@@ -1020,7 +1232,7 @@ public class Main {
         }
     }
 
-    public static String mostraDoubleSeExistir (int[] array, int opcao, double valor) {
+    public static String mostraSeExistir (int[] array, int opcao, double valor) {
         if (existeNoArray(array, opcao)) {
             return String.valueOf(valor);
         } else {
@@ -1124,9 +1336,9 @@ public class Main {
                 int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
                 int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
                 if (novosInfetados[i] == -1 && novosHospitalizacoes[i] == -1 && novosUCI[i] == -1 && novosMortes[i] == -1) {
-                    System.out.printf(impressao, datas[i], mostraStrSeExistir(colunas, 1, "Sem dados"), mostraStrSeExistir(colunas, 2, "Sem dados"), mostraStrSeExistir(colunas, 3, "Sem dados"), mostraStrSeExistir(colunas, 4, "Sem dados"));
+                    System.out.printf(impressao, datas[i], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
                 } else {
-                    System.out.printf(impressao, datas[i + indexData1], mostraIntSeExistir(colunas, 1, novosInfetados[i]), mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]), mostraIntSeExistir(colunas, 3, novosUCI[i]), mostraIntSeExistir(colunas, 4, novosMortes[i]));
+                    System.out.printf(impressao, datas[i + indexData1], mostraSeExistir(colunas, 1, novosInfetados[i]), mostraSeExistir(colunas, 2, novosHospitalizacoes[i]), mostraSeExistir(colunas, 3, novosUCI[i]), mostraSeExistir(colunas, 4, novosMortes[i]));
                 }
             }
         }
@@ -1193,7 +1405,7 @@ public class Main {
             int[] dadosHospitalizados = dados[2];
             int[] dadosUCI = dados[3];
             int[] dadosMortes = dados[4];
-            System.out.printf(impressao, datas[i+indexData1], mostraIntSeExistir(colunas, 1, dadosInfetados[i]),mostraIntSeExistir(colunas, 2, dadosHospitalizados[i]),mostraIntSeExistir(colunas, 3, dadosUCI[i]),mostraIntSeExistir(colunas, 4, dadosMortes[i]));
+            System.out.printf(impressao, datas[i+indexData1], mostraSeExistir(colunas, 1, dadosInfetados[i]),mostraSeExistir(colunas, 2, dadosHospitalizados[i]),mostraSeExistir(colunas, 3, dadosUCI[i]),mostraSeExistir(colunas, 4, dadosMortes[i]));
         }
     }
 
@@ -1249,7 +1461,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraIntSeExistir(colunas, 1, novosInfetados[i]),mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, novosUCI[i]),mostraIntSeExistir(colunas, 4, novosMortes[i]));
+                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
             }
         }
     }
@@ -1374,7 +1586,7 @@ public class Main {
                 int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraIntSeExistir(colunas, 1, totaisInfetados[i]),mostraIntSeExistir(colunas, 2, totaisHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, totaisUCI[i]),mostraIntSeExistir(colunas, 4, totaisMortes[i]));
+                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, totaisInfetados[i]),mostraSeExistir(colunas, 2, totaisHospitalizacoes[i]),mostraSeExistir(colunas, 3, totaisUCI[i]),mostraSeExistir(colunas, 4, totaisMortes[i]));
             }
         }
     }
@@ -1446,7 +1658,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraIntSeExistir(colunas, 1, novosInfetados[i]),mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, novosUCI[i]),mostraIntSeExistir(colunas, 4, novosMortes[i]));
+                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
             }
@@ -1565,7 +1777,7 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisTotaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraIntSeExistir(colunas, 1, novosInfetados[i]),mostraIntSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraIntSeExistir(colunas, 3, novosUCI[i]),mostraIntSeExistir(colunas, 4, novosMortes[i]));
+                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
             }
@@ -1605,21 +1817,14 @@ public class Main {
 
     //-------------------------------------Analise Comparativa Novos Casos--------------------------------------------//
 
-    public static void analiseComparativaNovosCasos(String[] datas, int[][] dados) {
+    public static void analiseComparativaNovosCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
         long diasIntervalo1;
         long diasIntervalo2;
-        String[] intervalo1;
-        String[] intervalo2;
-        do {
-            System.out.println("1º intervalo:");
-            intervalo1 = leituraIntervaloDatas();
-            // calcular intervalo de dias do intervalo1
-            diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-            System.out.println("\n2º intervalo:");
-            // calcular intervalo de dias do intervalo2
-            intervalo2 = leituraIntervaloDatas();
-            diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
-        } while (diasIntervalo1 < 0 && diasIntervalo2 < 0);
+
+        // calcular intervalo de dias do intervalo1
+        diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+        // calcular intervalo de dias do intervalo2
+        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
 
         int numeroDiasAComparar = (int) diasIntervalo1;
         if (diasIntervalo1 < diasIntervalo2) {
@@ -1629,7 +1834,51 @@ public class Main {
         }
         int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
-        System.out.printf("\nDados                        | %5s Novos Infetados | Novas Hospitalizações | Novos UCI | Novas Mortes\n", "");
+
+        String cabecalho = "Datas                       ";
+        String impressao = "";
+        String impressaoMediaEDesvio = "";
+        String tracinhos = "------------------------------";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += " | %5s Novos Infetados";
+                        impressao += " | %21s";
+                        impressaoMediaEDesvio += " | %21.4f";
+                        tracinhos += "------------------------";
+                        break;
+                    case 2:
+                        cabecalho += " | Novas Hospitalizações";
+                        impressao += " | %21.10s";
+                        impressaoMediaEDesvio += " | %21.4f";
+                        tracinhos += "------------------------";
+                        break;
+                    case 3:
+                        cabecalho += " | Novos UCI";
+                        impressao += " | %9.10s";
+                        impressaoMediaEDesvio += " | %9.4f";
+                        tracinhos += "------------";
+                        break;
+                    case 4:
+                        cabecalho += " | Novas Mortes";
+                        impressao += " | %12.10s";
+                        impressaoMediaEDesvio += " | %12.4f";
+                        tracinhos += "-------------";
+                        break;
+                }
+            } else {
+                impressao += "%s";
+                impressaoMediaEDesvio += "%s";
+            }
+        }
+
+        cabecalho += "\n";
+        impressao += "\n";
+        impressaoMediaEDesvio += "\n";
+
+        System.out.printf(cabecalho, "");
         int[][] comparacaoInfet = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[1], numeroDiasAComparar);
         int[][] comparacaoHosp = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[2], numeroDiasAComparar);
         int[][] comparacaoUCI = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[3], numeroDiasAComparar);
@@ -1637,23 +1886,21 @@ public class Main {
         for (int j = 0; j < numeroDiasAComparar; j++) {
 
             if ((indexData1 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], "Sem dados", "Sem dados", "Sem dados", "Sem dados");
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], comparacaoInfet[1][j], comparacaoHosp[1][j], comparacaoUCI[1][j], comparacaoObi[1][j]);
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
-
-            } else if ((indexData2 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], comparacaoInfet[0][j], comparacaoHosp[0][j], comparacaoUCI[0][j], comparacaoObi[0][j]);
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], "Sem dados", "Sem dados", "Sem dados", "Sem dados");
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], comparacaoInfet[0][j], comparacaoHosp[0][j], comparacaoUCI[0][j], comparacaoObi[0][j]);
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], comparacaoInfet[1][j], comparacaoHosp[1][j], comparacaoUCI[1][j], comparacaoObi[1][j]);
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
             }
+            if ((indexData2 + j) - 1 < 0) {
+                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+            } else {
+                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
+            }
+
+            System.out.printf("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
+            System.out.println(tracinhos);
+
         }
+
         // media e desvio Padrão dos novos casos
         double mediaInfetado1 = mediaComparativa(comparacaoInfet[0]);
         double mediaInfetado2 = mediaComparativa(comparacaoInfet[1]);
@@ -1672,13 +1919,13 @@ public class Main {
         double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
         double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
 
-        System.out.printf("Media do 1ªIntervalo         | %21.4f | %21.4f | %9.4f | %12.4f \n", mediaInfetado1, mediaHosp1, mediaUCI1, mediaObitos1);
-        System.out.printf("Media do 2ªIntervalo         | %21.4f | %21.4f | %9.4f | %12.4f \n", mediaInfetado2, mediaHosp2, mediaUCI2, mediaObitos2);
-        System.out.printf("%sDiferença entre dados        | %21.4f | %21.4f | %9.4f | %12.4f \n","",mediaInfetado2-mediaInfetado1,mediaHosp2-mediaHosp1,mediaUCI2-mediaUCI1,mediaObitos2-mediaObitos1);
-        System.out.println("--------------------------------------------------------------------------------------------------------");
-        System.out.printf("Desvio Padrão do 1ªIntervalo | %21.4f | %21.4f | %9.4f | %12.4f \n", desvioInfet1,desvioHosp1,desvioUCI1,desvioObitos1);
-        System.out.printf("Desvio Padrão do 2ªIntervalo | %21.4f | %21.4f | %9.4f | %12.4f \n", desvioInfet2,desvioHosp2,desvioUCI2,desvioObitos2);
-        System.out.printf("%sDiferença entre dados        | %21.4f | %21.4f | %9.4f | %12.4f \n","",desvioInfet2-desvioInfet1,desvioHosp2-desvioHosp1,desvioUCI2-desvioUCI1,desvioObitos2-desvioObitos1);
+        System.out.printf("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
+        System.out.printf("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
+        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
+        System.out.println(tracinhos);
+        System.out.printf("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
+        System.out.printf("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
+        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
 
     }
 
@@ -1726,21 +1973,14 @@ public class Main {
 
     //-------------------------------------Analise Comparativa Totais Casos-------------------------------------------//
 
-    public static void analiseComparativaTotaisCasos(String[] datas, int[][] dados) {
+    public static void analiseComparativaTotaisCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
         long diasIntervalo1;
         long diasIntervalo2;
-        String[] intervalo1;
-        String[] intervalo2;
-        do {
-            System.out.println("1º intervalo:");
-            intervalo1 = leituraIntervaloDatas();
-            // calcular intervalo de dias do intervalo1
-            diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
-            System.out.println("\n2º intervalo:");
-            // calcular intervalo de dias do intervalo2
-            intervalo2 = leituraIntervaloDatas();
-            diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
-        } while (diasIntervalo1 < 0 && diasIntervalo2 < 0);
+
+        // calcular intervalo de dias do intervalo1
+        diasIntervalo1 = calcularDiasEntreIntervalo(intervalo1);
+        // calcular intervalo de dias do intervalo2
+        diasIntervalo2 = calcularDiasEntreIntervalo(intervalo2);
 
         int numeroDiasAComparar = (int) diasIntervalo1;
         if (diasIntervalo1 < diasIntervalo2) {
@@ -1751,29 +1991,72 @@ public class Main {
         int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
 
-        System.out.printf("\nDados                        | %5s Total Infetados | Total Hospitalizações | Total UCI | Total Mortes\n", "");
+        String cabecalho = "Datas                       ";
+        String impressao = "";
+        String impressaoMediaEDesvio = "";
+        String tracinhos = "------------------------------";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += " | %5s Total Infetados";
+                        impressao += " | %21s";
+                        impressaoMediaEDesvio += " | %21.4f";
+                        tracinhos += "------------------------";
+                        break;
+                    case 2:
+                        cabecalho += " | Total Hospitalizações";
+                        impressao += " | %21.10s";
+                        impressaoMediaEDesvio += " | %21.4f";
+                        tracinhos += "------------------------";
+                        break;
+                    case 3:
+                        cabecalho += " | Total UCI";
+                        impressao += " | %9.10s";
+                        impressaoMediaEDesvio += " | %9.4f";
+                        tracinhos += "------------";
+                        break;
+                    case 4:
+                        cabecalho += " | Total Mortes";
+                        impressao += " | %12.10s";
+                        impressaoMediaEDesvio += " | %12.4f";
+                        tracinhos += "-------------";
+                        break;
+                }
+            } else {
+                impressao += "%s";
+                impressaoMediaEDesvio += "%s";
+            }
+        }
+
+        cabecalho += "\n";
+        impressao += "\n";
+        impressaoMediaEDesvio += "\n";
+
+        System.out.printf(cabecalho, "");
         int[][] comparacaoInfet = comparacaoTotaisCasos(indexData1, indexData2, dados[1], numeroDiasAComparar);
         int[][] comparacaoHosp = comparacaoTotaisCasos(indexData1, indexData2, dados[2], numeroDiasAComparar);
         int[][] comparacaoUCI = comparacaoTotaisCasos(indexData1, indexData2, dados[3], numeroDiasAComparar);
         int[][] comparacaoObi = comparacaoTotaisCasos(indexData1, indexData2, dados[4], numeroDiasAComparar);
         for (int j = 0; j < numeroDiasAComparar; j++) {
+
             if ((indexData1 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], "Sem dados", "Sem dados", "Sem dados", "Sem dados");
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], comparacaoInfet[1][j], comparacaoHosp[1][j], comparacaoUCI[1][j], comparacaoObi[1][j]);
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
-            } else if ((indexData2 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], comparacaoInfet[0][j], comparacaoHosp[0][j], comparacaoUCI[0][j], comparacaoObi[0][j]);
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], "Sem dados", "Sem dados", "Sem dados", "Sem dados");
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 1ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData1], comparacaoInfet[0][j], comparacaoHosp[0][j], comparacaoUCI[0][j], comparacaoObi[0][j]);
-                System.out.printf("%s 2ªIntervalo       | %21s | %21.10s | %9.10s | %12.10s \n", datas[j + indexData2], comparacaoInfet[1][j], comparacaoHosp[1][j], comparacaoUCI[1][j], comparacaoObi[1][j]);
-                System.out.printf("%sDiferença entre dados        | %21s | %21.10s | %9.10s | %12.10s \n","",comparacaoInfet[1][j]-comparacaoInfet[0][j],comparacaoHosp[1][j]-comparacaoHosp[0][j],comparacaoUCI[1][j]-comparacaoUCI[0][j],comparacaoObi[1][j]-comparacaoObi[0][j]);
-                System.out.println("--------------------------------------------------------------------------------------------------------");
+                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
             }
+            if ((indexData2 + j) - 1 < 0) {
+                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+            } else {
+                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
+            }
+
+            System.out.printf("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
+            System.out.println(tracinhos);
+
         }
+
         // media e desvio Padrao dos totais casos
         double mediaInfetado1 = mediaComparativa(comparacaoInfet[0]);
         double mediaInfetado2 = mediaComparativa(comparacaoInfet[1]);
@@ -1792,13 +2075,13 @@ public class Main {
         double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
         double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
 
-        System.out.printf("Media do 1ªIntervalo         | %21.4f | %21.4f | %9.4f | %12.4f \n", mediaInfetado1, mediaHosp1, mediaUCI1, mediaObitos1);
-        System.out.printf("Media do 2ªIntervalo         | %21.4f | %21.4f | %9.4f | %12.4f \n", mediaInfetado2, mediaHosp2, mediaUCI2, mediaObitos2);
-        System.out.printf("%sDiferença entre dados        | %21.4f | %21.4f | %9.4f | %12.4f \n","",mediaInfetado2-mediaInfetado1,mediaHosp2-mediaHosp1,mediaUCI2-mediaUCI1,mediaObitos2-mediaObitos1);
-        System.out.println("--------------------------------------------------------------------------------------------------------");
-        System.out.printf("Desvio Padrão do 1ªIntervalo | %21.4f | %21.4f | %9.4f | %12.4f \n", desvioPadrao(comparacaoInfet[0], mediaInfetado1), desvioPadrao(comparacaoHosp[0], mediaHosp1), desvioPadrao(comparacaoUCI[0], mediaUCI1), desvioPadrao(comparacaoObi[0], mediaObitos1));
-        System.out.printf("Desvio Padrão do 2ªIntervalo | %21.4f | %21.4f | %9.4f | %12.4f \n", desvioPadrao(comparacaoInfet[1], mediaInfetado2), desvioPadrao(comparacaoHosp[1], mediaHosp2), desvioPadrao(comparacaoUCI[1], mediaUCI2), desvioPadrao(comparacaoObi[1], mediaObitos2));
-        System.out.printf("%sDiferença entre dados        | %21.4f | %21.4f | %9.4f | %12.4f \n","",desvioInfet2-desvioInfet1,desvioHosp2-desvioHosp1,desvioUCI2-desvioUCI1,desvioObitos2-desvioObitos1);
+        System.out.printf("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
+        System.out.printf("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
+        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
+        System.out.println(tracinhos);
+        System.out.printf("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
+        System.out.printf("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
+        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
 
     }
 
