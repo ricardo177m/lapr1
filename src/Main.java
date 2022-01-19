@@ -441,12 +441,10 @@ public class Main {
             if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
                 if ((indexData1 - 1) == -1) {
                     data = datas[0];
-                    Date data1 = stringParaDateEConverterDatas(data);
                     mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
                 }
                 if (existeNoArrayData(datas,dataEscolhe)){
                     data = escolherDiaAnterior(indexData1, datas);
-                    Date data1 = stringParaDateEConverterDatas(data);
                     mostrarPrevisao(data, datas, dados, matriz, dataEscolhe);
                 } else if (!verificarDiaExiste(datas,dataEscolhe)) {
                 Date data1 = stringParaDateEConverterDatas(dataEscolhe);
@@ -461,6 +459,7 @@ public class Main {
         }
     }
 
+    // todo teste
     public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_acumulados_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
@@ -1975,7 +1974,7 @@ public class Main {
 
     // passar para o ficheiro Matrizes
     public static double[][] subtrairMatrizes(double[][] matriz, double[][] identidade) {
-        double[][] sub = new double[NUMERO_ESTADOS_DIFERENTES - 1][NUMERO_ESTADOS_DIFERENTES - 1];
+        double[][] sub = new double[matriz.length][matriz[0].length];
         for (int i = 0; i < sub.length; i++) {
             for (int j = 0; j < sub[i].length; j++) {
                 sub[i][j] = Math.abs(identidade[i][j] - matriz[i][j]);

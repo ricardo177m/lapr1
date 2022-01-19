@@ -2,7 +2,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Tests {
-    private static int NUM_TESTS = 6;
+    private static int NUM_TESTS = 7;
 
     public static void main() {
         runTestes();
@@ -36,7 +36,10 @@ public class Tests {
         return Matrizes.compararMatrizes(res, expectedRes);
     }
 
-    // private static boolean test_decomposicaoCrout() {}
+    // todo
+    private static boolean test_decomposicaoCrout() {
+        return false;
+    }
 
     public static void runTestes() {
         int count = 0;
@@ -87,7 +90,10 @@ public class Tests {
         if (test6) count++;
 
 
-        // Teste 7 - decomposição Crout
+        // todo Teste 7 - decomposição Crout
+        boolean test7 = test_decomposicaoCrout();
+        System.out.println("[7] decomposicaoCrout: " + (test7 ? "OK" : "NOT OK"));
+        if (test7) count++;
 
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", count, NUM_TESTS);
     }
