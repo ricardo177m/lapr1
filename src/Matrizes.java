@@ -45,21 +45,19 @@ public class Matrizes {
     }
 
     // todo
-    public static double[][] matrizInversaL(double[][] matriz) {
-        double[][] inversaL = new double[3][3];
+    public static double[][] inversaL(double[][] matriz, double[][] ident) {
+        double[][] inversa = new double[3][3];
 
-        for (int i = 0; i < inversaL.length; i++) {
-            for (int j = 0; j < inversaL[i].length; j++) {
-                inversaL[i][j] = 0.0;
+        // diagonal da inversa
+        for (int i = inversa.length - 1; i >= 0; i--) {
+            inversa[i][i] = 1 / matriz[i][i];
+        }
+        for (int i = 0; i < inversa.length; i++) {
+            for (int j = 0; j < inversa[i].length - 1; j++) {
+                inversa[i][j + 1] = -(matriz[i][j + 1] * inversa[i][i]) / matriz[i + 1][j + 1];
             }
         }
-        for (int i = inversaL.length - 1; i >= 0; i--) {
-            inversaL[i][i] = matriz[i][i];
-            for (int j = i; j >= 0; j--) {
-                inversaL[i][j] = matriz[i][j] / inversaL[i][i];
-            }
-        }
-        return inversaL;
+        return inversa;
     }
 
     public static double[][] preencherDiagonalMatriz(double dig) {
