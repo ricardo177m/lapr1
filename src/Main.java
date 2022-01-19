@@ -38,6 +38,7 @@ public class Main {
         // 4 - mortes
 
 
+
         String[] acumuladoDatas;
         int[][] acumuladoDados;
 
@@ -53,13 +54,9 @@ public class Main {
         switch (opcaoTipoFicheiro) {
             case "1":
                 int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                acumuladoDatas = new String[numLinhas];
                 acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                totalDatas = new String[numLinhas];
                 totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 totalDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[0] = true;
                 System.out.println("Ficheiro lido com sucesso!");
@@ -69,13 +66,9 @@ public class Main {
                 break;
             case "2":
                 numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                totalDatas = new String[numLinhas];
                 totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 totalDados = lerDados(caminhoFicheiro, numLinhas);
-                acumuladoDatas = new String[numLinhas];
                 acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                 acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                 jaleuFicheiros[1] = true;
                 System.out.println("Ficheiro lido com sucesso!");
@@ -238,34 +231,40 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
-                    String[] leituraDatas = leituraIntervaloDatas();
-                    if (existeNoArrayDatas(datasAcumulados,leituraDatas) ) {
-                        int[] colunas = menuEscolherQtdDados();
-                        mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
-                        String diretorio = guardarOuSair();
-                        if (!diretorio.equals("")) {
-                            imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
+                    String[] leituraDatas;
+                    do {
+                        leituraDatas = leituraIntervaloDatas();
+                        if (existeNoArrayDatas(datasAcumulados, leituraDatas)) {
+                            int[] colunas = menuEscolherQtdDados();
+                            mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
+                            String diretorio = guardarOuSair();
+                            if (!diretorio.equals("")) {
+                                imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
+                            }
+                        } else {
+                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } else {
-                        System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
-                    }
+                    } while (!existeNoArrayDatas(datasAcumulados,leituraDatas));
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
                 break;
             case "2":
                 if (jaLeuFicheiros[1]) {
-                    String[] leituraDatas = leituraIntervaloDatas();
-                    if (existeNoArrayDatas(datasTotais,leituraDatas) ) {
-                        int[] colunas = menuEscolherQtdDados();
-                        mostrarDadosTotaisDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
-                        String diretorio = guardarOuSair();
-                        if (!diretorio.equals("")) {
-                            imprimirFicheiroTotalDiarios(diretorio, leituraDatas, datasTotais, dadosTotais, colunas);
+                    String[] leituraDatas;
+                    do {
+                        leituraDatas = leituraIntervaloDatas();
+                        if (existeNoArrayDatas(datasTotais, leituraDatas)) {
+                            int[] colunas = menuEscolherQtdDados();
+                            mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais, colunas);
+                            String diretorio = guardarOuSair();
+                            if (!diretorio.equals("")) {
+                                imprimirFicheiroTotalDiarios(diretorio, leituraDatas, datasTotais, dadosTotais, colunas);
+                            }
+                        } else {
+                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } else {
-                        System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
-                    }
+                    } while (!existeNoArrayDatas(datasTotais,leituraDatas));
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
@@ -280,17 +279,27 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
-                    String[] leituraDatas = leituraIntervaloDatas();
-                    if (existeNoArrayDatas(datasAcumulado,leituraDatas) ) {
-                        int[] colunas = menuEscolherQtdDados();
-                        mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas);
-                        String diretorio = guardarOuSair();
-                        if (!diretorio.equals("")) {
-                            imprimirFicheiroAcumuladoSemanais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado, colunas);
+                    String[] leituraDatas;
+                    int numeroSemanas=0;
+                    do {
+                        leituraDatas = leituraIntervaloDatas();
+                        if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
+                            int[] colunas;
+                            numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]), stringParaDateEConverterDatas(leituraDatas[1]));
+                            if (numeroSemanas != -1 && numeroSemanas!=0) {
+                                colunas = menuEscolherQtdDados();
+                                mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroSemanas);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroAcumuladoSemanais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado, colunas);
+                                }
+                            } else {
+                                System.out.println("Introduza datas que contenham pelo menos 1 semana.");
+                            }
+                        } else {
+                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } else {
-                        System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
-                    }
+                    } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroSemanas == -1 || numeroSemanas ==0);
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
@@ -298,19 +307,26 @@ public class Main {
             case "2":
                 if (jaLeuFicheiros[1]) {
                     String[] leituraDatas;
+                    int numeroSemanas=0;
                     do {
                         leituraDatas=leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasTotal, leituraDatas)) {
-                            int[] colunas = menuEscolherQtdDados();
-                            mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas);
-                            String diretorio = guardarOuSair();
-                            if (!diretorio.equals("")) {
-                                imprimirFicheiroTotalSemanais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas);
+                            int[] colunas;
+                            numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]),stringParaDateEConverterDatas(leituraDatas[1]));
+                            if (numeroSemanas !=-1 && numeroSemanas !=0) {
+                                colunas=menuEscolherQtdDados();
+                                mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroTotalSemanais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
+                                }
+                            } else {
+                                System.out.println("Introduza datas que contenham pelo menos 1 semana.");
                             }
                         } else {
                             System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } while (!existeNoArrayDatas(datasTotal,leituraDatas));
+                    } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas ==-1 || numeroSemanas==0);
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
@@ -325,35 +341,52 @@ public class Main {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
-                    String[] leituraDatas = leituraIntervaloDatas();
-                    if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
-                        int[] colunas = menuEscolherQtdDados();
-                        mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas);
-                        String diretorio = guardarOuSair();
-                        if (!diretorio.equals("")) {
-                            imprimirFicheiroNovosMensais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas);
+                    String[] leituraDatas;
+                    int numeroMeses=0;
+                    do {
+                        leituraDatas = leituraIntervaloDatas();
+                        if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
+                            numeroMeses = numeroMeses(leituraDatas);
+                            if (numeroMeses!=0) {
+                                int[] colunas = menuEscolherQtdDados();
+                                mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroMeses);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroNovosMensais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroMeses);
+                                }
+                            } else {
+                                System.out.println("Introduza datas que contenham pelo menos 1 mês.");
+                            }
+                        } else {
+                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } else {
-                        System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
-                }
+                    } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroMeses ==0);
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
                 break;
             case "2":
                 if (jaLeuFicheiros[1]) {
-                    String[] leituraDatas = leituraIntervaloDatas();
-                    if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
-                        int[] colunas = menuEscolherQtdDados();
-                        mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas);
-                        String diretorio = guardarOuSair();
-                        if (!diretorio.equals("")) {
-                            imprimirFicheiroTotaisMensais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas);
+                    String[] leituraDatas;
+                    int numeroMeses=0;
+                    do {
+                        leituraDatas = leituraIntervaloDatas();
+                        if (existeNoArrayDatas(datasTotal, leituraDatas)) {
+                            numeroMeses=numeroMeses(leituraDatas);
+                            if (numeroMeses!=0) {
+                                int[] colunas = menuEscolherQtdDados();
+                                mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroTotaisMensais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
+                                }
+                            } else {
+                                System.out.println("Introduza datas que contenham pelo menos 1 mês.");
+                            }
+                        } else {
+                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
-                    } else {
-                        System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
-
-                    }
+                    } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroMeses==0);
                 } else {
                     System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
                 }
@@ -552,9 +585,6 @@ public class Main {
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
         int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]),stringParaDateEConverterDatas(leituraDeDatas[1]));
 
-        if (numeroSemanas == 0) {
-            ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
-        } else {
             String cabecalho = "Semana";
 
             for (int opcao : colunas) {
@@ -583,14 +613,13 @@ public class Main {
                 int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
                 ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraSeExistir(colunas, 1, "," + novosInfetados[i]) + mostraSeExistir(colunas, 2, "," + novosHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + novosUCI[i]) + mostraSeExistir(colunas, 4, "," + novosMortes[i]));
             }
-        }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
 
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroTotalSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
+    public static void imprimirFicheiroTotalSemanais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas,int numeroSemanas) {
         String nomeFicheiro = diretorio + "/dados_totais_semanais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -602,11 +631,7 @@ public class Main {
 
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])),stringParaDateEConverterDatas((leituraDeDatas[1])));
 
-        if (numeroSemanas == 0) {
-            ficheiroEscrita.println("As datas não contêm pelo menos uma semana completa.");
-        } else {
             String cabecalho = "Semana";
 
             for (int opcao : colunas) {
@@ -634,14 +659,13 @@ public class Main {
                 int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
                 ficheiroEscrita.println(datas[indexData1+(7*i)] + " - " + datas[(indexData1+(7*i))+6] + mostraSeExistir(colunas, 1, "," + totaisInfetados[i]) + mostraSeExistir(colunas, 2, "," + totaisHospitalizacoes[i]) + mostraSeExistir(colunas, 3, "," + totaisUCI[i]) + mostraSeExistir(colunas, 4, "," + totaisMortes[i]));
             }
-        }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
 
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroNovosMensais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
+    public static void imprimirFicheiroNovosMensais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas,int numeroMeses) {
         String nomeFicheiro = diretorio + "/dados_novos_mensais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -653,13 +677,9 @@ public class Main {
 
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
-        int numeroMeses = numeroMeses(leituraDeDatas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-        if (numeroMeses == 0) {
-            System.out.println("Introduza datas que contenham pelo menos 1 mês");
-        } else {
             String cabecalho = "Meses";
 
             for (int i = 1; i <= 4; i++) {
@@ -681,7 +701,6 @@ public class Main {
                 }
             }
 
-            cabecalho += "\n";
             ficheiroEscrita.println(cabecalho);
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(primeiroDiaValido);
@@ -697,14 +716,13 @@ public class Main {
                 currIndex+=numDias;
             }
 
-        }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
 
         ficheiroEscrita.close();
     }
 
-    public static void imprimirFicheiroTotaisMensais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
+    public static void imprimirFicheiroTotaisMensais(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas,int numeroMeses) {
         String nomeFicheiro = diretorio + "/dados_totais_mensais_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
         try {
@@ -716,13 +734,9 @@ public class Main {
 
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
-        int numeroMeses = numeroMeses(leituraDeDatas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-        if (numeroMeses == 0) {
-            System.out.println("Introduza datas que contenham pelo menos 1 mês");
-        } else {
             String cabecalho = "Meses";
 
             for (int i = 1; i <= 4; i++) {
@@ -759,8 +773,6 @@ public class Main {
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
             }
-
-        }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
 
@@ -1156,6 +1168,7 @@ public class Main {
 
     public static String[] leituraIntervaloDatas() {
         String[] leituraDatas = new String[2];
+
         boolean dataEValida;
         boolean dataFinalDepoisQueInicial;
         do {
@@ -1189,6 +1202,7 @@ public class Main {
                 dataFinalDepoisQueInicial = true;
             }
         } while (!dataFinalDepoisQueInicial);
+
         return leituraDatas;
     }
 
@@ -1265,14 +1279,35 @@ public class Main {
         return calendar.getTime();
     }
 
+    public static String converterDatasEntreSi (String data ) {
+        String[] date = data.split("-");
+        String ano;
+        String mes;
+        String dia;
+
+        if (date[0].length() == 4) {
+            ano = date[0];
+            mes = date[1];
+            dia = date[2];
+            return dia + "-" + mes + "-" + ano;
+
+        } else if (date[2].length() == 4) {
+            ano = date[2];
+            mes = date[1];
+            dia = date[0];
+            return ano + "-" + mes + "-" +dia;
+        }
+        return data;
+    }
+
     public static boolean existeNoArrayDatas(String[] array, String[] datas) {
         boolean existe=false;
         boolean existe2=false;
         for (int i = 0; i < array.length; i++) {
-            if ((array[i].equals(datas[0]))) {
+            if ((array[i].equals(datas[0])) || array[i].equals(converterDatasEntreSi(datas[0]))) {
                existe=true;
             }
-            if (array[i].equals(datas[1])) {
+            if (array[i].equals(datas[1]) || array[i].equals(converterDatasEntreSi(datas[1]))) {
                 existe2=true;
             }
         }
@@ -1412,18 +1447,14 @@ public class Main {
 
     //--------------------------------------------Analise Semanal Novos Casos-----------------------------------------------------//
 
-    public static void mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas)  {
+    public static void mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroSemanas)  {
         // mostrar dados das semanas entre as datas pretendidas, ou seja, por exemplo: dados da 1 semn, dados da 2 semn, dados da 3 semn
         // 2020-04-01 2020-04-02 -> Não é uma semana completa
         // 2020-04-1 2020-04-17 -> mostra 2 semanas 1-15
         // 1 semana, subtrair acumulado do ult dia semana com 1 dia semn
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDeDatas[0]), stringParaDateEConverterDatas(leituraDeDatas[1]));
 
-        if (numeroSemanas == 0) {
-            System.out.println("Introduza datas que contenham pelo menos 1 semana");
-        } else {
             String cabecalho = "Semanas                ";
             String impressao = "%s - %s";
 
@@ -1464,7 +1495,7 @@ public class Main {
                 System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
             }
         }
-    }
+
 
     public static int[] dadosSemanaisNovos (int[] dados, int numeroSemanas,int indexData2,int indexData1) {
 
@@ -1508,8 +1539,8 @@ public class Main {
         Calendar cal1 = Calendar.getInstance();
         Calendar cal2 = Calendar.getInstance();
 
-        cal1.setTime(inicio);
-        cal2.setTime(fim);
+        cal1.setTime(verificarSemanaSegunda(inicio));
+        cal2.setTime(verificarSemanaDomingo(fim));
 
         limparHoras(cal1);
         limparHoras(cal2);
@@ -1519,11 +1550,11 @@ public class Main {
 
         int numSemanas = 0;
 
-        while (cal1.compareTo(cal2) < 0) {
+        while (cal1.getTime().before(fim)) {
             cal1.add(Calendar.WEEK_OF_YEAR, 1);
             numSemanas++;
         }
-        return numSemanas - 1;
+        return numSemanas-1;
     }
 
     public static int inicioDaSemana(Calendar calendar) {
@@ -1541,12 +1572,11 @@ public class Main {
 
     //--------------------------------------------Analise Semanal Total Casos-----------------------------------------//
 
-    public static void mostrarDadosTotaisSemanais (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas){
+    public static void mostrarDadosTotaisSemanais (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas,int numeroSemanas){
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
-        int numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas((leituraDeDatas[0])), stringParaDateEConverterDatas((leituraDeDatas[1])));
 
-        if (numeroSemanas == 0) {
+        if (numeroSemanas == -1) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
         } else {
             String cabecalho = "Semanas                ";
@@ -1606,18 +1636,14 @@ public class Main {
 
     // ------------------------------------------Analise Mensal Novos Casos-------------------------------------------------------//
 
-    public static void mostrarDadosMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas) {
+    public static void mostrarDadosMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroMeses) {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
-        int numeroMeses = numeroMeses(leituraDeDatas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-        if (numeroMeses == 0) {
-            System.out.println("Introduza datas que contenham pelo menos 1 mês");
-        } else {
             String cabecalho = "Meses                  ";
             String impressao = "%s - %s";
 
@@ -1664,7 +1690,7 @@ public class Main {
             }
 
         }
-    }
+
 
     public static int[] dadosMensaisNovos(Date primeiroDia, int[] dados, int numeroMeses, int index2, int index1) {
         int[] dadosNovos = new int[numeroMeses];
@@ -1727,16 +1753,12 @@ public class Main {
         return dataFinal.getTime();
     }
 
-    public static void mostrarDadosTotaisMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas) {
+    public static void mostrarDadosTotaisMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroMeses) {
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
-        int numeroMeses = numeroMeses(leituraDeDatas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-        if (numeroMeses == 0) {
-            System.out.println("Introduza datas que contenham pelo menos 1 mês");
-        } else {
             String cabecalho = "Meses                  ";
             String impressao = "%s - %s";
 
@@ -1782,7 +1804,7 @@ public class Main {
                 currIndex+=numDias;
             }
         }
-    }
+
 
     public static int[] dadosMensaisTotaisNovos(Date data, int[] dados, int numeroMeses, int index2, int index1) {
         int[] dadosNovos = new int[numeroMeses];
