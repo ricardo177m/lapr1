@@ -37,10 +37,10 @@ public class Main {
         // 4 - mortes
 
         // tests
-        // boolean test = true;
+        boolean test = true;
         Tests.runTestes();
         
-        // if (test) return;
+        if (test) return;
         // end of tests
 
         String[] acumuladoDatas;

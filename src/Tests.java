@@ -144,6 +144,19 @@ public class Tests {
         if (test10)
             okCount++;
 
+        // Teste 11 - último dia mes valido
+        cal1.set(2020, 2, 28, 0, 0, 0);
+        cal2.set(2021, 5, 31, 0, 0, 0);
+        Calendar expectedRes1 = Calendar.getInstance();
+        Calendar expectedRes2 = Calendar.getInstance();
+
+        Date[] test11_datas = {  };
+        boolean[] test11_expectedRes = { true, true, false, false, false };
+        boolean test11 = test_validarDatas(datas, test10_expectedRes);
+        printTestResult("validararDatas", ++testCount, test10);
+        if (test11)
+            okCount++;
+
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 
