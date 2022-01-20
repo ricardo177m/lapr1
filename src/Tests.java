@@ -82,6 +82,39 @@ public class Tests {
         return flag;
     }
 
+    private static boolean test_stringParaDateEConverterDatas(String[] datas, Date[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < datas.length; i++) {
+            if (Main.stringParaDateEConverterDatas(datas[i]).getTime() != expectedRes[i].getTime()) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_converterDatasEntreSi(String[] datas, String[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < datas.length; i++) {
+            if (datas[i].equals(expectedRes[i])) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_existeNoArrayData(String[] testDatas, String[] datas, boolean[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < datas.length; i++) {
+            if (Main.existeNoArrayData(datas, testDatas[i]) != expectedRes[i]) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
     public static void runTestes() {
         int testCount = 0;
         int okCount = 0;
@@ -133,7 +166,7 @@ public class Tests {
         if (testTrocarPosicoes)
             okCount++;
 
-        // todo Teste - matriz inversa L
+        // Teste - matriz inversa L
         double[][] testeMatrizInversas = { { 1, 4, 7 }, { 2, 5, 8 }, { 3, 6, 9 } };
         double[][] invL_expectedRes = { { 1, 0, 0 }, { -.4, .2, 0 },
                 { -.06666666666666662, -.13333333333333336, .1111111111111111 } };
@@ -142,7 +175,7 @@ public class Tests {
         if (test4)
             okCount++;
 
-        // todo Teste - matriz inversa U
+        // Teste - matriz inversa U
         double[][] invU_expectedRes = { { 1, -.8, -0.06666666666666662 }, { 0, .2, -.17777777777777778 },
                 { 0, 0, .1111111111111111 } };
         boolean test5 = test_matrizInversaU(testeMatrizInversas, invU_expectedRes);
@@ -150,7 +183,7 @@ public class Tests {
         if (test5)
             okCount++;
 
-        // todo Teste - decomposição Crout
+        // Teste - decomposição Crout
         double[][] croutL_expectedRes = { { 1, 0, 0 }, { 4, -3, 0 }, { 7, -30, 48 } };
         double[][] croutU_expectedRes = { { 1, 2, 3 }, { 0, .2, 2 }, { 0, 0, .1111111111111111 } };
         boolean testCrout = test_decomposicaoCrout(invL_expectedRes, invU_expectedRes, testeMatrizInversas,
@@ -203,6 +236,37 @@ public class Tests {
         boolean test12 = test_ultimoDiaMesValido(test12_datas, test12_expectedRes);
         printTestResult("ultimoDiaMesValido", ++testCount, test12);
         if (test12)
+            okCount++;
+
+        // Teste - string para date e converter
+        String[] testeConverterDatasStrings = { "2020-02-29", "01-12-2021" };
+        Calendar testeConverterData1 = Calendar.getInstance();
+        testeConverterData1.set(2020, 1, 29, 0, 0, 0);
+        testeConverterData1.set(Calendar.MILLISECOND, 0);
+        Calendar testeConverterData2 = Calendar.getInstance();
+        testeConverterData2.set(2021, 11, 1, 0, 0, 0);
+        testeConverterData2.set(Calendar.MILLISECOND, 0);
+
+        boolean testConverterDatas = test_stringParaDateEConverterDatas(testeConverterDatasStrings,
+                new Date[] { testeConverterData1.getTime(), testeConverterData2.getTime() });
+        printTestResult("stringParaDateEConverterDatas", ++testCount, testConverterDatas);
+        if (testConverterDatas)
+            okCount++;
+
+        // Teste - converter datas entre si
+        String[] convEntreSi_expectedRes = { "29-02-2020", "2021-12-01" };
+        boolean testConvEntreSi = test_converterDatasEntreSi(testeConverterDatasStrings, convEntreSi_expectedRes);
+        printTestResult("converterDatasEntreSi", ++testCount, testConvEntreSi);
+        if (testConvEntreSi)
+            okCount++;
+
+        // Teste - existe no array datas
+        String[] testExisteDataStrings = { "2020-02-29", "2020-01-01" };
+        boolean[] existeData_expectedRes = { true, false };
+        boolean testExisteData = test_existeNoArrayData(testExisteDataStrings, testeConverterDatasStrings,
+                existeData_expectedRes);
+        printTestResult("existeNoArrayData", ++testCount, testExisteData);
+        if (testExisteData)
             okCount++;
 
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
