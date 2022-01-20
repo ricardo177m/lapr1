@@ -68,12 +68,11 @@ public class Matrizes {
         double[][] inversa;
         double[][] temp = trocarPosicoesMatriz(matriz);
         inversa=inversaL(temp);
-        double[][] inversaU = trocarPosicoesMatriz(inversa);
-        return inversaU;
+        return trocarPosicoesMatriz(inversa);
     }
 
-    public static double[][] preencherDiagonalMatriz(double dig) {
-        double[][] matrizDiagonal = new double[3][3];
+    public static double[][] preencherDiagonalMatriz(double dig,int tamanho) {
+        double[][] matrizDiagonal = new double[tamanho][tamanho];
 
         for (int i = 0; i < matrizDiagonal.length; ++i) {
             for (int j = 0; j < matrizDiagonal[i].length; ++j) {
@@ -93,20 +92,79 @@ public class Matrizes {
             for (int p = 0; p < k; ++p) {
                 suma += matrizL[k][p] * matrizU[p][k];
             }
-            matrizL[k][k] = matriz[k][k] - suma;
+            matrizL[k][k] = matriz[k][k]-suma;
             for (int i = k + 1; i < matriz.length; ++i) {
                 double suma2 = 0;
                 for (int p = 0; p < k; ++p) {
                     suma2 += matrizL[i][p] * matrizU[p][k];
                 }
-                matrizL[i][k] = (matriz[i][k] - suma2) / matrizU[k][k];
+                if (matrizU[k][k]!=0)
+                    matrizL[i][k] = (matriz[i][k] - suma2) / matrizU[k][k];
             }
             for (int j = k + 1; j < matriz.length; ++j) {
                 double suma3 = 0;
                 for (int p = 0; p < k; ++p) {
                     suma3 += matrizL[k][p] * matrizU[p][j];
                 }
-                matrizU[k][j] = (matriz[k][j] - suma3) / matrizL[k][k];
+                if (matrizL[k][k]!=0)
+                    matrizU[k][j] = (matriz[k][j] - suma3) / matrizL[k][k];
+            }
+        }
+    }
+
+    public static void crout (double[][] matrizL, double[][] matrizU, double[][] matriz) {
+        int i, j, k;
+        double sum = 0;
+        int n =3;
+        for (i = 0; i < n; i++) {
+            matrizU[i][i] = 1;
+        }
+
+        for (j = 0; j < n; j++) {
+            for (i = j; i < n; i++) {
+                sum = 0;
+                for (k = 0; k < j; k++) {
+                    sum = sum + matrizL[i][k] * matrizU[k][j];
+                }
+                matrizL[i][j] = matriz[i][j] - sum;
+            }
+
+            for (i = j; i < n; i++) {
+                sum = 0;
+                for(k = 0; k < j; k++) {
+                    sum = sum + matrizL[j][k] * matrizU[k][i];
+                }
+                if (matrizL[j][j] != 0) {
+                    matrizU[j][i] = (matriz[j][i] - sum) / matrizL[j][j];
+                }
+            }
+        }
+    }
+
+    public static void lu (double[][] L,double[][] U, double[][] A) {
+        for (int i = 1; i < A.length; i++) {
+            L[i][0]=A[i][0];
+        }
+
+        for (int i = 1; i <A.length ; i++) {
+            U[0][i]=A[0][i]/L[0][0];
+        }
+
+        for (int j = 2; j <A.length ; j++) {
+            for (int i = 0; i < A.length; i++) {
+                double sum=0;
+                for (int k = 1; k < j-1; k++) {
+                    sum = sum +L[i][k]*U[k][j];
+                }
+                L[i][j]=A[i][j]-sum;
+            }
+            U[j][j]=1;
+            for (int i = j+1; i < A.length; i++) {
+                double sum=0;
+                for (int k = 1; k <j-1; k++) {
+                    sum = sum +L[j][k]*U[k][i];
+                }
+                U[j][i]=(A[j][i]-sum)/L[j][j];
             }
         }
     }
@@ -123,7 +181,7 @@ public class Matrizes {
     }
 
     public static double[][] subtrairMatrizes(double[][] matriz) {
-        double[][] identidade = preencherDiagonalMatriz(1);
+        double[][] identidade = preencherDiagonalMatriz(1,4);
         double[][] sub = new double[matriz.length][matriz[0].length];
         for (int i = 0; i < sub.length; i++) {
             for (int j = 0; j < sub[i].length; j++) {

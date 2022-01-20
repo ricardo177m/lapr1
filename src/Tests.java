@@ -31,8 +31,8 @@ public class Tests {
         return false;
     }
 
-    private static boolean test_preencherDiagonalMatriz(double num, double[][] expectedRes) {
-        double[][] res = Matrizes.preencherDiagonalMatriz(num);
+    private static boolean test_preencherDiagonalMatriz(double num,int tamanho, double[][] expectedRes) {
+        double[][] res = Matrizes.preencherDiagonalMatriz(num,tamanho);
         return Matrizes.compararMatrizes(res, expectedRes);
     }
 
@@ -84,7 +84,7 @@ public class Tests {
 
         // Teste 6 - preencher diagonal matriz
         double[][] matrizTest6_expectedRes = { { 3, 0, 0 }, { 0, 3, 0 }, { 0, 0, 3 } };
-        boolean test6 = test_preencherDiagonalMatriz(3, matrizTest6_expectedRes);
+        boolean test6 = test_preencherDiagonalMatriz(3,3, matrizTest6_expectedRes);
         System.out.println("[6] preencherDiagonalMatriz: "
                 + (test6 ? "OK" : "NOT OK"));
         if (test6) count++;
