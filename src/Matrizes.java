@@ -44,20 +44,32 @@ public class Matrizes {
         return matriz;
     }
 
-    // todo
-    public static double[][] calcularInversaL(double[][] matriz) {
-        double[][] inversa = new double[3][3];
+    public static double[][] inversaL(double[][] matriz) {
+        double[][] inversa = new double[matriz.length][matriz.length];
 
         // diagonal da inversa
-        for (int i = inversa.length - 1; i >= 0; i--) {
-            inversa[i][i] = 1 / matriz[i][i];
+        for (int i = inversa.length-1; i >= 0; i--) {
+            inversa[i][i] = 1/matriz[i][i];
         }
-        for (int i = 0; i < inversa.length; i++) {
-            for (int j = 0; j < inversa[i].length - 1; j++) {
-                inversa[i][j + 1] = -(matriz[i][j + 1] * inversa[i][i]) / matriz[i + 1][j + 1];
+
+        for (int i = 1; i < matriz.length ; i++) {
+            for (int j = 0; j <= (i-1) ; j++) {
+                double sum=0;
+                for (int k = 0; k <  (i-j); k++) {
+                    sum += matriz[i][j+k]*inversa[j+k][j];
+                }
+                inversa[i][j]=(-sum)/matriz[i][i];
             }
         }
         return inversa;
+    }
+
+    public static double[][] inversaU(double[][] matriz) {
+        double[][] inversa;
+        double[][] temp = trocarPosicoesMatriz(matriz);
+        inversa=inversaL(temp);
+        double[][] inversaU = trocarPosicoesMatriz(inversa);
+        return inversaU;
     }
 
     public static double[][] preencherDiagonalMatriz(double dig) {
@@ -99,9 +111,20 @@ public class Matrizes {
         }
     }
 
-    public static double[][] subtrairIdentidadeComMatriz(double[][] matriz) {
+    public static double[][] trocarPosicoesMatriz(double[][] matriz) {
+        for (int i = 0; i < matriz.length ; i++) {
+            for (int j = i+1; j <matriz[i].length; j++) {
+                double temp = matriz[i][j];
+                matriz[i][j] = matriz[j][i];
+                matriz[j][i]=temp;
+            }
+        }
+        return matriz;
+    }
+
+    public static double[][] subtrairMatrizes(double[][] matriz) {
+        double[][] identidade = preencherDiagonalMatriz(1);
         double[][] sub = new double[matriz.length][matriz[0].length];
-        double[][] identidade = Matrizes.preencherDiagonalMatriz(1);
         for (int i = 0; i < sub.length; i++) {
             for (int j = 0; j < sub[i].length; j++) {
                 sub[i][j] = identidade[i][j] - matriz[i][j];
