@@ -122,7 +122,7 @@ public class Matrizes {
         return matriz;
     }
 
-    public static double[][] subtrairMatrizes(double[][] matriz) {
+    public static double[][] subtrairIdentidadeComMatriz(double[][] matriz) {
         double[][] identidade = preencherDiagonalMatriz(1);
         double[][] sub = new double[matriz.length][matriz[0].length];
         for (int i = 0; i < sub.length; i++) {

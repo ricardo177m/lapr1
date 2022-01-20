@@ -2210,7 +2210,7 @@ public class Main {
         System.out.printf("%19.1f | %15.1f | %21.1f | %15.1f | %12.1f\n", previsao[0][0], previsao[1][0], previsao[2][0], previsao[3][0], previsao[4][0]);
 
         double[][] matrizSemObi = matrizSemObito(matriz);
-        double[][] subtracaoIdenMatriz = Matrizes.subtrairMatrizes(matrizSemObi);
+        double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
         System.out.println("\n------------subtracao----------------------------------\n");
         for (int i = 0; i < subtracaoIdenMatriz.length; i++) {
             for (int j = 0; j < subtracaoIdenMatriz[i].length; j++) {
