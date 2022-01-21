@@ -1,3 +1,6 @@
+package MSPGrupo04;
+
+
 /**
  * Projeto LAPR1 - Aplicação para a empresa MSP
  * 2021-2022 LEI, Turma 1DI
@@ -25,7 +28,6 @@ public class Main {
     static final int NUMERO_ESTADOS_DIFERENTES = 5;
 
     public static void main(String[] args) throws FileNotFoundException {
-
         // Matriz de dados:
         // abcDados[tipoDeDado][indiceDado]
         //
@@ -43,46 +45,60 @@ public class Main {
         // if (test) return;
         // end of tests
 
-        String[] acumuladoDatas;
-        int[][] acumuladoDados;
+        String[] acumuladoDatas = new String[0];
+        int[][] acumuladoDados = new int[0][0];
 
-        String[] totalDatas;
-        int[][] totalDados;
+        String[] totalDatas = new String[0];
+        int[][] totalDados = new int[0][0];
 
-        boolean[] jaleuFicheiros = new boolean[NUMERO_FICHEIRO_DIFERENTE];
-        System.out.println("\n\n                      Bem-vindo!                                  ");
-        System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
-        String opcaoTipoFicheiro = selecionarTipoFicheiro();
-        String caminhoFicheiro = selecionarFicheiro();
-        switch (opcaoTipoFicheiro) {
-            case "1":
-                int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = lerDados(caminhoFicheiro, numLinhas);
-                jaleuFicheiros[0] = true;
-                System.out.println("Ficheiro lido com sucesso!");
-                pressioneEnterParaCont();
-                opcaoTipoFicheiro = menu();
-                executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
-                break;
-            case "2":
-                numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = lerDados(caminhoFicheiro, numLinhas);
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                jaleuFicheiros[1] = true;
-                System.out.println("Ficheiro lido com sucesso!");
-                pressioneEnterParaCont();
-                opcaoTipoFicheiro = menu();
-                executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
-                break;
-        }
+        boolean[] jaLeuFicheiros = new boolean[NUMERO_FICHEIRO_DIFERENTE];
+        
+        entrada(args, acumuladoDatas, acumuladoDados, totalDatas, totalDados, jaLeuFicheiros);
     }
 
 //-------------------------------------------Funcionamento Aplicação----------------------------------------------//
+
+    public static void entrada(String[] args, String[] acumuladoDatas, int[][] acumuladoDados, String[] totalDatas, int[][] totalDados, boolean[] jaLeuFicheiros) throws FileNotFoundException {
+        /**
+         * check se há argumentos
+         * se houver, avançar menu
+         */
+
+        if (args.length != 0) {
+            System.out.println("argumentos");
+        } else {
+            System.out.println("\n\n                      Bem-vindo!                                  ");
+            System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
+            String opcaoTipoFicheiro = selecionarTipoFicheiro();
+            String caminhoFicheiro = selecionarFicheiro();
+            switch (opcaoTipoFicheiro) {
+                case "1":
+                    int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    totalDados = lerDados(caminhoFicheiro, numLinhas);
+                    jaLeuFicheiros[0] = true;
+                    System.out.println("Ficheiro lido com sucesso!");
+                    pressioneEnterParaCont();
+                    opcaoTipoFicheiro = menu();
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    break;
+                case "2":
+                    numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    totalDados = lerDados(caminhoFicheiro, numLinhas);
+                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+                    jaLeuFicheiros[1] = true;
+                    System.out.println("Ficheiro lido com sucesso!");
+                    pressioneEnterParaCont();
+                    opcaoTipoFicheiro = menu();
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    break;
+            }
+        }
+    }
 
     public static String[] lerDatas(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
