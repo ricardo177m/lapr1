@@ -1,3 +1,5 @@
+package MSPGrupo04;
+
 public class Matrizes {
     public static boolean compararMatrizes(double[][] matriz1, double[][] matriz2) {
         boolean flag = true;

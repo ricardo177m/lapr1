@@ -1,3 +1,6 @@
+package MSPGrupo04;
+
+
 /**
  * Projeto LAPR1 - Aplicação para a empresa MSP
  * 2021-2022 LEI, Turma 1DI
@@ -25,7 +28,6 @@ public class Main {
     static final int NUMERO_ESTADOS_DIFERENTES = 5;
 
     public static void main(String[] args) throws FileNotFoundException {
-
         // Matriz de dados:
         // abcDados[tipoDeDado][indiceDado]
         //
@@ -43,46 +45,86 @@ public class Main {
         // if (test) return;
         // end of tests
 
-        String[] acumuladoDatas;
-        int[][] acumuladoDados;
+        String[] acumuladoDatas = new String[0];
+        int[][] acumuladoDados = new int[0][0];
 
-        String[] totalDatas;
-        int[][] totalDados;
+        String[] totalDatas = new String[0];
+        int[][] totalDados = new int[0][0];
 
-        boolean[] jaleuFicheiros = new boolean[NUMERO_FICHEIRO_DIFERENTE];
-        System.out.println("\n\n                      Bem-vindo!                                  ");
-        System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
-        String opcaoTipoFicheiro = selecionarTipoFicheiro();
-        String caminhoFicheiro = selecionarFicheiro();
-        switch (opcaoTipoFicheiro) {
-            case "1":
-                int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = lerDados(caminhoFicheiro, numLinhas);
-                jaleuFicheiros[0] = true;
-                System.out.println("Ficheiro lido com sucesso!");
-                pressioneEnterParaCont();
-                opcaoTipoFicheiro = menu();
-                executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
-                break;
-            case "2":
-                numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                totalDados = lerDados(caminhoFicheiro, numLinhas);
-                acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                jaleuFicheiros[1] = true;
-                System.out.println("Ficheiro lido com sucesso!");
-                pressioneEnterParaCont();
-                opcaoTipoFicheiro = menu();
-                executaOpcao(opcaoTipoFicheiro, jaleuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
-                break;
-        }
+        boolean[] jaLeuFicheiros = new boolean[NUMERO_FICHEIRO_DIFERENTE];
+        
+        entrada(args, acumuladoDatas, acumuladoDados, totalDatas, totalDados, jaLeuFicheiros);
     }
 
 //-------------------------------------------Funcionamento Aplicação----------------------------------------------//
+
+    public static void entrada(String[] args, String[] acumuladoDatas, int[][] acumuladoDados, String[] totalDatas, int[][] totalDados, boolean[] jaLeuFicheiros) throws FileNotFoundException {
+        /**
+         * check se há argumentos
+         * se houver, avançar menu
+         */
+
+        /**
+         * -r   : resolução temporal (0 - diária; 1 - semanal; 2 - mensal)
+         * -di  : data de início para visualização dos dados
+         * -df  : data de fim para visualização dos dados
+         * -di1 : data início para 1º intervalo de comparação de períodos
+         * -df1 : data fim para 1º intervalo de comparação de períodos
+         * -di2 : data início para 2º intervalo de comparação de períodos
+         * -df2 : data fim para 2º intervalo de comparação de períodos
+         * -T   : data para o qual o user pretende obter previsões para o total de casos
+         * 
+         * o cálculo do número médio de dias até à morte é sempre executado e não requer que seja especificado qualquer parâmetro
+         * caso não pretenda fazer previsões, não é definido o parâmetro -T, o caminho do ficheiro de dados totais nem a matriz de transição
+         * caso pretenda apenas previsões, o parâmetro -r, os parâmetros de intervalos de datas e o caminho do ficheiro de acumulados não serão definidos
+         * 
+         * sintaxe 1 (tudo):
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         * 
+         * sintaxe 2 (sem previsões):
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA acumuladosCasos.csv ficheiro_saida.txt
+         * 
+         * sintaxe 3 (apenas previsões):
+         * java -jar app.jar -T DD-MM-AAAA totalCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         */
+
+        if (args.length != 0) {
+
+
+
+        } else {
+            System.out.println("\n\n                      Bem-vindo!                                  ");
+            System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
+            String opcaoTipoFicheiro = selecionarTipoFicheiro();
+            String caminhoFicheiro = selecionarFicheiro();
+            switch (opcaoTipoFicheiro) {
+                case "1":
+                    int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    totalDados = lerDados(caminhoFicheiro, numLinhas);
+                    jaLeuFicheiros[0] = true;
+                    System.out.println("Ficheiro lido com sucesso!");
+                    pressioneEnterParaCont();
+                    opcaoTipoFicheiro = menu();
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    break;
+                case "2":
+                    numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    totalDados = lerDados(caminhoFicheiro, numLinhas);
+                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
+                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+                    jaLeuFicheiros[1] = true;
+                    System.out.println("Ficheiro lido com sucesso!");
+                    pressioneEnterParaCont();
+                    opcaoTipoFicheiro = menu();
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    break;
+            }
+        }
+    }
 
     public static String[] lerDatas(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(caminhoFicheiro));
