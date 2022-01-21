@@ -78,13 +78,19 @@ public class Main {
          * caso não pretenda fazer previsões, não é definido o parâmetro -T, o caminho do ficheiro de dados totais nem a matriz de transição
          * caso pretenda apenas previsões, o parâmetro -r, os parâmetros de intervalos de datas e o caminho do ficheiro de acumulados não serão definidos
          * 
-         * sintaxe:
-         * java -jar programa.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         * sintaxe 1 (tudo):
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         * 
+         * sintaxe 2 (sem previsões):
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA acumuladosCasos.csv ficheiro_saida.txt
+         * 
+         * sintaxe 3 (apenas previsões):
+         * java -jar app.jar -T DD-MM-AAAA totalCasos.csv matrizTransicao.txt ficheiro_saida.txt
          */
 
         if (args.length != 0) {
 
-            
+
 
         } else {
             System.out.println("\n\n                      Bem-vindo!                                  ");
