@@ -64,8 +64,28 @@ public class Main {
          * se houver, avançar menu
          */
 
+        /**
+         * -r   : resolução temporal (0 - diária; 1 - semanal; 2 - mensal)
+         * -di  : data de início para visualização dos dados
+         * -df  : data de fim para visualização dos dados
+         * -di1 : data início para 1º intervalo de comparação de períodos
+         * -df1 : data fim para 1º intervalo de comparação de períodos
+         * -di2 : data início para 2º intervalo de comparação de períodos
+         * -df2 : data fim para 2º intervalo de comparação de períodos
+         * -T   : data para o qual o user pretende obter previsões para o total de casos
+         * 
+         * o cálculo do número médio de dias até à morte é sempre executado e não requer que seja especificado qualquer parâmetro
+         * caso não pretenda fazer previsões, não é definido o parâmetro -T, o caminho do ficheiro de dados totais nem a matriz de transição
+         * caso pretenda apenas previsões, o parâmetro -r, os parâmetros de intervalos de datas e o caminho do ficheiro de acumulados não serão definidos
+         * 
+         * sintaxe:
+         * java -jar programa.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         */
+
         if (args.length != 0) {
-            System.out.println("argumentos");
+
+            
+
         } else {
             System.out.println("\n\n                      Bem-vindo!                                  ");
             System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
