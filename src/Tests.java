@@ -45,7 +45,7 @@ public class Tests {
     }
 
     private static boolean test_decomposicaoCrout(double[][] matrizL, double[][] matrizU, double[][] matriz,
-            double[][] croutL_expectedRes, double[][] croutU_expectedRes) {
+                                                  double[][] croutL_expectedRes, double[][] croutU_expectedRes) {
         Matrizes.decomposicaoCrout(matrizL, matrizU, matriz);
         return Matrizes.compararMatrizes(matrizL, croutL_expectedRes)
                 && Matrizes.compararMatrizes(matrizU, croutU_expectedRes);
@@ -114,6 +114,51 @@ public class Tests {
         }
         return flag;
     }
+
+    private static boolean test_verificarSemanaSegunda(Date[] data, Date[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < data.length; i++) {
+            if (Main.verificarSemanaSegunda(data[i]).getTime() != expectedRes[i].getTime()) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_verificarSemanaDomingo(Date[] data, Date[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < data.length; i++) {
+            if (Main.verificarSemanaDomingo(data[i]).getTime() != expectedRes[i].getTime()) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_mediaComparativa (int[] dadosTest,double expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < dadosTest.length; i++) {
+            if(Main.mediaComparativa(dadosTest) != expectedRes){
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_desvioPadrao (int[] dadosTest,double media,double expectedRes) {
+        boolean flag=true;
+        for (int i = 0; i < dadosTest.length ; i++) {
+            if(Main.desvioPadrao(dadosTest,media) != expectedRes) {
+                flag=false;
+                break;
+            }
+        }
+        return flag;
+    }
+
 
     public static void runTestes() {
         int testCount = 0;
@@ -269,6 +314,57 @@ public class Tests {
         if (testExisteData)
             okCount++;
 
+        //Teste - primeira segunda valida
+        cal1.set(2020,Calendar.DECEMBER,25,0,0,0);
+        cal1.set(Calendar.MILLISECOND,0);
+        cal2.set(2021,Calendar.JANUARY,1,0,0,0);
+        Calendar expectedRes3 = Calendar.getInstance();
+        expectedRes3.set(2020,Calendar.DECEMBER,28,0,0,0);
+        expectedRes3.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes4 = Calendar.getInstance();
+        expectedRes4.set(2021,Calendar.JANUARY,4,0,0,0);
+        expectedRes4.set(Calendar.MILLISECOND,0);
+        Date[] segundas = {cal1.getTime(),cal2.getTime()};
+        Date[] testSegundas = {expectedRes3.getTime(),expectedRes4.getTime()};
+        boolean testSegunda = test_verificarSemanaSegunda(segundas,testSegundas);
+        printTestResult("verificarSemanaSegunda",++testCount,testSegunda);
+        if (testSegunda)
+            okCount++;
+
+        //Teste - primeiro domingo valido
+        cal1.set(2020,Calendar.DECEMBER,14,0,0,0);
+        cal1.set(Calendar.MILLISECOND,0);
+        cal2.set(2020,Calendar.FEBRUARY,20,0,0,0);
+        cal2.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes5 = Calendar.getInstance();
+        expectedRes5.set(2020,Calendar.DECEMBER,13,0,0,0);
+        expectedRes5.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes6 = Calendar.getInstance();
+        expectedRes6.set(2020,Calendar.FEBRUARY,16,0,0,0);
+        expectedRes6.set(Calendar.MILLISECOND,0);
+        Date[] domingos = {cal1.getTime(),cal2.getTime()};
+        Date[] testDomingos ={expectedRes5.getTime(),expectedRes6.getTime()};
+        boolean testDomingo = test_verificarSemanaDomingo(domingos,testDomingos);
+        printTestResult("verificarSemanaDomingo",++testCount, testDomingo);
+        if (testDomingo)
+            okCount++;
+
+        //Teste - media Comparativa
+        int[] dadosMediaTest = {1,2,3,4,4,3,2,1,11};
+        double expectedMedia = 31.0/9.0;
+        boolean testMedia = test_mediaComparativa(dadosMediaTest,expectedMedia);
+        printTestResult("mediaComparativa",++testCount,testMedia);
+        if(testMedia)
+            okCount++;
+
+        //Teste - desvio Padrão
+        int[] dadosTestDesvio = {78,72,66};
+        double mediaTest = 72;
+        double expectedDesvio = 4.8989794855663;
+        boolean testDesvio =test_desvioPadrao(dadosTestDesvio,mediaTest,expectedDesvio);
+        printTestResult("desvioPadrao",++testCount,testDesvio);
+        if (testDesvio)
+            okCount++;
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 

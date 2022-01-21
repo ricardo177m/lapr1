@@ -2151,7 +2151,6 @@ public class Main {
 
     public static double desvioPadrao(int[] dados, double media) {
         double desvio = 0;
-
         for (int i = 0; i < dados.length; i++) {
             desvio = desvio + Math.pow(dados[i] - media, 2);
         }
