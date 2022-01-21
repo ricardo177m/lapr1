@@ -14,7 +14,7 @@ rmdir /s/q "%outPath%"
 mkdir "%outPath%"
 
 echo   Compiling .java files...
-javac %srcPath%/*.java -d %outPath%
+javac -encoding UTF8 %srcPath%/*.java -d %outPath%
 
 echo   Creating .jar file...
 cd %outPath%
