@@ -245,7 +245,7 @@ public class Main {
                                 imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
                             }
                         } else {
-                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
+                            System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
                     } while (!existeNoArrayDatas(datasAcumulados,leituraDatas));
                 } else {
@@ -265,7 +265,7 @@ public class Main {
                                 imprimirFicheiroTotalDiarios(diretorio, leituraDatas, datasTotais, dadosTotais, colunas);
                             }
                         } else {
-                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
+                            System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
                     } while (!existeNoArrayDatas(datasTotais,leituraDatas));
                 } else {
@@ -300,7 +300,7 @@ public class Main {
                                 System.out.println("Introduza datas que contenham pelo menos 1 semana.");
                             }
                         } else {
-                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
+                            System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
                     } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroSemanas == -1 || numeroSemanas ==0);
                 } else {
@@ -327,7 +327,7 @@ public class Main {
                                 System.out.println("Introduza datas que contenham pelo menos 1 semana.");
                             }
                         } else {
-                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
+                            System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
                     } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas ==-1 || numeroSemanas==0);
                 } else {
@@ -361,7 +361,7 @@ public class Main {
                                 System.out.println("Introduza datas que contenham pelo menos 1 mês.");
                             }
                         } else {
-                            System.out.println("ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
+                            System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).");
                         }
                     } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroMeses ==0);
                 } else {
@@ -1054,13 +1054,12 @@ public class Main {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
-            System.out.println("\n| --------------------------------------------- |");
+            System.out.println("\n| ---------------------------------------------- |");
             System.out.println("| Por favor, escolha uma opção:                  |");
             System.out.println("| 1. Visualizar previsão para 1 dia              |");
             System.out.println("| 2. Visualizar previsão dias até morte          |");
-            System.out.println("| ---------------------------------------------- | ");
-            System.out.println();
-            System.out.print("> ");
+            System.out.println("| ---------------------------------------------- |");
+            System.out.print("\n> ");
 
             selecaoUtilizador = kbScanner.nextLine();
 
@@ -1078,12 +1077,14 @@ public class Main {
 
         do {
             todosInteiros = true;
-            System.out.println("\nIntroduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3)");
-            System.out.println("1. Infetados");
-            System.out.println("2. Hospitalizações");
-            System.out.println("3. UCI");
-            System.out.println("4. Mortes");
-            System.out.println("0. Todos");
+            System.out.println("\n| ------------------------------------------------------------------------------------- |");
+            System.out.println("| Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3) |");
+            System.out.println("| 1. Infetados                                                                          |");
+            System.out.println("| 2. Hospitalizações                                                                    |");
+            System.out.println("| 3. UCI                                                                                |");
+            System.out.println("| 4. Mortes                                                                             |");
+            System.out.println("| 0. Todos                                                                              |");
+            System.out.println("| ------------------------------------------------------------------------------------- |");
             System.out.print("\n> ");
             String tiposDados = kbScanner.nextLine();
 
