@@ -190,7 +190,7 @@ public class Matrizes {
         }
         return sub;
     }
-    public static void crout1 (double[][] A, double[][] L, double[][] U) {
+    public static void crout1(double[][] A, double[][] L, double[][] U) {
         for (int i = 0; i < A[0].length; i++) {
             L[i][0] = A[i][0];
         }
@@ -207,21 +207,13 @@ public class Matrizes {
                 if (c > l) {
                     for (int i = 0; i < l; i++) {
                         produto = U[i][c] * L[l][i];
-                        if (i == 0) {
-                            soma = produto;
-                        } else {
-                            soma -= produto;
-                        }
+                        soma += produto;
                     }
                     U[l][c] = (A[l][c] - soma) / L[l][l];
                 } else {
                     for (int i = 0; i < l; i++) {
                         produto = U[i][c] * L[l][i];
-                        if (i == 0) {
-                            soma = produto;
-                        } else {
-                            soma -= produto;
-                        }
+                        soma += produto;
                     }
                     L[l][c] = A[l][c] - soma;
                 }

@@ -360,7 +360,7 @@ public class Tests {
         //Teste - desvio Padrão
         int[] dadosTestDesvio = {78,72,66};
         double mediaTest = 72;
-        double expectedDesvio = 4.8989794855663;
+        double expectedDesvio =Math.sqrt(24);
         boolean testDesvio =test_desvioPadrao(dadosTestDesvio,mediaTest,expectedDesvio);
         printTestResult("desvioPadrao",++testCount,testDesvio);
         if (testDesvio)
