@@ -39,8 +39,8 @@ public class Tests {
         return Matrizes.compararMatrizes(result, expectedRes);
     }
 
-    private static boolean test_preencherDiagonalMatriz(double num, double[][] expectedRes) {
-        double[][] res = Matrizes.preencherDiagonalMatriz(num);
+    private static boolean test_preencherDiagonalMatriz(double num, int tamanho, double[][] expectedRes) {
+        double[][] res = Matrizes.preencherDiagonalMatriz(num, tamanho);
         return Matrizes.compararMatrizes(res, expectedRes);
     }
 
@@ -153,7 +153,7 @@ public class Tests {
 
         // Teste - preencher diagonal matriz
         double[][] matrizTest6_expectedRes = { { 3, 0, 0 }, { 0, 3, 0 }, { 0, 0, 3 } };
-        boolean test6 = test_preencherDiagonalMatriz(3, matrizTest6_expectedRes);
+        boolean test6 = test_preencherDiagonalMatriz(3, 3, matrizTest6_expectedRes);
         printTestResult("preencherDiagonalMatriz", ++testCount, test6);
         if (test6)
             okCount++;
