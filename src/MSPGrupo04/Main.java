@@ -95,7 +95,7 @@ public class Main {
         } else {
             System.out.println("\n\n                      Bem-vindo!                                  ");
             System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
-            String opcaoTipoFicheiro = selecionarTipoFicheiro();
+            String opcaoTipoFicheiro = selecionarTipoFicheiroInicial();
             String caminhoFicheiro = selecionarFicheiro();
             switch (opcaoTipoFicheiro) {
                 case "1":
@@ -204,53 +204,68 @@ public class Main {
                 case "1":
                     // Ler ficheiros
                     String opcaoTipoFicheiro = selecionarTipoFicheiro();
-                    String caminhoFicheiro = selecionarFicheiro();
-                    int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+                    String caminhoFicheiro;
+                    int numLinhas;
                     switch (opcaoTipoFicheiro) {
                         case "1":
+                            caminhoFicheiro = selecionarFicheiro();
+                            numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
                             datasAcumulados = new String[numLinhas];
                             datasAcumulados = lerDatas(caminhoFicheiro, numLinhas);
                             acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                             acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[0] = true;
+                            System.out.println("Ficheiro lido com sucesso!");
                             break;
                         case "2":
+                            caminhoFicheiro = selecionarFicheiro();
+                            numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
                             datasTotais = new String[numLinhas];
                             datasTotais = lerDatas(caminhoFicheiro, numLinhas);
                             dadosTotais = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                             dadosTotais = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[1] = true;
+                            System.out.println("Ficheiro lido com sucesso!");
+                            break;
+                        case "3":
                             break;
                     }
-                    System.out.println("Ficheiro lido com sucesso!");
                     pressioneEnterParaCont();
                     opcao = menu();
                     break;
                 case "2":
                     // Ver dados diarios
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
-                    verDadosDiarios(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
+                    if (!opcaoTipoFicheiro.equals("3")) {
+                        verDadosDiarios(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    }
+                        pressioneEnterParaCont();
+                        opcao = menu();
                     break;
                 case "3":
                     // Ver dados Semanais
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
-                    verDadosSemanais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
+                    if (!opcaoTipoFicheiro.equals("3")) {
+                        verDadosSemanais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    }
+                        pressioneEnterParaCont();
+                        opcao = menu();
                     break;
                 case "4":
                     // Ver dados mensais
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
-                    verDadosMensais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    if (!opcaoTipoFicheiro.equals("3")) {
+                        verDadosMensais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    }
                     pressioneEnterParaCont();
                     opcao = menu();
                     break;
                 case "5":
                     // Ver analise comparativa
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
-                    verDadosComparativos(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    if (!opcaoTipoFicheiro.equals("3")) {
+                        verDadosComparativos(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
+                    }
                     pressioneEnterParaCont();
                     opcao = menu();
                     break;
@@ -506,54 +521,60 @@ public class Main {
         int indexData1;
         if (jaLeuFicheiro[1]) {
             String matrizFicheiro = selecionarMatriz();
-            double[][] matriz = lerDadosMatriz(matrizFicheiro,NUMERO_ESTADOS_DIFERENTES);
+            double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
             String opcao = selecionarTipoPrevisao();
-            if (opcao.equals("1")) {
-                System.out.print("Introduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
-                String dataEscolhe = kbScanner.nextLine();
-                Date dataEscolhida = stringParaDateEConverterDatas(dataEscolhe);
-                indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
-                String data;
-                if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
-                    if ((indexData1==0)) {
-                        data = datas[0];
-                        int[] colunas = menuEscolherQtdDadosPrevisao();
-                        mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
-                        String diretorio = guardarOuSair();
-                        if(!diretorio.equals("")){
-                            imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
+            switch (opcao) {
+                case "1":
+                    System.out.print("\nIntroduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
+                    String dataEscolhe = kbScanner.nextLine();
+                    Date dataEscolhida = stringParaDateEConverterDatas(dataEscolhe);
+                    indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
+                    String data;
+                    if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
+                        if ((indexData1 == 0)) {
+                            data = datas[0];
+                            int[] colunas = menuEscolherQtdDadosPrevisao();
+                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                            String diretorio = guardarOuSair();
+                            if (!diretorio.equals("")) {
+                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                            }
                         }
-                    }
-                    if (existeNoArrayData(datas, dataEscolhe)) {
-                        data = escolherDiaAnterior(indexData1, datas);
-                        int[] colunas = menuEscolherQtdDadosPrevisao();
-                        mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
-                        String diretorio = guardarOuSair();
-                        if(!diretorio.equals("")){
-                            imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
-                        }
-                    } else if (!verificarDiaExiste(datas, dataEscolhe) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
-                        Date data1 = stringParaDateEConverterDatas(dataEscolhe);
-                        data = escolherDiaMaisProximo(data1, datas);
-                        int[] colunas = menuEscolherQtdDadosPrevisao();
-                        mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
-                        String diretorio=guardarOuSair();
-                        if(!diretorio.equals("")){
-                            imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
+                        if (existeNoArrayData(datas, dataEscolhe)) {
+                            data = escolherDiaAnterior(indexData1, datas);
+                            int[] colunas = menuEscolherQtdDadosPrevisao();
+                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                            String diretorio = guardarOuSair();
+                            if (!diretorio.equals("")) {
+                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                            }
+                        } else if (!verificarDiaExiste(datas, dataEscolhe) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
+                            Date data1 = stringParaDateEConverterDatas(dataEscolhe);
+                            data = escolherDiaMaisProximo(data1, datas);
+                            int[] colunas = menuEscolherQtdDadosPrevisao();
+                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                            String diretorio = guardarOuSair();
+                            if (!diretorio.equals("")) {
+                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                            }
+                        } else {
+                            System.out.println("\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).");
                         }
                     } else {
-                        System.out.println("\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).");
+                        System.out.println("\nERRO: Data inválida.");
                     }
-                } else {
-                    System.out.println("ERRO: Data inválida.");
-                }
-            } else {
-               previsaoDiasAteMorte(matriz);
+                    break;
+                case "2":
+                    previsaoDiasAteMorte(matriz);
+                    break;
+                case "3":
+                    break;
             }
-            } else {
+        } else{
                 System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
             }
         }
+
 
 
     // todo teste
@@ -1110,7 +1131,7 @@ public class Main {
     }
 
     //-------------------------------------------Menus da Aplicação---------------------------------------------------//
-    public static String selecionarTipoFicheiro() {
+    public static String selecionarTipoFicheiroInicial() {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
@@ -1124,11 +1145,35 @@ public class Main {
 
             selecaoUtilizador = kbScanner.nextLine();
 
-            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2")) {
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3")) {
                 System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
                 pressioneEnterParaCont();
             }
-        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2"));
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3"));
+
+        return selecaoUtilizador;
+    }
+
+    public static String selecionarTipoFicheiro() {
+        String selecaoUtilizador;
+        do {
+            // Apresentação do menu
+            System.out.println("| ------------------------------- |");
+            System.out.println("| Por favor, escolha uma opção:   |");
+            System.out.println("| 1. Carregar dados acumulados    |");
+            System.out.println("| 2. Carregar dados totais        |");
+            System.out.println("| 3. Voltar atrás                 |");
+            System.out.println("| ------------------------------- |");
+            System.out.println();
+            System.out.print("> ");
+
+            selecaoUtilizador = kbScanner.nextLine();
+
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3")) {
+                System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
+                pressioneEnterParaCont();
+            }
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3"));
 
         return selecaoUtilizador;
     }
@@ -1141,16 +1186,17 @@ public class Main {
             System.out.println("| Por favor, escolha uma opção: |");
             System.out.println("| 1. Visualizar novos casos     |");
             System.out.println("| 2. Visualizar casos totais    |");
+            System.out.println("| 3. Voltar atrás               |");
             System.out.println("| ----------------------------- | ");
             System.out.println();
             System.out.print("> ");
 
             selecaoUtilizador = kbScanner.nextLine();
 
-            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2")) {
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3")) {
                 System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
             }
-        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2"));
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3"));
 
         return selecaoUtilizador;
     }
@@ -1163,15 +1209,16 @@ public class Main {
             System.out.println("| Por favor, escolha uma opção:                  |");
             System.out.println("| 1. Visualizar previsão para 1 dia              |");
             System.out.println("| 2. Visualizar previsão dias até morte          |");
+            System.out.println("| 3. Voltar atrás                                |");
             System.out.println("| ---------------------------------------------- |");
             System.out.print("\n> ");
 
             selecaoUtilizador = kbScanner.nextLine();
 
-            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2")) {
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3")) {
                 System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
             }
-        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2"));
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3"));
 
         return selecaoUtilizador;
     }
@@ -1544,20 +1591,20 @@ public class Main {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados";
-                            impressao += " | %15s";
+                            cabecalho += " | Novos Infetados |";
+                            impressao += " | %15s |";
                             break;
                         case 2:
-                            cabecalho += " | Novas Hospitalizações";
-                            impressao += " | %21.10s";
+                            cabecalho += "  Novas Hospitalizações |";
+                            impressao += "  %21.10s |";
                             break;
                         case 3:
-                            cabecalho += " | Novos UCI";
-                            impressao += " | %9.10s";
+                            cabecalho += "  Novos UCI |";
+                            impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += " | Novas Mortes";
-                            impressao += " | %12.10s";
+                            cabecalho += "  Novas Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -1614,20 +1661,20 @@ public class Main {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | Total Infetados";
-                        impressao += " | %15s";
+                        cabecalho += " | Total Infetados |";
+                        impressao += " | %15s |";
                         break;
                     case 2:
-                        cabecalho += " | Total Hospitalizações";
-                        impressao += " | %21.10s";
+                        cabecalho += "  Total Hospitalizações |";
+                        impressao += "  %21.10s |";
                         break;
                     case 3:
-                        cabecalho += " | Total UCI";
-                        impressao += " | %9.10s";
+                        cabecalho += "  Total UCI |";
+                        impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += " | Total Mortes";
-                        impressao += " | %12.10s";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
                         break;
                 }
             } else {
@@ -1666,20 +1713,20 @@ public class Main {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados";
-                            impressao += " | %15s";
+                            cabecalho += " | Novos Infetados |";
+                            impressao += " | %15s |";
                             break;
                         case 2:
-                            cabecalho += " | Novas Hospitalizações";
-                            impressao += " | %21.10s";
+                            cabecalho += "  Novas Hospitalizações |";
+                            impressao += "  %21.10s |";
                             break;
                         case 3:
-                            cabecalho += " | Novos UCI";
-                            impressao += " | %9.10s";
+                            cabecalho += "  Novos UCI |";
+                            impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += " | Novas Mortes";
-                            impressao += " | %12.10s";
+                            cabecalho += "  Novas Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -1790,20 +1837,20 @@ public class Main {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Total Infetados";
-                            impressao += " | %15s";
+                            cabecalho += " | Total Infetados |";
+                            impressao += " | %15s |";
                             break;
                         case 2:
-                            cabecalho += " | Total Hospitalizações";
-                            impressao += " | %21.10s";
+                            cabecalho += "  Total Hospitalizações |";
+                            impressao += "  %21.10s |";
                             break;
                         case 3:
-                            cabecalho += " | Total UCI";
-                            impressao += " | %9.10s";
+                            cabecalho += "  Total UCI |";
+                            impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += " | Total Mortes";
-                            impressao += " | %12.10s";
+                            cabecalho += "  Total Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -1857,20 +1904,20 @@ public class Main {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados";
-                            impressao += " | %15s";
+                            cabecalho += " | Novos Infetados |";
+                            impressao += " | %15s |";
                             break;
                         case 2:
-                            cabecalho += " | Novas Hospitalizações";
-                            impressao += " | %21.10s";
+                            cabecalho += "  Novas Hospitalizações |";
+                            impressao += "  %21.10s |";
                             break;
                         case 3:
-                            cabecalho += " | Novos UCI";
-                            impressao += " | %9.10s";
+                            cabecalho += "  Novos UCI |";
+                            impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += " | Novass Mortes";
-                            impressao += " | %12.10s";
+                            cabecalho += "  Novas Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -1890,9 +1937,10 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
+                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
+                numDias=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
             }
 
         }
@@ -1971,20 +2019,20 @@ public class Main {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Total Infetados";
-                            impressao += " | %15s";
+                            cabecalho += " | Total Infetados |";
+                            impressao += " | %15s |";
                             break;
                         case 2:
-                            cabecalho += " | Total Hospitalizações";
-                            impressao += " | %21.10s";
+                            cabecalho += "  Total Hospitalizações |";
+                            impressao += "  %21.10s |";
                             break;
                         case 3:
-                            cabecalho += " | Total UCI";
-                            impressao += " | %9.10s";
+                            cabecalho += "  Total UCI |";
+                            impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += " | Total Mortes";
-                            impressao += " | %12.10s";
+                            cabecalho += "  Total Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -2004,9 +2052,10 @@ public class Main {
                 int[] novosHospitalizacoes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
                 int[] novosUCI = dadosMensaisTotaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
                 int[] novosMortes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
+                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
                 calendar.add(Calendar.MONTH,1);
                 currIndex+=numDias;
+                numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
             }
         }
 
@@ -2070,27 +2119,27 @@ public class Main {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | %5s Novos Infetados";
-                        impressao += " | %21s";
-                        impressaoMediaEDesvio += " | %21.4f";
+                        cabecalho += " | %5s Novos Infetados |";
+                        impressao += " | %21s |";
+                        impressaoMediaEDesvio += " | %21.4f |";
                         tracinhos += "------------------------";
                         break;
                     case 2:
-                        cabecalho += " | Novas Hospitalizações";
-                        impressao += " | %21.10s";
-                        impressaoMediaEDesvio += " | %21.4f";
+                        cabecalho += "  Novas Hospitalizações |";
+                        impressao += "  %21.10s |";
+                        impressaoMediaEDesvio += "  %21.4f |";
                         tracinhos += "------------------------";
                         break;
                     case 3:
-                        cabecalho += " | Novos UCI";
-                        impressao += " | %9.10s";
-                        impressaoMediaEDesvio += " | %9.4f";
+                        cabecalho += "  Novos UCI |";
+                        impressao += "  %9.10s |";
+                        impressaoMediaEDesvio += "  %9.4f |";
                         tracinhos += "------------";
                         break;
                     case 4:
-                        cabecalho += " | Novas Mortes";
-                        impressao += " | %12.10s";
-                        impressaoMediaEDesvio += " | %12.4f";
+                        cabecalho += "  Novas Mortes |";
+                        impressao += "  %12.10s |";
+                        impressaoMediaEDesvio += "  %12.4f |";
                         tracinhos += "-------------";
                         break;
                 }
@@ -2225,28 +2274,28 @@ public class Main {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | %5s Total Infetados";
-                        impressao += " | %21s";
-                        impressaoMediaEDesvio += " | %21.4f";
+                        cabecalho += " | %5s Total Infetados |";
+                        impressao += " | %21s |";
+                        impressaoMediaEDesvio += " | %21.4f |";
                         tracinhos += "------------------------";
                         break;
                     case 2:
-                        cabecalho += " | Total Hospitalizações";
-                        impressao += " | %21.10s";
-                        impressaoMediaEDesvio += " | %21.4f";
+                        cabecalho += "  Total Hospitalizações |";
+                        impressao += "  %21.10s |";
+                        impressaoMediaEDesvio += "  %21.4f |";
                         tracinhos += "------------------------";
                         break;
                     case 3:
-                        cabecalho += " | Total UCI";
-                        impressao += " | %9.10s";
-                        impressaoMediaEDesvio += " | %9.4f";
+                        cabecalho += "  Total UCI |";
+                        impressao += "  %9.10s |";
+                        impressaoMediaEDesvio += "  %9.4f |";
                         tracinhos += "------------";
                         break;
                     case 4:
-                        cabecalho += " | Total Mortes";
-                        impressao += " | %12.10s";
-                        impressaoMediaEDesvio += " | %12.4f";
-                        tracinhos += "-------------";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
+                        impressaoMediaEDesvio += "  %12.4f |";
+                        tracinhos += "---------------";
                         break;
                 }
             } else {
@@ -2405,24 +2454,24 @@ public class Main {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | Total Não Infetados";
-                        impressao += " | %19.1f";
+                        cabecalho += " | Total Não Infetados |";
+                        impressao += " | %19.1f |";
                         break;
                     case 2:
-                        cabecalho += " | Total Infetados";
-                        impressao += " | %15.1f";
+                        cabecalho += "  Total Infetados |";
+                        impressao += "  %15.1f |";
                         break;
                     case 3:
-                        cabecalho += " | Total Hospitalizações";
-                        impressao += " | %21.1f";
+                        cabecalho += "  Total Hospitalizações |";
+                        impressao += "  %21.1f |";
                         break;
                     case 4:
-                        cabecalho += " |    Total UCI   ";
-                        impressao += " | %15.1f";
+                        cabecalho += "     Total UCI   |";
+                        impressao += "  %15.1f |";
                         break;
                     case 5:
-                        cabecalho += " | Total Mortes";
-                        impressao += " | %12.1f";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.1f |";
                         break;
                 }
             } else {
@@ -2462,8 +2511,8 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        System.out.print("\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n");
-        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+        System.out.print("\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI   |\n");
+        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f |\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
     }
 
