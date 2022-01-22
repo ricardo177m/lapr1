@@ -515,7 +515,7 @@ public class Main {
                 indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
                 String data;
                 if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
-                    if ((indexData1 - 1) == -1) {
+                    if ((indexData1==0)) {
                         data = datas[0];
                         int[] colunas = menuEscolherQtdDadosPrevisao();
                         mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
@@ -642,12 +642,12 @@ public class Main {
 
         ficheiroEscrita.println(cabecalho);
 
-        for (int i = 0; i <= indexData2-indexData1; i++) {
-            int[] dadosInfetados = dados[1];
-            int[] dadosHospitalizados = dados[2];
-            int[] dadosUCI = dados[3];
-            int[] dadosMortes = dados[4];
-            ficheiroEscrita.println(datas[i+indexData1] + mostraSeExistir(colunas, 1, "," + dadosInfetados[i]) + mostraSeExistir(colunas, 2, "," + dadosHospitalizados[i]) + mostraSeExistir(colunas, 3, "," + dadosUCI[i]) + mostraSeExistir(colunas, 4, "," + dadosMortes[i]));
+        for (int i = indexData1; i <= indexData2; i++) {
+            int dadosInfetados = dados[1][i];
+            int dadosHospitalizados = dados[2][i];
+            int dadosUCI = dados[3][i];
+            int dadosMortes = dados[4][i];
+            ficheiroEscrita.println(datas[i] + mostraSeExistir(colunas, 1, "," + dadosInfetados) + mostraSeExistir(colunas, 2, "," + dadosHospitalizados) + mostraSeExistir(colunas, 3, "," + dadosUCI) + mostraSeExistir(colunas, 4, "," + dadosMortes));
         }
 
         System.out.println("Dados gravados no ficheiro com sucesso.");
@@ -1643,12 +1643,12 @@ public class Main {
         impressao += "\n";
 
         System.out.printf(cabecalho, "" );
-        for (int i = 0; i <= indexData2-indexData1; i++) {
-            int[] dadosInfetados = dados[1];
-            int[] dadosHospitalizados = dados[2];
-            int[] dadosUCI = dados[3];
-            int[] dadosMortes = dados[4];
-            System.out.printf(impressao, datas[i+indexData1], mostraSeExistir(colunas, 1, dadosInfetados[i]),mostraSeExistir(colunas, 2, dadosHospitalizados[i]),mostraSeExistir(colunas, 3, dadosUCI[i]),mostraSeExistir(colunas, 4, dadosMortes[i]));
+        for (int i = indexData1; i <= indexData2; i++) {
+            int dadosInfetados = dados[1][i];
+            int dadosHospitalizados = dados[2][i];
+            int dadosUCI = dados[3][i];
+            int dadosMortes = dados[4][i];
+            System.out.printf(impressao, datas[i], mostraSeExistir(colunas, 1, dadosInfetados),mostraSeExistir(colunas, 2, dadosHospitalizados),mostraSeExistir(colunas, 3, dadosUCI),mostraSeExistir(colunas, 4, dadosMortes));
         }
     }
 
@@ -1834,9 +1834,11 @@ public class Main {
         int[] dadosNovos = new int[numeroSemanas];
 
         for (int j = 0; j < numeroSemanas; j++) {
-            if (indexData1 <= indexData2) {
-                dadosNovos[j] = dados[indexData1] + dados[indexData1 + 1];
-                indexData1 = indexData1 + 1;
+            for (int i = 0; i < 7; i++) {
+                if (indexData1 <= indexData2) {
+                    dadosNovos[j] = dadosNovos[j] + dados[indexData1];
+                    indexData1 = indexData1 + 1;
+                }
             }
         }
         return dadosNovos;
@@ -2442,30 +2444,23 @@ public class Main {
     public static void previsaoDiasAteMorte(double[][] matriz) {
         double[][] matrizSemObi = matrizSemObito(matriz);
         double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
+
         double[][] matrizL = new double[matrizSemObi.length][matrizSemObi.length];
         double[][] matrizU = new double[matrizSemObi.length][matrizSemObi.length];
-        for (int i = 0; i < subtracaoIdenMatriz.length ; i++) {
-            for (int j = 0; j < subtracaoIdenMatriz[i].length; j++) {
-                System.out.println(subtracaoIdenMatriz[i][j] + " ");
-            }
-            System.out.println();
-        }
-        double[][] test = {{1,2,1,2},{1,2,2,2},{1,1,1,2},{1,2,3,1}};
-        double[][] test2= {{1,2,2},{1,1,2},{1,0,1}};
-        double[][] test3= {{2,3,1,5},{6,13,5,19},{2,19,10,23},{4,10,11,31}};
         matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
-        double[][] vetor = {{1,0,0,0},{1,0,0,0},{1,0,0,0},{1,0,0,0}};
-        Matrizes.crout1(subtracaoIdenMatriz, matrizL, matrizU);
+
+        double[][] vetor =  {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+
+        Matrizes.crout(subtracaoIdenMatriz,matrizL,matrizU);
 
         double[][] inversaL = Matrizes.inversaL(matrizL);
         double[][] inversaU = Matrizes.inversaU(matrizU);
 
-        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaL,inversaU);
+        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
+        double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(matrizInversa,vetor);
-
-        System.out.print("\nNumero de dias até cada estado chegar a morte |  Não Infetados  |  Infetados  |  Hospitalizações  |   UCI\n");
-        System.out.printf("%16.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[1][0], previsaoDiasMorte[2][0], previsaoDiasMorte[3][0]);
+        System.out.print("\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n");
+        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
     }
 
