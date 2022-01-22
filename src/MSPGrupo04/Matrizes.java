@@ -31,19 +31,17 @@ public class Matrizes {
         double[][] temp = new double[matriz.length][matriz[0].length];
         double sum;
 
-        for (int i = 0; i < matriz.length; i++) {
+        for (int i = 0; i < matriz1.length; i++) {
             temp[i] = new double[matriz[i].length];
             for (int j = 0; j < matriz1[i].length; j++) {
                 sum = 0;
-                for (int l = 0; l < matriz.length; l++) {
+                for (int l = 0; l < matriz1.length; l++) {
                     sum += matriz[i][l] * matriz1[l][j];
                 }
                 temp[i][j] = sum;
             }
         }
-        matriz = temp;
-
-        return matriz;
+        return temp;
     }
 
     public static double[][] inversaL(double[][] matriz) {
@@ -68,9 +66,12 @@ public class Matrizes {
 
     public static double[][] inversaU(double[][] matriz) {
         double[][] inversa;
-        double[][] temp = trocarPosicoesMatriz(matriz);
+        double[][] matriz2 = new double[matriz.length][matriz.length];
+        System.arraycopy(matriz, 0, matriz2, 0, matriz.length);
+        double[][] temp = trocarPosicoesMatriz(matriz2);
         inversa = inversaL(temp);
-        return trocarPosicoesMatriz(inversa);
+        trocarPosicoesMatriz(inversa);
+        return inversa;
     }
 
     public static double[][] preencherDiagonalMatriz(double dig, int tamanho) {
@@ -114,63 +115,6 @@ public class Matrizes {
         }
     }
 
-    public static void crout(double[][] matrizL, double[][] matrizU, double[][] matriz) {
-        int i, j, k;
-        double sum = 0;
-        int n = 3;
-        for (i = 0; i < n; i++) {
-            matrizU[i][i] = 1;
-        }
-
-        for (j = 0; j < n; j++) {
-            for (i = j; i < n; i++) {
-                sum = 0;
-                for (k = 0; k < j; k++) {
-                    sum = sum + matrizL[i][k] * matrizU[k][j];
-                }
-                matrizL[i][j] = matriz[i][j] - sum;
-            }
-
-            for (i = j; i < n; i++) {
-                sum = 0;
-                for (k = 0; k < j; k++) {
-                    sum = sum + matrizL[j][k] * matrizU[k][i];
-                }
-                if (matrizL[j][j] != 0) {
-                    matrizU[j][i] = (matriz[j][i] - sum) / matrizL[j][j];
-                }
-            }
-        }
-    }
-
-    public static void calcularDecomposicaoLu(double[][] L, double[][] U, double[][] A) {
-        for (int i = 1; i < A.length; i++) {
-            L[i][0] = A[i][0];
-        }
-
-        for (int i = 1; i < A.length; i++) {
-            U[0][i] = A[0][i] / L[0][0];
-        }
-
-        for (int j = 2; j < A.length; j++) {
-            for (int i = 0; i < A.length; i++) {
-                double sum = 0;
-                for (int k = 1; k < j - 1; k++) {
-                    sum = sum + L[i][k] * U[k][j];
-                }
-                L[i][j] = A[i][j] - sum;
-            }
-            U[j][j] = 1;
-            for (int i = j + 1; i < A.length; i++) {
-                double sum = 0;
-                for (int k = 1; k < j - 1; k++) {
-                    sum = sum + L[j][k] * U[k][i];
-                }
-                U[j][i] = (A[j][i] - sum) / L[j][j];
-            }
-        }
-    }
-
     public static double[][] trocarPosicoesMatriz(double[][] matriz) {
         for (int i = 0; i < matriz.length; i++) {
             for (int j = i + 1; j < matriz[i].length; j++) {
@@ -192,7 +136,8 @@ public class Matrizes {
         }
         return sub;
     }
-    public static void crout1(double[][] A, double[][] L, double[][] U) {
+
+    public static void crout(double[][] A, double[][] L, double[][] U) {
         for (int i = 0; i < A[0].length; i++) {
             L[i][0] = A[i][0];
         }
@@ -204,7 +149,7 @@ public class Matrizes {
         double produto = 1;
 
         for (int l = 1; l < A[0].length; l++) {
-            for (int c = 1; c < A[0].length; c++) {
+            for (int c = 1; c < A.length; c++) {
                 soma = 0;
                 if (c > l) {
                     for (int i = 0; i < l; i++) {
@@ -213,7 +158,7 @@ public class Matrizes {
                     }
                     U[l][c] = (A[l][c] - soma) / L[l][l];
                 } else {
-                    for (int i = 0; i < l; i++) {
+                    for (int i = 0; i < c; i++) {
                         produto = U[i][c] * L[l][i];
                         soma += produto;
                     }
