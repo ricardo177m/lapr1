@@ -159,6 +159,49 @@ public class Tests {
         return flag;
     }
 
+    private  static  boolean test_numeroMeses (String[] datas,int expectedDatas) {
+        boolean flag=true;
+        for (int i = 0; i < datas.length; i++) {
+            if (Main.numeroMeses(datas) != expectedDatas) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_IndexData (Date data,String[] datas,int expectedRes) {
+        boolean flag=true;
+        if (Main.indexData(data,datas) != expectedRes){
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_diaAnterior (int index,String[] datas,String expectedRes) {
+        boolean flag=true;
+        if (!Main.escolherDiaAnterior(index,datas).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_diaMaisProximo (Date data,String[] datas,String expectedRes) {
+        boolean flag=true;
+        if (!Main.escolherDiaMaisProximo(data,datas).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_diaExiste (String data,String[] datas,boolean expectedRes) {
+        boolean flag=true;
+        if (Main.verificarDiaExiste(datas,data) != expectedRes) {
+            flag=false;
+        }
+        return flag ;
+    }
+
 
     public static void runTestes() {
         int testCount = 0;
@@ -360,11 +403,57 @@ public class Tests {
         //Teste - desvio Padrão
         int[] dadosTestDesvio = {78,72,66};
         double mediaTest = 72;
-        double expectedDesvio =Math.sqrt(24);
+        double expectedDesvio =Math.sqrt(72/dadosTestDesvio.length);
         boolean testDesvio =test_desvioPadrao(dadosTestDesvio,mediaTest,expectedDesvio);
         printTestResult("desvioPadrao",++testCount,testDesvio);
         if (testDesvio)
             okCount++;
+
+        //Teste - calcular numero meses
+        String[] datasMeses = new String[2];
+        datasMeses[0]="2020-11-01";
+        datasMeses[1]="2021-02-01";
+        int expectedMeses = 3;
+        boolean testMeses = test_numeroMeses(datasMeses,expectedMeses);
+        printTestResult("numeroMeses",++testCount,testMeses);
+        if(testMeses)
+            okCount++;
+
+        //Teste - index Data
+        String data = "2020-10-14";
+        Date date = Main.stringParaDateEConverterDatas(data);
+        String[] datasIndex = {"2020-10-10","2020-10-11","2020-10-12","2020-10-13","2020-10-14","2020-10-15"};
+        int expectedIndex = 4;
+        boolean testIndex=test_IndexData(date,datasIndex,expectedIndex);
+        printTestResult("indexData",++testCount,testIndex);
+        if(testIndex)
+            okCount++;
+
+        //Teste - escolher Dia anterior
+        int index = Main.indexData(date,datasIndex);
+        String expectedDiaAnterior = "2020-10-13";
+        boolean testDiaAnterior = test_diaAnterior(index,datasIndex, expectedDiaAnterior);
+        printTestResult("escolherDiaAnterior",++testCount,testDiaAnterior);
+        if(testDiaAnterior)
+            okCount++;
+
+        //Teste - dia mais proximo
+        String data1= "2020-11-01";
+        Date date1 = Main.stringParaDateEConverterDatas(data1);
+        String expectedDiaMaisProximo = "2020-10-15";
+        boolean testDiaProximo = test_diaMaisProximo(date1,datasIndex,expectedDiaMaisProximo);
+        printTestResult("diaMaisProximo",++testCount,testDiaProximo);
+        if (testDiaProximo)
+            okCount++;
+
+        //Teste - dia existe
+        String data2="2021-11-01";
+        boolean expectedResult = false;
+        boolean testDiaExiste=test_diaExiste(data2,datasIndex,expectedResult);
+        printTestResult("diaExiste",++testCount,testDiaExiste);
+        if(testDiaExiste)
+            okCount++;
+
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 

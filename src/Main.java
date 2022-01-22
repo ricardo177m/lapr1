@@ -1374,10 +1374,9 @@ public class Main {
 
     public static int indexData(Date leituraDeDatas, String[] datas) {
 
-        int len = datas.length;
         int i = 0;
 
-        while (i < len) {
+        while (i < datas.length) {
             if (leituraDeDatas.equals(stringParaDateEConverterDatas(datas[i]))) {
                 return i;
             } else {
