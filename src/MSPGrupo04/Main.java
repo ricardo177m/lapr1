@@ -1145,11 +1145,11 @@ public class Main {
 
             selecaoUtilizador = kbScanner.nextLine();
 
-            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3")) {
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2")) {
                 System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
                 pressioneEnterParaCont();
             }
-        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("3"));
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2"));
 
         return selecaoUtilizador;
     }
