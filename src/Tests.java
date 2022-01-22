@@ -194,7 +194,7 @@ public class Tests {
         return flag;
     }
 
-    private static boolean test_diaExiste (String data,String[] datas,boolean expectedRes) {
+    private static boolean test_verificarDiaExiste (String data,String[] datas,boolean expectedRes) {
         boolean flag=true;
         if (Main.verificarDiaExiste(datas,data) != expectedRes) {
             flag=false;
@@ -202,6 +202,47 @@ public class Tests {
         return flag ;
     }
 
+    private static boolean test_existeNoArrayDatas (String[] array,String[] datas, boolean expectedRes) {
+        boolean flag=true;
+        if (Main.existeNoArrayDatas(array,datas) != expectedRes){
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_existeNoArray (int[] array, int valor,boolean expectedRes) {
+        boolean flag=true;
+        for (int i = 0; i < array.length; i++) {
+            if (Main.existeNoArray(array,valor) !=  expectedRes) {
+                flag=false;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirString (int[] array, int valor, String texto, String expectedRes) {
+        boolean flag=true;
+        if (!Main.mostraSeExistir(array,valor,texto).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirInt (int[] array, int opcao, int valor, String expectedRes ) {
+        boolean flag =true;
+        if (!Main.mostraSeExistir(array,opcao,valor).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirDouble (int[] array, int opcao, double valor, String expectedRes ) {
+        boolean flag =true;
+        if (!Main.mostraSeExistir(array,opcao,valor).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
 
     public static void runTestes() {
         int testCount = 0;
@@ -449,11 +490,54 @@ public class Tests {
         //Teste - dia existe
         String data2="2021-11-01";
         boolean expectedResult = false;
-        boolean testDiaExiste=test_diaExiste(data2,datasIndex,expectedResult);
+        boolean testDiaExiste=test_verificarDiaExiste(data2,datasIndex,expectedResult);
         printTestResult("diaExiste",++testCount,testDiaExiste);
         if(testDiaExiste)
             okCount++;
 
+        //Teste - existe no array datas
+        String[] datasArray = {"2020-11-10","2020-10-12"};
+        boolean expectedResult1 = false;
+        boolean testExisteDatas = test_existeNoArrayDatas(datasIndex,datasArray,expectedResult1);
+        printTestResult("existeNoArrayDatas",++testCount,testExisteDatas);
+        if(testExisteDatas)
+            okCount++;
+
+        //Teste - existe no array
+        int[] array = {1,10,100,22,0,11,39,51};
+        int valor = 39;
+        boolean expectedResArray = true;
+        boolean testExisteNoArray = test_existeNoArray(array,valor,expectedResArray);
+        printTestResult("existeNoArray",++testCount,testExisteNoArray);
+        if (testExisteNoArray)
+            okCount++;
+
+        //Teste - mostra se existir com valor string
+        int valor1=101;
+        String texto = "String";
+        String expectedString = "";
+        boolean testMostraSeExistirString = test_mostraSeExistirString(array,valor1,texto,expectedString);
+        printTestResult("mostraSeExistirString",++testCount,testMostraSeExistirString);
+        if (testMostraSeExistirString)
+            okCount++;
+
+        //Teste - mostra se existir com valor int
+        int valor2 = 10;
+        int opcao = 1;
+        String expectedInt = String.valueOf(valor2);
+        boolean testMostraSeExistirInt = test_mostraSeExistirInt(array,opcao,valor2,expectedInt);
+        printTestResult("mostraSeExistirInt",++testCount,testMostraSeExistirInt);
+        if (testMostraSeExistirInt)
+            okCount++;
+
+        //Teste - mostra se existir com valor double
+        int opcao2=2;
+        double valor3=100;
+        String expectedDouble = "";
+        boolean testMostraSeExistirDouble=test_mostraSeExistirDouble(array,opcao2,valor3,expectedDouble);
+        printTestResult("mostraSeExistirDouble",++testCount,testMostraSeExistirDouble);
+        if (testMostraSeExistirDouble)
+            okCount++;
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 
