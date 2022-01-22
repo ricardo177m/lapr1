@@ -1416,10 +1416,9 @@ public class Main {
 
     public static int indexData(Date leituraDeDatas, String[] datas) {
 
-        int len = datas.length;
         int i = 0;
 
-        while (i < len) {
+        while (i < datas.length) {
             if (leituraDeDatas.equals(stringParaDateEConverterDatas(datas[i]))) {
                 return i;
             } else {
@@ -2193,7 +2192,6 @@ public class Main {
 
     public static double desvioPadrao(int[] dados, double media) {
         double desvio = 0;
-
         for (int i = 0; i < dados.length; i++) {
             desvio = desvio + Math.pow(dados[i] - media, 2);
         }
@@ -2455,7 +2453,7 @@ public class Main {
         double[][] test3= {{2,3,1,5},{6,13,5,19},{2,19,10,23},{4,10,11,31}};
         matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
         double[][] vetor = {{1,0,0,0},{1,0,0,0},{1,0,0,0},{1,0,0,0}};
-        Matrizes.crout1(subtracaoIdenMatriz, matrizL, matrizU);
+        Matrizes.crout1(test3, matrizL, matrizU);
 
         double[][] inversaL = Matrizes.inversaL(matrizL);
         double[][] inversaU = Matrizes.inversaU(matrizU);

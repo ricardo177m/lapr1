@@ -47,7 +47,7 @@ public class Tests {
     }
 
     private static boolean test_decomposicaoCrout(double[][] matrizL, double[][] matrizU, double[][] matriz,
-            double[][] croutL_expectedRes, double[][] croutU_expectedRes) {
+                                                  double[][] croutL_expectedRes, double[][] croutU_expectedRes) {
         Matrizes.decomposicaoCrout(matrizL, matrizU, matriz);
         return Matrizes.compararMatrizes(matrizL, croutL_expectedRes)
                 && Matrizes.compararMatrizes(matrizU, croutU_expectedRes);
@@ -113,6 +113,135 @@ public class Tests {
                 flag = false;
                 break;
             }
+        }
+        return flag;
+    }
+
+    private static boolean test_verificarSemanaSegunda(Date[] data, Date[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < data.length; i++) {
+            if (Main.verificarSemanaSegunda(data[i]).getTime() != expectedRes[i].getTime()) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_verificarSemanaDomingo(Date[] data, Date[] expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < data.length; i++) {
+            if (Main.verificarSemanaDomingo(data[i]).getTime() != expectedRes[i].getTime()) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_mediaComparativa (int[] dadosTest,double expectedRes) {
+        boolean flag = true;
+        for (int i = 0; i < dadosTest.length; i++) {
+            if(Main.mediaComparativa(dadosTest) != expectedRes){
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_desvioPadrao (int[] dadosTest,double media,double expectedRes) {
+        boolean flag=true;
+        for (int i = 0; i < dadosTest.length ; i++) {
+            if(Main.desvioPadrao(dadosTest,media) != expectedRes) {
+                flag=false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private  static  boolean test_numeroMeses (String[] datas,int expectedDatas) {
+        boolean flag=true;
+        for (int i = 0; i < datas.length; i++) {
+            if (Main.numeroMeses(datas) != expectedDatas) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_IndexData (Date data,String[] datas,int expectedRes) {
+        boolean flag=true;
+        if (Main.indexData(data,datas) != expectedRes){
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_diaAnterior (int index,String[] datas,String expectedRes) {
+        boolean flag=true;
+        if (!Main.escolherDiaAnterior(index,datas).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_diaMaisProximo (Date data,String[] datas,String expectedRes) {
+        boolean flag=true;
+        if (!Main.escolherDiaMaisProximo(data,datas).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_verificarDiaExiste (String data,String[] datas,boolean expectedRes) {
+        boolean flag=true;
+        if (Main.verificarDiaExiste(datas,data) != expectedRes) {
+            flag=false;
+        }
+        return flag ;
+    }
+
+    private static boolean test_existeNoArrayDatas (String[] array,String[] datas, boolean expectedRes) {
+        boolean flag=true;
+        if (Main.existeNoArrayDatas(array,datas) != expectedRes){
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_existeNoArray (int[] array, int valor,boolean expectedRes) {
+        boolean flag=true;
+        for (int i = 0; i < array.length; i++) {
+            if (Main.existeNoArray(array,valor) !=  expectedRes) {
+                flag=false;
+            }
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirString (int[] array, int valor, String texto, String expectedRes) {
+        boolean flag=true;
+        if (!Main.mostraSeExistir(array,valor,texto).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirInt (int[] array, int opcao, int valor, String expectedRes ) {
+        boolean flag =true;
+        if (!Main.mostraSeExistir(array,opcao,valor).equals(expectedRes)) {
+            flag=false;
+        }
+        return flag;
+    }
+
+    private static boolean test_mostraSeExistirDouble (int[] array, int opcao, double valor, String expectedRes ) {
+        boolean flag =true;
+        if (!Main.mostraSeExistir(array,opcao,valor).equals(expectedRes)) {
+            flag=false;
         }
         return flag;
     }
@@ -271,6 +400,146 @@ public class Tests {
         if (testExisteData)
             okCount++;
 
+        //Teste - primeira segunda valida
+        cal1.set(2020,Calendar.DECEMBER,25,0,0,0);
+        cal1.set(Calendar.MILLISECOND,0);
+        cal2.set(2021,Calendar.JANUARY,1,0,0,0);
+        Calendar expectedRes3 = Calendar.getInstance();
+        expectedRes3.set(2020,Calendar.DECEMBER,28,0,0,0);
+        expectedRes3.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes4 = Calendar.getInstance();
+        expectedRes4.set(2021,Calendar.JANUARY,4,0,0,0);
+        expectedRes4.set(Calendar.MILLISECOND,0);
+        Date[] segundas = {cal1.getTime(),cal2.getTime()};
+        Date[] testSegundas = {expectedRes3.getTime(),expectedRes4.getTime()};
+        boolean testSegunda = test_verificarSemanaSegunda(segundas,testSegundas);
+        printTestResult("verificarSemanaSegunda",++testCount,testSegunda);
+        if (testSegunda)
+            okCount++;
+
+        //Teste - primeiro domingo valido
+        cal1.set(2020,Calendar.DECEMBER,14,0,0,0);
+        cal1.set(Calendar.MILLISECOND,0);
+        cal2.set(2020,Calendar.FEBRUARY,20,0,0,0);
+        cal2.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes5 = Calendar.getInstance();
+        expectedRes5.set(2020,Calendar.DECEMBER,13,0,0,0);
+        expectedRes5.set(Calendar.MILLISECOND,0);
+        Calendar expectedRes6 = Calendar.getInstance();
+        expectedRes6.set(2020,Calendar.FEBRUARY,16,0,0,0);
+        expectedRes6.set(Calendar.MILLISECOND,0);
+        Date[] domingos = {cal1.getTime(),cal2.getTime()};
+        Date[] testDomingos ={expectedRes5.getTime(),expectedRes6.getTime()};
+        boolean testDomingo = test_verificarSemanaDomingo(domingos,testDomingos);
+        printTestResult("verificarSemanaDomingo",++testCount, testDomingo);
+        if (testDomingo)
+            okCount++;
+
+        //Teste - media Comparativa
+        int[] dadosMediaTest = {1,2,3,4,4,3,2,1,11};
+        double expectedMedia = 31.0/9.0;
+        boolean testMedia = test_mediaComparativa(dadosMediaTest,expectedMedia);
+        printTestResult("mediaComparativa",++testCount,testMedia);
+        if(testMedia)
+            okCount++;
+
+        //Teste - desvio Padrão
+        int[] dadosTestDesvio = {78,72,66};
+        double mediaTest = 72;
+        double expectedDesvio =Math.sqrt(72/dadosTestDesvio.length);
+        boolean testDesvio =test_desvioPadrao(dadosTestDesvio,mediaTest,expectedDesvio);
+        printTestResult("desvioPadrao",++testCount,testDesvio);
+        if (testDesvio)
+            okCount++;
+
+        //Teste - calcular numero meses
+        String[] datasMeses = new String[2];
+        datasMeses[0]="2020-11-01";
+        datasMeses[1]="2021-02-01";
+        int expectedMeses = 3;
+        boolean testMeses = test_numeroMeses(datasMeses,expectedMeses);
+        printTestResult("numeroMeses",++testCount,testMeses);
+        if(testMeses)
+            okCount++;
+
+        //Teste - index Data
+        String data = "2020-10-14";
+        Date date = Main.stringParaDateEConverterDatas(data);
+        String[] datasIndex = {"2020-10-10","2020-10-11","2020-10-12","2020-10-13","2020-10-14","2020-10-15"};
+        int expectedIndex = 4;
+        boolean testIndex=test_IndexData(date,datasIndex,expectedIndex);
+        printTestResult("indexData",++testCount,testIndex);
+        if(testIndex)
+            okCount++;
+
+        //Teste - escolher Dia anterior
+        int index = Main.indexData(date,datasIndex);
+        String expectedDiaAnterior = "2020-10-13";
+        boolean testDiaAnterior = test_diaAnterior(index,datasIndex, expectedDiaAnterior);
+        printTestResult("escolherDiaAnterior",++testCount,testDiaAnterior);
+        if(testDiaAnterior)
+            okCount++;
+
+        //Teste - dia mais proximo
+        String data1= "2020-11-01";
+        Date date1 = Main.stringParaDateEConverterDatas(data1);
+        String expectedDiaMaisProximo = "2020-10-15";
+        boolean testDiaProximo = test_diaMaisProximo(date1,datasIndex,expectedDiaMaisProximo);
+        printTestResult("diaMaisProximo",++testCount,testDiaProximo);
+        if (testDiaProximo)
+            okCount++;
+
+        //Teste - dia existe
+        String data2="2021-11-01";
+        boolean expectedResult = false;
+        boolean testDiaExiste=test_verificarDiaExiste(data2,datasIndex,expectedResult);
+        printTestResult("diaExiste",++testCount,testDiaExiste);
+        if(testDiaExiste)
+            okCount++;
+
+        //Teste - existe no array datas
+        String[] datasArray = {"2020-11-10","2020-10-12"};
+        boolean expectedResult1 = false;
+        boolean testExisteDatas = test_existeNoArrayDatas(datasIndex,datasArray,expectedResult1);
+        printTestResult("existeNoArrayDatas",++testCount,testExisteDatas);
+        if(testExisteDatas)
+            okCount++;
+
+        //Teste - existe no array
+        int[] array = {1,10,100,22,0,11,39,51};
+        int valor = 39;
+        boolean expectedResArray = true;
+        boolean testExisteNoArray = test_existeNoArray(array,valor,expectedResArray);
+        printTestResult("existeNoArray",++testCount,testExisteNoArray);
+        if (testExisteNoArray)
+            okCount++;
+
+        //Teste - mostra se existir com valor string
+        int valor1=101;
+        String texto = "String";
+        String expectedString = "";
+        boolean testMostraSeExistirString = test_mostraSeExistirString(array,valor1,texto,expectedString);
+        printTestResult("mostraSeExistirString",++testCount,testMostraSeExistirString);
+        if (testMostraSeExistirString)
+            okCount++;
+
+        //Teste - mostra se existir com valor int
+        int valor2 = 10;
+        int opcao = 1;
+        String expectedInt = String.valueOf(valor2);
+        boolean testMostraSeExistirInt = test_mostraSeExistirInt(array,opcao,valor2,expectedInt);
+        printTestResult("mostraSeExistirInt",++testCount,testMostraSeExistirInt);
+        if (testMostraSeExistirInt)
+            okCount++;
+
+        //Teste - mostra se existir com valor double
+        int opcao2=2;
+        double valor3=100;
+        String expectedDouble = "";
+        boolean testMostraSeExistirDouble=test_mostraSeExistirDouble(array,opcao2,valor3,expectedDouble);
+        printTestResult("mostraSeExistirDouble",++testCount,testMostraSeExistirDouble);
+        if (testMostraSeExistirDouble)
+            okCount++;
         System.out.printf("\n%s/%s testes efetuados com sucesso.\n", okCount, testCount);
     }
 
