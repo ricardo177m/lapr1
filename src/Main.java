@@ -1020,7 +1020,7 @@ public class Main {
     }
 
     public static void imprimirFicheiroPrevisaoDia(String diretorio,String dataEscolhida,String data,int[] colunas,double[][] matriz,int[][] dados,String[] datas) {
-        String nomeFicheiro = diretorio + "/dados_totais_previsao_dia" + data + ".csv";
+        String nomeFicheiro = diretorio + "/dados_previstos_para_" + data + ".csv";
         PrintWriter ficheiroEscrita;
         try {
             ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
@@ -1039,35 +1039,31 @@ public class Main {
         double[][] matrizElevada = Matrizes.elevarMatriz(matriz, diasDiferenca);
         double[][] previsao = Matrizes.multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
 
-        String cabecalho="";
-        for (int i = 1; i <= 4; i++) {
+        String cabecalho = "Data";
+        for (int i = 1; i <= 5; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += ",Totais Infetados";
+                        cabecalho += ",Totais Não Infetados";
                         break;
                     case 2:
-                        cabecalho += ",Totais Hospitalizações";
+                        cabecalho += ",Totais Infetados";
                         break;
                     case 3:
-                        cabecalho += ",Totais UCI";
+                        cabecalho += ",Totais Hospitalizações";
                         break;
                     case 4:
+                        cabecalho += ",Totais UCI";
+                        break;
+                    case 5:
                         cabecalho += ",Totais Mortes";
                         break;
                 }
             }
         }
-        int[] array = new int[5];
-        array[0]= (int) previsao[0][0];
-        array[1]= (int) previsao[1][0];
-        array[2]= (int) previsao[2][0];
-        array[3]= (int) previsao[3][0];
-        array[4]= (int) previsao[4][0];
-        ficheiroEscrita.println();
-        ficheiroEscrita.println("Previsão para o dia: " + data + " |");
-        ficheiroEscrita.println(mostraSeExistir(colunas,1,"," +previsao[0][0])+mostraSeExistir(colunas,2,","+ previsao[1][0]) + mostraSeExistir(colunas,3,","+previsao[2][0]) +mostraSeExistir(colunas,4,","+previsao[3][0]));
-
+        ficheiroEscrita.println(cabecalho);
+        ficheiroEscrita.println(data + mostraSeExistir(colunas,1,"," + previsao[0][0])+mostraSeExistir(colunas,2,","+ previsao[1][0]) + mostraSeExistir(colunas,3,","+previsao[2][0]) +mostraSeExistir(colunas,4,","+previsao[3][0])+mostraSeExistir(colunas,5,","+previsao[4][0]));
+        System.out.println("Dados gravados no ficheiro com sucesso.");
         ficheiroEscrita.close();
     }
 
@@ -1148,8 +1144,9 @@ public class Main {
             System.out.println("| Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3) |");
             System.out.println("| 1. Não Infetados                                                                      |");
             System.out.println("| 2. Infetados                                                                          |");
-            System.out.println("| 3. Hospitalizados                                                                     |");
+            System.out.println("| 3. Hospitalizações                                                                    |");
             System.out.println("| 4. UCI                                                                                |");
+            System.out.println("| 5. Mortes                                                                             |");
             System.out.println("| 0. Todos                                                                              |");
             System.out.println("| ------------------------------------------------------------------------------------- |");
             System.out.print("\n> ");
@@ -1160,7 +1157,7 @@ public class Main {
 
             try {
                 for (String opcao : dados) {
-                    if (Integer.parseInt(opcao) < 0 || Integer.parseInt(opcao) > 4) {
+                    if (Integer.parseInt(opcao) < 0 || Integer.parseInt(opcao) > 5) {
                         todosInteiros = false;
                     }
                 }
@@ -1179,7 +1176,7 @@ public class Main {
 
 
         if (dadosInteiros.length == 1 && dadosInteiros[0] == 0) {
-            int[] array = {1, 2, 3, 4};
+            int[] array = {1, 2, 3, 4, 5};
             return array;
         } else {
             return dadosInteiros;
@@ -1890,7 +1887,6 @@ public class Main {
         return numeroMeses + 1;
     }
 
-
     public static Date primeiroDiaMesValido(Date inicio) {
         Calendar data = Calendar.getInstance();
 
@@ -2359,26 +2355,32 @@ public class Main {
         String[] intervalo = new String[NUMERO_DADOS_COMPARACAO];
         intervalo[0] = data;
         intervalo[1] = dataEscolhida;
-        String cabecalho="";
-        String impressao="";
-        for (int i = 1; i <= 4; i++) {
+
+        String cabecalho = "\n%31s";
+        String impressao = "";
+
+        for (int i = 1; i <= 5; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | %5s Não Infetados";
-                        impressao += " | %21s";
+                        cabecalho += " | Total Não Infetados";
+                        impressao += " | %19.1f";
                         break;
                     case 2:
-                        cabecalho += " | Infetados";
-                        impressao += " | %21.10s";
+                        cabecalho += " | Total Infetados";
+                        impressao += " | %15.1f";
                         break;
                     case 3:
-                        cabecalho += " | Hospitalizações";
-                        impressao += " | %9.10s";
+                        cabecalho += " | Total Hospitalizações";
+                        impressao += " | %21.1f";
                         break;
                     case 4:
-                        cabecalho += " | UCI";
-                        impressao += " | %9.10s";
+                        cabecalho += " |    Total UCI   ";
+                        impressao += " | %15.1f";
+                        break;
+                    case 5:
+                        cabecalho += " | Total Mortes";
+                        impressao += " | %12.1f";
                         break;
                 }
             } else {
@@ -2386,15 +2388,18 @@ public class Main {
             }
         }
 
+        cabecalho += "\n";
+        impressao += "\n";
+
         int index = indexData(stringParaDateEConverterDatas(data), datas);
         long diasDiferenca = (int) Math.abs(calcularDiasEntreIntervalo(intervalo)) - 1;
 
         double[][] matrizElevada = Matrizes.elevarMatriz(matriz, diasDiferenca);
         double[][] previsao = Matrizes.multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
 
-        System.out.printf("\n%31s |Total Não Infetados | Total Infetados | Total Hospitalizações |    Total UCI    | Total Mortes\n", "");
-        System.out.print("Previsão para o dia: " + dataEscolhida + " |");
-        System.out.printf("%19.1s | %15.1s | %21.1s | %15.1s\n",mostraSeExistir(colunas,1,"," +previsao[0][0]),mostraSeExistir(colunas,2,","+ previsao[1][0]),mostraSeExistir(colunas,3,","+previsao[2][0]),mostraSeExistir(colunas,4,","+previsao[3][0]));
+        System.out.printf(cabecalho, "");
+        System.out.print("Previsão para o dia: " + dataEscolhida);
+        System.out.printf(impressao, mostraSeExistir(colunas,1,previsao[0][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,1,previsao[0][0])),mostraSeExistir(colunas,2,previsao[1][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,2,previsao[1][0])),mostraSeExistir(colunas,3,previsao[2][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,3,previsao[2][0])),mostraSeExistir(colunas,4,previsao[3][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,4,previsao[3][0])),mostraSeExistir(colunas,5,previsao[4][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,5,previsao[4][0])));
     }
 
     public static void previsaoDiasAteMorte(double[][] matriz) {
