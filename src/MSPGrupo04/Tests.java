@@ -26,13 +26,10 @@ public class Tests {
         return Matrizes.compararMatrizes(result, expectedRes);
     }
 
-    /**
-     * private static boolean test_trocarPosicoesMatriz(double[][] matriz,
-     * double[][] expectedRes) {
-     * double[][] result = Matrizes.trocarPosicoesMatriz(matriz);
-     * return Matrizes.compararMatrizes(result, expectedRes);
-     * }
-     */
+    private static boolean test_trocarPosicoesMatriz(double[][] matriz, double[][] expectedRes) {
+        double[][] result = Matrizes.trocarPosicoesMatriz(matriz);
+        return Matrizes.compararMatrizes(result, expectedRes);
+    }
 
     private static boolean test_matrizInversaL(double[][] matriz, double[][] expectedRes) {
         double[][] result = Matrizes.inversaL(matriz);
@@ -292,16 +289,13 @@ public class Tests {
         if (test6)
             okCount++;
 
-        /*
-         * Teste - trocar posições matriz
-         * double[][] trocarPosicoesMatriz = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
-         * double[][] posicoes_expectedRes = { { 1, 4, 7 }, { 2, 5, 8 }, { 3, 6, 9 } };
-         * boolean testTrocarPosicoes = test_trocarPosicoesMatriz(trocarPosicoesMatriz,
-         * posicoes_expectedRes);
-         * printTestResult("trocarPosicoesMatriz", ++testCount, testTrocarPosicoes);
-         * if (testTrocarPosicoes)
-         * okCount++;
-         */
+        // Teste - trocar posições matriz
+        double[][] trocarPosicoesMatriz = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+        double[][] posicoes_expectedRes = { { 1, 4, 7 }, { 2, 5, 8 }, { 3, 6, 9 } };
+        boolean testTrocarPosicoes = test_trocarPosicoesMatriz(trocarPosicoesMatriz, posicoes_expectedRes);
+        printTestResult("trocarPosicoesMatriz", ++testCount, testTrocarPosicoes);
+        if (testTrocarPosicoes)
+            okCount++;
 
         // Teste - matriz inversa L
         double[][] testeMatrizInversas = { { 1, 4, 7 }, { 2, 5, 8 }, { 3, 6, 9 } };
