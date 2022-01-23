@@ -1,6 +1,5 @@
 package MSPGrupo04;
 
-
 /**
  * Projeto LAPR1 - Aplicação para a empresa MSP
  * 2021-2022 LEI, Turma 1DI
@@ -79,18 +78,117 @@ public class Main {
          * caso pretenda apenas previsões, o parâmetro -r, os parâmetros de intervalos de datas e o caminho do ficheiro de acumulados não serão definidos
          * 
          * sintaxe 1 (tudo):
-         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MM-AAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA -T DD-MM-AAAA totalCasos.csv acumuladosCasos.csv matrizTransicao.txt ficheiro_saida.txt
          * 
          * sintaxe 2 (sem previsões):
-         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MMAAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA acumuladosCasos.csv ficheiro_saida.txt
+         * java -jar app.jar -r X -di DD-MM-AAAA -df DD-MM-AAAA -di1 DD-MM-AAAA -df1 DD-MM-AAAA -di2 DD-MM-AAAA -df2 DD-MM-AAAA acumuladosCasos.csv ficheiro_saida.txt
          * 
          * sintaxe 3 (apenas previsões):
          * java -jar app.jar -T DD-MM-AAAA totalCasos.csv matrizTransicao.txt ficheiro_saida.txt
          */
 
         if (args.length != 0) {
+            int i = 0;
 
+            int resolucaoTemporal = -1;
+            String[] intervaloDatasVisualizacao = new String[2]; // null
+            String[] intervaloDatas1 = new String[2];
+            String[] intervaloDatas2 = new String[2];
+            String dataPrevisao = null;
+            String ficheiroTotalCasos = null;
+            String ficheiroAcumuladosCasos = null;
+            String ficheiroMatrizTransicao = null;
+            String ficheiroOutput = null;
 
+            while (i < args.length) {
+                if (args[i].charAt(0) == '-') {
+                    // parâmetro
+                    String parametroNome = args[i];
+                    String parametroValor = args[++i];
+
+                    switch (parametroNome) {
+                        case "-r":
+                            resolucaoTemporal = Integer.parseInt(parametroValor);
+                            break;
+                        case "-di":
+                            intervaloDatasVisualizacao[0] = parametroValor;
+                            break;
+                        case "-df":
+                            intervaloDatasVisualizacao[1] = parametroValor;
+                            break;
+                        case "-di1":
+                            intervaloDatas1[0] = parametroValor;
+                            break;
+                        case "-df1":
+                            intervaloDatas1[1] = parametroValor;
+                            break;
+                        case "-di2":
+                            intervaloDatas2[0] = parametroValor;
+                            break;
+                        case "-df2":
+                            intervaloDatas2[1] = parametroValor;
+                            break;
+                        case "-T":
+                            dataPrevisao = parametroValor;
+                            break;
+                    }
+
+                } else {
+                    // ficheiro
+                    String parametro = args[i];
+
+                    if (ficheiroTotalCasos == null && dataPrevisao != null) {
+                        ficheiroTotalCasos = parametro;
+                    } else if (ficheiroAcumuladosCasos == null && resolucaoTemporal != -1) {
+                        ficheiroAcumuladosCasos = parametro;
+                    } else if (ficheiroMatrizTransicao == null && dataPrevisao != null) {
+                        ficheiroMatrizTransicao = parametro;
+                    } else if (ficheiroOutput == null) {
+                        ficheiroOutput = parametro;
+                    }
+
+                }
+
+                i++;
+            }
+
+            String output = "";
+            int numLinhas;
+
+            // totais
+            if (ficheiroTotalCasos != null) {
+                numLinhas = tamanhoLinhasFicheiro(ficheiroTotalCasos);
+                acumuladoDatas = lerDatas(ficheiroTotalCasos, numLinhas);
+                acumuladoDados = lerDados(ficheiroTotalCasos, numLinhas);
+
+                // todo
+            }
+
+            // acumulados
+            if (ficheiroAcumuladosCasos != null) {
+                numLinhas = tamanhoLinhasFicheiro(ficheiroAcumuladosCasos);
+                acumuladoDatas = lerDatas(ficheiroAcumuladosCasos, numLinhas);
+                acumuladoDados = lerDados(ficheiroAcumuladosCasos, numLinhas);
+
+                // todo
+            }
+
+            // previsão
+            if(ficheiroMatrizTransicao != null && ficheiroTotalCasos != null) {
+                output += verPrevisoesNaoInterativo(ficheiroMatrizTransicao, dataPrevisao, totalDatas, totalDados);
+            }
+
+            // todo: output p/ ficheiro
+            PrintWriter outputWriter;
+            try {
+                outputWriter = new PrintWriter(ficheiroOutput, "UTF-8");
+            } catch (IOException e) {
+                System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+                return;
+            }
+
+            outputWriter.println(output);
+            outputWriter.close();
 
         } else {
             System.out.println("\n\n                      Bem-vindo!                                  ");
@@ -223,50 +321,41 @@ public class Main {
                             break;
                     }
                     System.out.println("Ficheiro lido com sucesso!");
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "2":
                     // Ver dados diarios
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
                     verDadosDiarios(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "3":
                     // Ver dados Semanais
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
                     verDadosSemanais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "4":
                     // Ver dados mensais
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
                     verDadosMensais(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "5":
                     // Ver analise comparativa
                     opcaoTipoFicheiro = selecionarTipoVisualizacao();
                     verDadosComparativos(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "6":
                     // Ver previsoes
                     verPrevisoes(jaLeuFicheiros, datasTotais, dadosTotais);
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
                 case "0":
                     break;
                 default:
                     System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.\n");
-                    pressioneEnterParaCont();
-                    opcao = menu();
                     break;
+            }
+
+            if (!opcao.equals("0")) {
+                pressioneEnterParaCont();
+                opcao = menu();
             }
         } while (!opcao.equals("0"));
         System.out.println("\nOBRIGADO PELA PREFERENCIA!");
@@ -512,7 +601,7 @@ public class Main {
                 System.out.print("Introduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
                 String dataEscolhe = kbScanner.nextLine();
                 Date dataEscolhida = stringParaDateEConverterDatas(dataEscolhe);
-                indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
+                indexData1 = indexData(dataEscolhida, datas);
                 String data;
                 if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
                     if ((indexData1==0)) {
@@ -550,11 +639,64 @@ public class Main {
             } else {
                previsaoDiasAteMorte(matriz);
             }
-            } else {
-                System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+        } else {
+            System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+        }
+    }
+
+    public static String verPrevisoesNaoInterativo(String matrizFicheiro, String dataPrevisao, String[] datas, int[][] dados) {
+        String output = "";
+        int indexData1;
+        double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
+
+        // opção 1
+        Date dataEscolhida = stringParaDateEConverterDatas(dataPrevisao);
+        indexData1 = indexData(dataEscolhida, datas);
+        String data;
+        if (verificarData1(dataPrevisao) || verificarData2(dataPrevisao)) {
+            int[] colunas = {1, 2, 3, 4, 5};
+
+            if (indexData1 == 0) {
+                data = datas[0];
+
+                // todo: guardar numa string, retornar e guardar no ficheiro
+                // mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
+                // String diretorio = guardarOuSair();
+                // if(!diretorio.equals("")){
+                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
+                // }
             }
+            if (existeNoArrayData(datas, dataPrevisao)) {
+                data = escolherDiaAnterior(indexData1, datas);
+
+                // todo: guardar numa string, retornar e guardar no ficheiro
+                // mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
+                // String diretorio = guardarOuSair();
+                // if(!diretorio.equals("")){
+                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
+                // }
+            } else if (!verificarDiaExiste(datas, dataPrevisao) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
+                data = escolherDiaMaisProximo(dataEscolhida, datas);
+
+                // todo: guardar numa string, retornar e guardar no ficheiro
+                // mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
+                // String diretorio=guardarOuSair();
+                // if(!diretorio.equals("")){
+                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
+                // }
+            } else {
+                output += "\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).\n";
+            }
+        } else {
+            output += "ERRO: Data inválida.\n";
         }
 
+        // opção 2
+        String previsaoDiasAteMorte = previsaoDiasAteMorteNaoInterativo(matriz);
+
+        // todo: return
+        return output;
+    }
 
     // todo teste
     public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
@@ -2452,7 +2594,7 @@ public class Main {
         double[][] matrizU = new double[matrizSemObi.length][matrizSemObi.length];
         matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
 
-        double[][] vetor =  {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+        double[][] vetor = {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
 
         Matrizes.crout(subtracaoIdenMatriz, matrizL, matrizU);
 
@@ -2464,7 +2606,30 @@ public class Main {
 
         System.out.print("\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n");
         System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+    }
 
+    public static String previsaoDiasAteMorteNaoInterativo(double[][] matriz) {
+        double[][] matrizSemObi = matrizSemObito(matriz);
+        double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
+
+        double[][] matrizL = new double[matrizSemObi.length][matrizSemObi.length];
+        double[][] matrizU = new double[matrizSemObi.length][matrizSemObi.length];
+        matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
+
+        double[][] vetor = {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+
+        Matrizes.crout(subtracaoIdenMatriz, matrizL, matrizU);
+
+        double[][] inversaL = Matrizes.inversaL(matrizL);
+        double[][] inversaU = Matrizes.inversaU(matrizU);
+
+        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
+        double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
+
+        String output = "\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n";
+        output += String.format("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+
+        return output;
     }
 
     public static double[][] preencherArray(int[][] dados, int index) {
