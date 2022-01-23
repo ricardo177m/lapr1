@@ -218,13 +218,13 @@ public class Main {
         String resolucaoTemporalStr = "";
 
         switch (resolucaoTemporal) {
-            case 1:
+            case 0:
                 resolucaoTemporalStr = "Diária";
                 break;
-            case 2:
+            case 1:
                 resolucaoTemporalStr = "Semanal";
                 break;
-            case 3:
+            case 2:
                 resolucaoTemporalStr = "Mensal";
                 break;
             default:
@@ -798,9 +798,10 @@ public class Main {
                 do {
                     if (existeNoArrayDatas(datasAcumulado, intervalo1) && existeNoArrayDatas(datasAcumulado, intervalo2)) {
                         output += analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
-                    } else
+                    } else {
                         output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
                         flag = false;
+                    }
                 } while (flag && (!existeNoArrayDatas(datasAcumulado,intervalo1) && !existeNoArrayDatas(datasAcumulado,intervalo2)));
                 break;
             case "2":
