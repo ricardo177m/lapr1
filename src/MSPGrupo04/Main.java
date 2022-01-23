@@ -1472,6 +1472,7 @@ public class Main {
             System.out.println("|   Por favor, escolha uma opção:      |");
             System.out.println("|     1. Carregar dados acumulados     |");
             System.out.println("|     2. Carregar dados totais         |");
+            System.out.println("|     3. Carregar matriz transição     |");
             System.out.println("|     0. Voltar atrás                  |");
             System.out.println("|                                      |");
             System.out.println("+--------------------------------------+");
@@ -1729,7 +1730,7 @@ public class Main {
     public static String selecionarMatriz() {
         String caminho;
         do {
-            System.out.print("Insira o caminho absoluto do ficheiro que contém a matriz: ");
+            System.out.print("\nInsira o caminho absoluto do ficheiro que contém a matriz: ");
             caminho = kbScanner.nextLine();
             if (!(new File(caminho)).isFile()) {
                 System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.");
@@ -2770,7 +2771,7 @@ public class Main {
         intervalo[0] = data;
         intervalo[1] = dataEscolhida;
 
-        String cabecalho = "\n%31s |";
+        String cabecalho = "\n%32s |";
         String impressao = " |";
 
         for (int i = 1; i <= 5; i++) {
@@ -2793,8 +2794,8 @@ public class Main {
                         impressao += "  %14.1f |";
                         break;
                     case 5:
-                        cabecalho += "  Total Mortes |";
-                        impressao += "  %12.1f |";
+                        cabecalho += "  Total Mortes";
+                        impressao += "  %12.1f";
                         break;
                 }
             } else {
@@ -2814,7 +2815,7 @@ public class Main {
         String output = "";
 
         output += String.format(cabecalho, "");
-        output += "Previsão para o dia: " + dataEscolhida;
+        output += "Previsão para o dia " + dataEscolhida;
         output += String.format(impressao, mostraSeExistir(colunas,1,previsao[0][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,1,previsao[0][0])),mostraSeExistir(colunas,2,previsao[1][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,2,previsao[1][0])),mostraSeExistir(colunas,3,previsao[2][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,3,previsao[2][0])),mostraSeExistir(colunas,4,previsao[3][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,4,previsao[3][0])),mostraSeExistir(colunas,5,previsao[4][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,5,previsao[4][0])));
 
         return output;
@@ -2838,8 +2839,8 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        System.out.print("\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI   |\n");
-        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f |\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+        System.out.print("\n                                               |   Não Infetados |   Infetados |   Hospitalizações |        UCI\n");
+        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
     }
 
     public static String previsaoDiasAteMorteNaoInterativo(double[][] matriz) {
@@ -2860,7 +2861,7 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaL,inversaU);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        String output = "\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n";
+        String output = "\n                                               |   Não Infetados |   Infetados |   Hospitalizações |       UCI\n";
         output += String.format("Número de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
         return output;
