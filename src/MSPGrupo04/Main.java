@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.function.ToLongBiFunction;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -156,7 +157,8 @@ public class Main {
             try {
                 outputWriter = new PrintWriter(ficheiroOutput, "UTF-8");
 
-                String output = "";
+                String output = prepararOutput(resolucaoTemporal, totalDatas, totalDados, acumuladoDatas, acumuladoDados, intervaloDatasVisualizacao, intervaloDatas1, intervaloDatas2, dataPrevisao, ficheiroTotalCasos, ficheiroAcumuladosCasos, ficheiroMatrizTransicao);
+
                 int numLinhas;
 
                 // totais
@@ -209,6 +211,27 @@ public class Main {
             opcaoTipoFicheiro = menu();
             executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
         }
+    }
+
+    public static String prepararOutput(int resolucaoTemporal, String[] totalDatas, int[][] totalDados, String[] acumuladoDatas, int[][] acumuladoDados, String[] intervaloDatas, String[] intervalo1, String[] intervalo2, String dataPrevisao, String fichTotal, String fichAcum, String fichMatriz) {
+        String output = "Parâmetros:\n";
+        output += String.format("%-32s %s\n", " - Resolução temporal: ", resolucaoTemporal == -1 ? "<NÃO DEFINIDO>" : resolucaoTemporal);
+        output += String.format("%-32s %s\n", " - Data início visualização: ", intervaloDatas[0] == null ? "<NÃO DEFINIDO>" : intervaloDatas[0]);
+        output += String.format("%-32s %s\n", " - Data fim visualização: ", intervaloDatas[1] == null ? "<NÃO DEFINIDO>" : intervaloDatas[1]);
+        output += String.format("%-32s %s\n", " - Data início 1º intervalo: ", intervalo1[0] == null ? "<NÃO DEFINIDO>" : intervalo1[0]);
+        output += String.format("%-32s %s\n", " - Data fim 1º intervalo: ", intervalo1[1] == null ? "<NÃO DEFINIDO>" : intervalo1[1]);
+        output += String.format("%-32s %s\n", " - Data início 2º intervalo: ", intervalo2[0] == null ? "<NÃO DEFINIDO>" : intervalo2[0]);
+        output += String.format("%-32s %s\n", " - Data fim 2º intervalo: ", intervalo2[1] == null ? "<NÃO DEFINIDO>" : intervalo2[1]);
+        output += String.format("%-32s %s\n\n", " - Data para previsão: ", dataPrevisao == null ? "<NÃO DEFINIDO>" : dataPrevisao);
+
+        output += "Ficheiros carregados:\n";
+        output += String.format("%-32s %s\n", " - Dados p/ total casos: ", fichTotal == null ? "<NÃO DEFINIDO>" : fichTotal);
+        output += String.format("%-32s %s\n", " - Dados p/ casos acumulados: ", fichAcum == null ? "<NÃO DEFINIDO>" : fichAcum);
+        output += String.format("%-32s %s\n\n", " - Matriz de transição: ", fichMatriz == null ? "<NÃO DEFINIDO>" : fichMatriz);
+
+        output += "--------------------------------------------------\n\n";
+
+        return output;
     }
 
     public static String visualizarDadosNaoInterativo(String opcao, int resolucaoTemporal, String[] totalDatas, int[][] totalDados, String[] acumuladoDatas, int[][] acumuladoDados, String[] intervaloDatasVisualizacao, String[] intervalo1, String[] intervalo2) {
@@ -823,7 +846,7 @@ public class Main {
         double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
 
         // opção 1
-        output += "\nPrevisão para dia " + dataPrevisao + ":\n\n";
+        output += "Previsões:\n";
         Date dataEscolhida = stringParaDateEConverterDatas(dataPrevisao);
         indexData1 = indexData(dataEscolhida, datas);
         String data;
@@ -844,11 +867,11 @@ public class Main {
                 output += "\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).\n";
             }
         } else {
-            output += "ERRO: Data inválida.\n";
+            output += "\nERRO: Data inválida.\n";
         }
 
         // opção 2
-        output += "\nPrevisão dias até morte:\n\n";
+        output += "\n";
         output += previsaoDiasAteMorteNaoInterativo(matriz);
 
         return output;
@@ -2760,7 +2783,7 @@ public class Main {
                         impressao += "  %21.1f |";
                         break;
                     case 4:
-                        cabecalho += "     Total UCI   |";
+                        cabecalho += "        Total UCI |";
                         impressao += "  %15.1f |";
                         break;
                     case 5:
@@ -2832,7 +2855,7 @@ public class Main {
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
         String output = "\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n";
-        output += String.format("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+        output += String.format("Número de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
         return output;
     }
