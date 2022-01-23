@@ -330,7 +330,7 @@ public class Tests {
         cal1.set(2021, 3, 6, 0, 0, 0);
         Calendar cal2 = Calendar.getInstance();
         cal2.set(2021, 5, 27, 0, 0, 0);
-        boolean test9 = test_calcularNumSemanas(cal1.getTime(), cal2.getTime(), 10);
+        boolean test9 = test_calcularNumSemanas(cal1.getTime(), cal2.getTime(), 11);
         printTestResult("calcularNumSemanas", ++testCount, test9);
         if (test9)
             okCount++;

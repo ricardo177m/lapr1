@@ -439,7 +439,7 @@ public class Main {
                 opcao = menu();
             }
         } while (!opcao.equals("0"));
-        System.out.println("\nA sair...");
+        System.out.println("Obrigado! A sair...");
     }
 
     public static void verDadosDiarios(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] dadosAcumaldos, String[] datasTotais, int[][] dadosTotais) {
