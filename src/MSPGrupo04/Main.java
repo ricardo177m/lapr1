@@ -203,7 +203,7 @@ public class Main {
             acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
             totalDatas = lerDatas(caminhoFicheiro, numLinhas);
             totalDados = lerDados(caminhoFicheiro, numLinhas);
-            jaLeuFicheiros[opcaoTipoFicheiro == "1" ? 0 : 1] = true;
+            jaLeuFicheiros[opcaoTipoFicheiro.equals("1") ? 0 : 1] = true;
 
             System.out.println("Ficheiro lido com sucesso!");
             pressioneEnterParaCont();
