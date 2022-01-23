@@ -2498,7 +2498,7 @@ public class Main {
                         cabecalho += "  Novas Mortes";
                         impressao += "  %12.10s";
                         impressaoMediaEDesvio += "  %12.4f";
-                        tracinhos += "--------------\n";
+                        tracinhos += "--------------";
                         break;
                 }
             } else {
@@ -2510,6 +2510,7 @@ public class Main {
         cabecalho += "\n";
         impressao += "\n";
         impressaoMediaEDesvio += "\n";
+        tracinhos += "\n";
 
         String output = String.format(cabecalho, "");
         int[][] comparacaoInfet = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[1], numeroDiasAComparar);
@@ -2653,7 +2654,7 @@ public class Main {
                         cabecalho += "  Total Mortes";
                         impressao += "  %12.10s";
                         impressaoMediaEDesvio += "  %12.4f";
-                        tracinhos += "--------------\n";
+                        tracinhos += "--------------";
                         break;
                 }
             } else {
@@ -2665,6 +2666,7 @@ public class Main {
         cabecalho += "\n";
         impressao += "\n";
         impressaoMediaEDesvio += "\n";
+        tracinhos += "\n";
 
         String output = String.format(cabecalho, "");
         int[][] comparacaoInfet = comparacaoTotaisCasos(indexData1, indexData2, dados[1], numeroDiasAComparar);
