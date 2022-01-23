@@ -202,11 +202,12 @@ public class Main {
                     acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                     totalDatas = lerDatas(caminhoFicheiro, numLinhas);
                     totalDados = lerDados(caminhoFicheiro, numLinhas);
+                    double[][] matriz = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
                     jaLeuFicheiros[0] = true;
                     System.out.println("Ficheiro lido com sucesso!");
                     pressioneEnterParaCont();
                     opcaoTipoFicheiro = menu();
-                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados,matriz);
                     break;
                 case "2":
                     numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
@@ -214,11 +215,12 @@ public class Main {
                     totalDados = lerDados(caminhoFicheiro, numLinhas);
                     acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
                     acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+                    matriz = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
                     jaLeuFicheiros[1] = true;
                     System.out.println("Ficheiro lido com sucesso!");
                     pressioneEnterParaCont();
                     opcaoTipoFicheiro = menu();
-                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados);
+                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados,matriz);
                     break;
             }
         }
@@ -296,7 +298,7 @@ public class Main {
         return dados;
     }
 
-    public static void executaOpcao(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] acumuladoDados, String[] datasTotais, int[][] dadosTotais) throws FileNotFoundException {
+    public static void executaOpcao(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulados, int[][] acumuladoDados, String[] datasTotais, int[][] dadosTotais,double[][] matriz) throws FileNotFoundException {
         do {
             String opcaoTipoFicheiro = "";
             switch (opcao) {
@@ -314,7 +316,7 @@ public class Main {
                             acumuladoDados = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                             acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[0] = true;
-                            System.out.println("\nFicheiro lido com sucesso!");
+                            System.out.println("Ficheiro lido com sucesso!");
                             break;
                         case "2":
                             caminhoFicheiro = selecionarFicheiro();
@@ -324,8 +326,14 @@ public class Main {
                             dadosTotais = new int[NUMERO_DADOS_DIFERENTES][numLinhas];
                             dadosTotais = lerDados(caminhoFicheiro, numLinhas);
                             jaLeuFicheiros[1] = true;
-                            System.out.println("\nFicheiro lido com sucesso!");
+                            System.out.println("Ficheiro lido com sucesso!");
                             break;
+                        case "3":
+                            caminhoFicheiro = selecionarMatriz();
+                            numLinhas=tamanhoLinhasFicheiro(caminhoFicheiro);
+                            matriz = lerDadosMatriz(caminhoFicheiro,numLinhas);
+                            jaLeuFicheiros[2]=true;
+                            System.out.println("Ficheiro lido com sucesso!");
                         case "0":
                             break;
                     }
@@ -358,11 +366,13 @@ public class Main {
                     if (!opcaoTipoFicheiro.equals("0")) {
                         verDadosComparativos(opcaoTipoFicheiro, jaLeuFicheiros, datasAcumulados, acumuladoDados, datasTotais, dadosTotais);
                     }
-                    
                     break;
                 case "6":
                     // Ver previsoes
-                    verPrevisoes(jaLeuFicheiros, datasTotais, dadosTotais);
+                    opcaoTipoFicheiro = selecionarTipoPrevisao();
+                    if (!opcaoTipoFicheiro.equals("0")) {
+                        verPrevisoes(jaLeuFicheiros, datasTotais, dadosTotais, matriz, opcaoTipoFicheiro);
+                    }
                     break;
                 case "0":
                     break;
@@ -398,7 +408,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasAcumulados,leituraDatas));
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             case "2":
@@ -418,7 +428,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasTotais,leituraDatas));
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             default:
@@ -453,7 +463,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroSemanas == -1 || numeroSemanas ==0);
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             case "2":
@@ -480,7 +490,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas ==-1 || numeroSemanas==0);
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             default:
@@ -514,7 +524,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasAcumulado,leituraDatas) || numeroMeses ==0);
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             case "2":
@@ -540,7 +550,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroMeses==0);
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             default:
@@ -571,7 +581,7 @@ public class Main {
                             System.out.println("\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n");
                     } while (!existeNoArrayDatas(datasAcumulado,intervalo1) && !existeNoArrayDatas(datasAcumulado,intervalo2));
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             case "2":
@@ -595,7 +605,7 @@ public class Main {
                         }
                     } while (!existeNoArrayDatas(datasTotal,intervalo1) && !existeNoArrayDatas(datasTotal,intervalo2));
                 } else {
-                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+                    System.out.println("ERRO: Ficheiro não carregado. Por favor, carregue o ficheiro selecionando a opção 1 do menu.");
                 }
                 break;
             default:
@@ -604,66 +614,65 @@ public class Main {
         }
     }
 
-    public static void verPrevisoes(boolean[] jaLeuFicheiro, String[] datas, int[][] dados) throws FileNotFoundException {
+    public static void verPrevisoes(boolean[] jaLeuFicheiro, String[] datas, int[][] dados,double[][] matriz,String opcao) throws FileNotFoundException {
         // ler matriz do ficheiro
         // veririficar se o dia que ele introduziu pertence ao ficheiro
         // Se nao existir, escolher o dia mais proximo
         // Se existir, escolher o dia anterior
         // matriz elevada a diferença do dia escolhido pelo utilizador a multiplicar pelo vetor do dia escolhido
         int indexData1;
-        if (jaLeuFicheiro[1]) {
-            String matrizFicheiro = selecionarMatriz();
-            double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
-            String opcao = selecionarTipoPrevisao();
+        if (jaLeuFicheiro[1] && jaLeuFicheiro[2]) {
             switch (opcao) {
                 case "1":
-                    System.out.print("\nIntroduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
-                    String dataEscolhe = kbScanner.nextLine();
-                    Date dataEscolhida = stringParaDateEConverterDatas(dataEscolhe);
-                    indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
-                    String data;
-                    if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
-                        if ((indexData1 == 0)) {
-                            data = datas[0];
-                            int[] colunas = menuEscolherQtdDadosPrevisao();
-                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
-                            String diretorio = guardarOuSair();
-                            if (!diretorio.equals("")) {
-                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                    String dataEscolhe;
+                    Date dataEscolhida;
+                    do {
+                        System.out.print("\nIntroduza a data que pretende escolher para fazer a previsao no formato (AAAA-MM-DD) ou (DD-MM-AAAA): ");
+                        dataEscolhe = kbScanner.nextLine();
+                        dataEscolhida = stringParaDateEConverterDatas(dataEscolhe);
+                        indexData1 = indexData(stringParaDateEConverterDatas(dataEscolhe), datas);
+                        String data;
+                        if (verificarData1(dataEscolhe) || verificarData2(dataEscolhe)) {
+                            if ((indexData1 == 0)) {
+                                data = datas[0];
+                                int[] colunas = menuEscolherQtdDadosPrevisao();
+                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                                }
                             }
-                        }
-                        if (existeNoArrayData(datas, dataEscolhe)) {
-                            data = escolherDiaAnterior(indexData1, datas);
-                            int[] colunas = menuEscolherQtdDadosPrevisao();
-                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
-                            String diretorio = guardarOuSair();
-                            if (!diretorio.equals("")) {
-                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
-                            }
-                        } else if (!verificarDiaExiste(datas, dataEscolhe) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
-                            Date data1 = stringParaDateEConverterDatas(dataEscolhe);
-                            data = escolherDiaMaisProximo(data1, datas);
-                            int[] colunas = menuEscolherQtdDadosPrevisao();
-                            mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
-                            String diretorio = guardarOuSair();
-                            if (!diretorio.equals("")) {
-                                imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                            if (existeNoArrayData(datas, dataEscolhe)) {
+                                data = escolherDiaAnterior(indexData1, datas);
+                                int[] colunas = menuEscolherQtdDadosPrevisao();
+                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                                }
+                            } else if (!verificarDiaExiste(datas, dataEscolhe) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
+                                Date data1 = stringParaDateEConverterDatas(dataEscolhe);
+                                data = escolherDiaMaisProximo(data1, datas);
+                                int[] colunas = menuEscolherQtdDadosPrevisao();
+                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                String diretorio = guardarOuSair();
+                                if (!diretorio.equals("")) {
+                                    imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
+                                }
+                            } else {
+                                System.out.println("\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).");
                             }
                         } else {
-                            System.out.println("\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).");
+                            System.out.println("\nERRO: Data inválida.");
                         }
-                    } else {
-                        System.out.println("\nERRO: Data inválida.");
-                    }
+                    } while (!verificarData1(dataEscolhe) && !verificarData2(dataEscolhe) || dataEscolhida.before(stringParaDateEConverterDatas(datas[0])));
                     break;
                 case "2":
                     previsaoDiasAteMorte(matriz);
                     break;
-                case "3":
-                    break;
             }
         } else {
-            System.out.println("ERRO: Ficheiro de totais não carregado. Por favor, carregue o ficheiro selecionando a opção 1.");
+            System.out.println("ERRO: Ficheiro de totais ou matriz não carregado. Por favor, carregue o(s) ficheiro(s) selecionando a opção 1 do menu.");
         }
     }
 
@@ -1307,6 +1316,7 @@ public class Main {
             System.out.println("| Por favor, escolha uma opção:   |");
             System.out.println("| 1. Carregar dados acumulados    |");
             System.out.println("| 2. Carregar dados totais        |");
+            System.out.println("| 3. Carregar matriz              |");
             System.out.println("| 0. Voltar atrás                 |");
             System.out.println("| ------------------------------- |");
             System.out.println();
@@ -1314,11 +1324,11 @@ public class Main {
 
             selecaoUtilizador = kbScanner.nextLine();
 
-            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("0")) {
+            if (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("0") && !selecaoUtilizador.equals("3")) {
                 System.out.println("ERRO: Opção inválida. Por favor, selecione uma das opções apresentadas no menu.");
                 pressioneEnterParaCont();
             }
-        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("0"));
+        } while (!selecaoUtilizador.equals("1") && !selecaoUtilizador.equals("2") && !selecaoUtilizador.equals("0") && !selecaoUtilizador.equals("3"));
 
         return selecaoUtilizador;
     }
@@ -1546,7 +1556,6 @@ public class Main {
                 System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.");
             }
         } while (!(new File(caminho).isFile()));
-
         return caminho;
     }
 
@@ -1559,7 +1568,6 @@ public class Main {
                 System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.");
             }
         } while (!(new File(caminho).isFile()));
-        System.out.println();
         return caminho;
     }
 
@@ -1729,15 +1737,15 @@ public class Main {
         int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]), datas);
 
-            String cabecalho = "Data %5s";
-            String impressao = "%s";
+            String cabecalho = "Data %5s |";
+            String impressao = "%s |";
 
             for (int i = 1; i <= 4; i++) {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados |";
-                            impressao += " | %15s |";
+                            cabecalho += "  Novos Infetados |";
+                            impressao += "  %15s |";
                             break;
                         case 2:
                             cabecalho += "  Novas Hospitalizações |";
@@ -1799,15 +1807,15 @@ public class Main {
         int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])),datas);
         int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])),datas);
 
-        String cabecalho = "Data %5s";
-        String impressao = "%s";
+        String cabecalho = "Data %5s |";
+        String impressao = "%s |";
 
         for (int i = 1; i <= 4; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | Total Infetados |";
-                        impressao += " | %15s |";
+                        cabecalho += "  Total Infetados |";
+                        impressao += "  %15s |";
                         break;
                     case 2:
                         cabecalho += "  Total Hospitalizações |";
@@ -1851,15 +1859,15 @@ public class Main {
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas(leituraDeDatas[0])),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas(leituraDeDatas[1])),datas);
 
-            String cabecalho = "Semanas                ";
-            String impressao = "%s - %s";
+            String cabecalho = "Semana(s)               |";
+            String impressao = "%s - %s |";
 
             for (int i = 1; i <= 4; i++) {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados |";
-                            impressao += " | %15s |";
+                            cabecalho += "  Novos Infetados |";
+                            impressao += "  %15s |";
                             break;
                         case 2:
                             cabecalho += "  Novas Hospitalizações |";
@@ -1975,15 +1983,15 @@ public class Main {
         if (numeroSemanas == -1) {
             System.out.println("Introduza datas que contenham pelo menos 1 semana");
         } else {
-            String cabecalho = "Semanas                ";
-            String impressao = "%s - %s";
+            String cabecalho = "Semana(s)               |";
+            String impressao = "%s - %s |";
 
             for (int i = 1; i <= 4; i++) {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Total Infetados |";
-                            impressao += " | %15s |";
+                            cabecalho += "  Total Infetados |";
+                            impressao += "  %15s |";
                             break;
                         case 2:
                             cabecalho += "  Total Hospitalizações |";
@@ -2042,15 +2050,15 @@ public class Main {
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-            String cabecalho = "Meses                  ";
-            String impressao = "%s - %s";
+            String cabecalho = "Meses                   |";
+            String impressao = "%s - %s |";
 
             for (int i = 1; i <= 4; i++) {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Novos Infetados |";
-                            impressao += " | %15s |";
+                            cabecalho += "  Novos Infetados |";
+                            impressao += "  %15s |";
                             break;
                         case 2:
                             cabecalho += "  Novas Hospitalizações |";
@@ -2157,15 +2165,15 @@ public class Main {
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-            String cabecalho = "Meses                  ";
-            String impressao = "%s - %s";
+            String cabecalho = "Meses                   |";
+            String impressao = "%s - %s |";
 
             for (int i = 1; i <= 4; i++) {
                 if (existeNoArray(colunas, i)) {
                     switch (i) {
                         case 1:
-                            cabecalho += " | Total Infetados |";
-                            impressao += " | %15s |";
+                            cabecalho += "  Total Infetados |";
+                            impressao += "  %15s |";
                             break;
                         case 2:
                             cabecalho += "  Total Hospitalizações |";
@@ -2255,37 +2263,37 @@ public class Main {
         int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
 
-        String cabecalho = "Datas                       ";
-        String impressao = "";
-        String impressaoMediaEDesvio = "";
+        String cabecalho = "Datas                        |";
+        String impressao = " |";
+        String impressaoMediaEDesvio = " |";
         String tracinhos = "------------------------------";
 
         for (int i = 1; i <= 4; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | %5s Novos Infetados |";
-                        impressao += " | %21s |";
-                        impressaoMediaEDesvio += " | %21.4f |";
-                        tracinhos += "------------------------";
+                        cabecalho += "  %5s Novos Infetados |";
+                        impressao += "  %21s |";
+                        impressaoMediaEDesvio += "  %21.4f |";
+                        tracinhos += "-------------------------";
                         break;
                     case 2:
                         cabecalho += "  Novas Hospitalizações |";
                         impressao += "  %21.10s |";
                         impressaoMediaEDesvio += "  %21.4f |";
-                        tracinhos += "------------------------";
+                        tracinhos += "-------------------------";
                         break;
                     case 3:
                         cabecalho += "  Novos UCI |";
                         impressao += "  %9.10s |";
                         impressaoMediaEDesvio += "  %9.4f |";
-                        tracinhos += "------------";
+                        tracinhos += "-------------";
                         break;
                     case 4:
                         cabecalho += "  Novas Mortes |";
                         impressao += "  %12.10s |";
                         impressaoMediaEDesvio += "  %12.4f |";
-                        tracinhos += "-------------";
+                        tracinhos += "----------------";
                         break;
                 }
             } else {
@@ -2410,37 +2418,37 @@ public class Main {
         int indexData1 = indexData(stringParaDateEConverterDatas(intervalo1[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(intervalo2[0]), datas);
 
-        String cabecalho = "Datas                       ";
-        String impressao = "";
-        String impressaoMediaEDesvio = "";
+        String cabecalho = "Datas                        |";
+        String impressao = " |";
+        String impressaoMediaEDesvio = " |";
         String tracinhos = "------------------------------";
 
         for (int i = 1; i <= 4; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | %5s Total Infetados |";
-                        impressao += " | %21s |";
-                        impressaoMediaEDesvio += " | %21.4f |";
-                        tracinhos += "------------------------";
+                        cabecalho += "  %5s Total Infetados |";
+                        impressao += "  %21s |";
+                        impressaoMediaEDesvio += "  %21.4f |";
+                        tracinhos += "-------------------------";
                         break;
                     case 2:
                         cabecalho += "  Total Hospitalizações |";
                         impressao += "  %21.10s |";
                         impressaoMediaEDesvio += "  %21.4f |";
-                        tracinhos += "------------------------";
+                        tracinhos += "-------------------------";
                         break;
                     case 3:
                         cabecalho += "  Total UCI |";
                         impressao += "  %9.10s |";
                         impressaoMediaEDesvio += "  %9.4f |";
-                        tracinhos += "------------";
+                        tracinhos += "-------------";
                         break;
                     case 4:
                         cabecalho += "  Total Mortes |";
                         impressao += "  %12.10s |";
                         impressaoMediaEDesvio += "  %12.4f |";
-                        tracinhos += "---------------";
+                        tracinhos += "----------------";
                         break;
                 }
             } else {
@@ -2592,15 +2600,15 @@ public class Main {
         intervalo[0] = data;
         intervalo[1] = dataEscolhida;
 
-        String cabecalho = "\n%31s";
-        String impressao = "";
+        String cabecalho = "\n%31s |";
+        String impressao = " |";
 
         for (int i = 1; i <= 5; i++) {
             if (existeNoArray(colunas, i)) {
                 switch (i) {
                     case 1:
-                        cabecalho += " | Total Não Infetados |";
-                        impressao += " | %19.1f |";
+                        cabecalho += "  Total Não Infetados |";
+                        impressao += "  %19.1f |";
                         break;
                     case 2:
                         cabecalho += "  Total Infetados |";
@@ -2612,7 +2620,7 @@ public class Main {
                         break;
                     case 4:
                         cabecalho += "     Total UCI   |";
-                        impressao += "  %15.1f |";
+                        impressao += "  %14.1f |";
                         break;
                     case 5:
                         cabecalho += "  Total Mortes |";
@@ -2643,7 +2651,7 @@ public class Main {
         double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
 
         double[][] matrizL = new double[matrizSemObi.length][matrizSemObi.length];
-        double[][] matrizU = new double[matrizSemObi.length][matrizSemObi.length];
+        double[][] matrizU;
         matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
 
         double[][] vetor = {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
@@ -2665,7 +2673,7 @@ public class Main {
         double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
 
         double[][] matrizL = new double[matrizSemObi.length][matrizSemObi.length];
-        double[][] matrizU = new double[matrizSemObi.length][matrizSemObi.length];
+        double[][] matrizU;
         matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
 
         double[][] vetor = {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
