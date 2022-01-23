@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.function.ToLongBiFunction;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -152,78 +153,114 @@ public class Main {
                 i++;
             }
 
-            String output = "";
-            int numLinhas;
-
-            // totais
-            if (ficheiroTotalCasos != null) {
-                numLinhas = tamanhoLinhasFicheiro(ficheiroTotalCasos);
-                acumuladoDatas = lerDatas(ficheiroTotalCasos, numLinhas);
-                acumuladoDados = lerDados(ficheiroTotalCasos, numLinhas);
-
-                // todo
-            }
-
-            // acumulados
-            if (ficheiroAcumuladosCasos != null) {
-                numLinhas = tamanhoLinhasFicheiro(ficheiroAcumuladosCasos);
-                acumuladoDatas = lerDatas(ficheiroAcumuladosCasos, numLinhas);
-                acumuladoDados = lerDados(ficheiroAcumuladosCasos, numLinhas);
-
-                // todo
-            }
-
-            // previsão
-            if(ficheiroMatrizTransicao != null && ficheiroTotalCasos != null) {
-                output += verPrevisoesNaoInterativo(ficheiroMatrizTransicao, dataPrevisao, totalDatas, totalDados);
-            }
-
-            // todo: output p/ ficheiro
             PrintWriter outputWriter;
             try {
                 outputWriter = new PrintWriter(ficheiroOutput, "UTF-8");
+
+                String output = prepararOutput(resolucaoTemporal, totalDatas, totalDados, acumuladoDatas, acumuladoDados, intervaloDatasVisualizacao, intervaloDatas1, intervaloDatas2, dataPrevisao, ficheiroTotalCasos, ficheiroAcumuladosCasos, ficheiroMatrizTransicao);
+
+                int numLinhas;
+
+                // totais
+                if (ficheiroTotalCasos != null) {
+                    numLinhas = tamanhoLinhasFicheiro(ficheiroTotalCasos);
+                    totalDatas = lerDatas(ficheiroTotalCasos, numLinhas);
+                    totalDados = lerDados(ficheiroTotalCasos, numLinhas);
+
+                    output += visualizarDadosNaoInterativo("2", resolucaoTemporal, totalDatas, totalDados, acumuladoDatas, acumuladoDados, intervaloDatasVisualizacao, intervaloDatas1, intervaloDatas2);
+                }
+
+                // acumulados
+                if (ficheiroAcumuladosCasos != null) {
+                    numLinhas = tamanhoLinhasFicheiro(ficheiroAcumuladosCasos);
+                    acumuladoDatas = lerDatas(ficheiroAcumuladosCasos, numLinhas);
+                    acumuladoDados = lerDados(ficheiroAcumuladosCasos, numLinhas);
+
+                    output += visualizarDadosNaoInterativo("1", resolucaoTemporal, totalDatas, totalDados, acumuladoDatas, acumuladoDados, intervaloDatasVisualizacao, intervaloDatas1, intervaloDatas2);
+                }
+
+                // previsão
+                if(ficheiroMatrizTransicao != null && ficheiroTotalCasos != null) {
+                    output += verPrevisoesNaoInterativo(ficheiroMatrizTransicao, dataPrevisao, totalDatas, totalDados);
+                }
+
+                // escrever no ficheiro
+                outputWriter.println(output);
+                outputWriter.close();
+
             } catch (IOException e) {
                 System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
                 return;
             }
 
-            outputWriter.println(output);
-            outputWriter.close();
-
         } else {
-            System.out.println("\n\n                      Bem-vindo!                                  ");
+            System.out.println("\n\n- Bem-vindo!");
             System.out.println("Para continuar, necessita de carregar pelo menos um ficheiro. \n");
             String opcaoTipoFicheiro = selecionarTipoFicheiroInicial();
             String caminhoFicheiro = selecionarFicheiro();
-            switch (opcaoTipoFicheiro) {
-                case "1":
-                    int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                    totalDados = lerDados(caminhoFicheiro, numLinhas);
-                    double[][] matriz = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
-                    jaLeuFicheiros[0] = true;
-                    System.out.println("Ficheiro lido com sucesso!");
-                    pressioneEnterParaCont();
-                    opcaoTipoFicheiro = menu();
-                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados,matriz);
-                    break;
-                case "2":
-                    numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
-                    totalDatas = lerDatas(caminhoFicheiro, numLinhas);
-                    totalDados = lerDados(caminhoFicheiro, numLinhas);
-                    acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
-                    acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
-                    matriz = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
-                    jaLeuFicheiros[1] = true;
-                    System.out.println("Ficheiro lido com sucesso!");
-                    pressioneEnterParaCont();
-                    opcaoTipoFicheiro = menu();
-                    executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados,matriz);
-                    break;
-            }
+            double[][] matriz = new double[NUMERO_ESTADOS_DIFERENTES][NUMERO_ESTADOS_DIFERENTES];
+
+            int numLinhas = tamanhoLinhasFicheiro(caminhoFicheiro);
+            acumuladoDatas = lerDatas(caminhoFicheiro, numLinhas);
+            acumuladoDados = lerDados(caminhoFicheiro, numLinhas);
+            totalDatas = lerDatas(caminhoFicheiro, numLinhas);
+            totalDados = lerDados(caminhoFicheiro, numLinhas);
+            jaLeuFicheiros[opcaoTipoFicheiro == "1" ? 0 : 1] = true;
+
+            System.out.println("Ficheiro lido com sucesso!");
+            pressioneEnterParaCont();
+            opcaoTipoFicheiro = menu();
+            executaOpcao(opcaoTipoFicheiro, jaLeuFicheiros, acumuladoDatas, acumuladoDados, totalDatas, totalDados, matriz);
         }
+    }
+
+    public static String prepararOutput(int resolucaoTemporal, String[] totalDatas, int[][] totalDados, String[] acumuladoDatas, int[][] acumuladoDados, String[] intervaloDatas, String[] intervalo1, String[] intervalo2, String dataPrevisao, String fichTotal, String fichAcum, String fichMatriz) {
+        String output = "Parâmetros:\n";
+        output += String.format("%-32s %s\n", " - Resolução temporal: ", resolucaoTemporal == -1 ? "<NÃO DEFINIDO>" : resolucaoTemporal);
+        output += String.format("%-32s %s\n", " - Data início visualização: ", intervaloDatas[0] == null ? "<NÃO DEFINIDO>" : intervaloDatas[0]);
+        output += String.format("%-32s %s\n", " - Data fim visualização: ", intervaloDatas[1] == null ? "<NÃO DEFINIDO>" : intervaloDatas[1]);
+        output += String.format("%-32s %s\n", " - Data início 1º intervalo: ", intervalo1[0] == null ? "<NÃO DEFINIDO>" : intervalo1[0]);
+        output += String.format("%-32s %s\n", " - Data fim 1º intervalo: ", intervalo1[1] == null ? "<NÃO DEFINIDO>" : intervalo1[1]);
+        output += String.format("%-32s %s\n", " - Data início 2º intervalo: ", intervalo2[0] == null ? "<NÃO DEFINIDO>" : intervalo2[0]);
+        output += String.format("%-32s %s\n", " - Data fim 2º intervalo: ", intervalo2[1] == null ? "<NÃO DEFINIDO>" : intervalo2[1]);
+        output += String.format("%-32s %s\n\n", " - Data para previsão: ", dataPrevisao == null ? "<NÃO DEFINIDO>" : dataPrevisao);
+
+        output += "Ficheiros carregados:\n";
+        output += String.format("%-32s %s\n", " - Dados p/ total casos: ", fichTotal == null ? "<NÃO DEFINIDO>" : fichTotal);
+        output += String.format("%-32s %s\n", " - Dados p/ casos acumulados: ", fichAcum == null ? "<NÃO DEFINIDO>" : fichAcum);
+        output += String.format("%-32s %s\n\n", " - Matriz de transição: ", fichMatriz == null ? "<NÃO DEFINIDO>" : fichMatriz);
+
+        output += "--------------------------------------------------\n\n";
+
+        return output;
+    }
+
+    public static String visualizarDadosNaoInterativo(String opcao, int resolucaoTemporal, String[] totalDatas, int[][] totalDados, String[] acumuladoDatas, int[][] acumuladoDados, String[] intervaloDatasVisualizacao, String[] intervalo1, String[] intervalo2) {
+        String output = "";
+        switch (resolucaoTemporal) {
+            case 0: // diária
+                output += verDadosDiariosNaoInterativo(opcao, acumuladoDatas, acumuladoDados, totalDatas, totalDados, intervaloDatasVisualizacao);
+                break;
+
+            case 1: // semanal
+                output += verDadosSemanaisNaoInterativo(opcao, acumuladoDatas, acumuladoDados, totalDatas, totalDados, intervaloDatasVisualizacao);
+                break;
+
+            case 2: // mensal
+                output += verDadosMensaisNaoInterativo(opcao, acumuladoDatas, acumuladoDados, totalDatas, totalDados, intervaloDatasVisualizacao);
+                break;
+        }
+
+        // comparação
+        if(!verificarIntervalosNull(intervalo1, intervalo2)) {
+            output += verDadosComparativosNaoInterativo(opcao, acumuladoDatas, acumuladoDados, totalDatas, totalDados, intervalo1, intervalo2);
+        }
+
+        return output;
+    }
+
+    public static boolean verificarIntervalosNull(String[] intervalo1, String[] intervalo2) {
+        return intervalo1[0] == null || intervalo1[1] == null || intervalo2[0] == null || intervalo2[1] == null; 
     }
 
     public static String[] lerDatas(String caminhoFicheiro, int numeroLinhas) throws FileNotFoundException {
@@ -398,7 +435,7 @@ public class Main {
                         leituraDatas = leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasAcumulados, leituraDatas)) {
                             int[] colunas = menuEscolherQtdDados();
-                            mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
+                            System.out.print(mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas));
                             String diretorio = guardarOuSair();
                             if (!diretorio.equals("")) {
                                 imprimirFicheiroAcumuladoDiarios(diretorio, leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
@@ -418,7 +455,7 @@ public class Main {
                         leituraDatas = leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasTotais, leituraDatas)) {
                             int[] colunas = menuEscolherQtdDados();
-                            mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais, colunas);
+                            System.out.print(mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais, colunas));
                             String diretorio = guardarOuSair();
                             if (!diretorio.equals("")) {
                                 imprimirFicheiroTotalDiarios(diretorio, leituraDatas, datasTotais, dadosTotais, colunas);
@@ -437,12 +474,41 @@ public class Main {
         }
     }
 
-    public static void verDadosSemanais (String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
+    public static String verDadosDiariosNaoInterativo(String opcao, String[] datasAcumulados, int[][] dadosAcumaldos, String[] datasTotais, int[][] dadosTotais, String[] leituraDatas) {
+        String output = "";
+        int[] colunas = {1, 2, 3, 4, 5};
+        switch (opcao) {
+            case "1":
+                output += String.format("\nNovos casos diários entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasAcumulados, leituraDatas)) {
+                        output += mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasAcumulados,leituraDatas));
+
+                break;
+            case "2":
+                output += String.format("\nCasos totais diários entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasTotais, leituraDatas)) {
+                        output += mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais, colunas);
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasTotais,leituraDatas));
+                break;
+        }
+        return output;
+    }
+
+    public static void verDadosSemanais(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
         switch (opcao) {
             case "1":
                 if (jaLeuFicheiros[0]) {
                     String[] leituraDatas;
-                    int numeroSemanas=0;
+                    int numeroSemanas = 0;
                     do {
                         leituraDatas = leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
@@ -450,7 +516,7 @@ public class Main {
                             numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]), stringParaDateEConverterDatas(leituraDatas[1]));
                             if (numeroSemanas != -1 && numeroSemanas!=0) {
                                 colunas = menuEscolherQtdDados();
-                                mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroSemanas);
+                                System.out.print(mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroSemanas));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroAcumuladoSemanais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado, colunas);
@@ -469,7 +535,7 @@ public class Main {
             case "2":
                 if (jaLeuFicheiros[1]) {
                     String[] leituraDatas;
-                    int numeroSemanas=0;
+                    int numeroSemanas = 0;
                     do {
                         leituraDatas=leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasTotal, leituraDatas)) {
@@ -477,7 +543,7 @@ public class Main {
                             numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]),stringParaDateEConverterDatas(leituraDatas[1]));
                             if (numeroSemanas !=-1 && numeroSemanas !=0) {
                                 colunas=menuEscolherQtdDados();
-                                mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
+                                System.out.print(mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroTotalSemanais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
@@ -499,6 +565,45 @@ public class Main {
         }
     }
 
+    public static String verDadosSemanaisNaoInterativo(String opcao, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal, String[] leituraDatas) {
+        String output = "";
+        int[] colunas = {1, 2, 3, 4, 5};
+        int numeroSemanas = 0;
+        switch (opcao) {
+            case "1":
+                output += String.format("\nNovos casos semanais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
+                        numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]), stringParaDateEConverterDatas(leituraDatas[1]));
+                        if (numeroSemanas != -1 && numeroSemanas!=0) {
+                            output += mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas, numeroSemanas);
+                        } else {
+                            output += "Introduza datas que contenham pelo menos 1 semana.";
+                        }
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroSemanas == -1 || numeroSemanas == 0);
+                break;
+            case "2":
+                output += String.format("\nCasos totais semanais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasTotal, leituraDatas)) {
+                        numeroSemanas = calcularNumSemanas(stringParaDateEConverterDatas(leituraDatas[0]),stringParaDateEConverterDatas(leituraDatas[1]));
+                        if (numeroSemanas !=-1 && numeroSemanas !=0) {
+                            output += mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
+                        } else {
+                            output += "Introduza datas que contenham pelo menos 1 semana.";
+                        }
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas ==-1 || numeroSemanas==0);
+                break;
+        }
+        return output;
+    }
+
     public static void verDadosMensais(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
         switch (opcao) {
             case "1":
@@ -511,7 +616,7 @@ public class Main {
                             numeroMeses = numeroMeses(leituraDatas);
                             if (numeroMeses!=0) {
                                 int[] colunas = menuEscolherQtdDados();
-                                mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroMeses);
+                                System.out.print(mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroMeses));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroNovosMensais(diretorio, leituraDatas, datasAcumulado, dadosAcumulado, colunas,numeroMeses);
@@ -537,7 +642,7 @@ public class Main {
                             numeroMeses=numeroMeses(leituraDatas);
                             if (numeroMeses!=0) {
                                 int[] colunas = menuEscolherQtdDados();
-                                mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
+                                System.out.print(mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroTotaisMensais(diretorio, leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
@@ -559,6 +664,45 @@ public class Main {
         }
     }
 
+    public static String verDadosMensaisNaoInterativo(String opcao, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal, String[] leituraDatas) {
+        String output = "";
+        int[] colunas = {1, 2, 3, 4, 5};
+        int numeroMeses=0;
+        switch (opcao) {
+            case "1":
+                output += String.format("\nNovos casos mensais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasAcumulado, leituraDatas)) {
+                        numeroMeses = numeroMeses(leituraDatas);
+                        if (numeroMeses != 0) {
+                            output += mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas, numeroMeses);
+                        } else {
+                            output += "Introduza datas que contenham pelo menos 1 mês.";
+                        }
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroMeses == 0);
+                break;
+            case "2":
+                output += String.format("\nCasos totais mensais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
+                do {
+                    if (existeNoArrayDatas(datasTotal, leituraDatas)) {
+                        numeroMeses = numeroMeses(leituraDatas);
+                        if (numeroMeses != 0) {
+                            output += mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
+                        } else {
+                            output += "Introduza datas que contenham pelo menos 1 mês.";
+                        }
+                    } else {
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                    }
+                } while (!existeNoArrayDatas(datasTotal, leituraDatas) || numeroMeses == 0);
+                break;
+        }
+        return output;
+    }
+
     public static void verDadosComparativos(String opcao, boolean[] jaLeuFicheiros, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal) {
         switch (opcao) {
             case "1":
@@ -572,7 +716,7 @@ public class Main {
                         intervalo2 = leituraIntervaloDatas();
                         if (existeNoArrayDatas(datasAcumulado,intervalo1) && existeNoArrayDatas(datasAcumulado,intervalo2)) {
                             int[] colunas = menuEscolherQtdDados();
-                            analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
+                            System.out.print(analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas));
                             String diretorio = guardarOuSair();
                             if (!diretorio.equals("")) {
                                 imprimirFicheiroAcumuladosComparativos(diretorio, intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
@@ -593,9 +737,9 @@ public class Main {
                         intervalo1 = leituraIntervaloDatas();
                         System.out.println("\n2º intervalo:");
                         intervalo2 = leituraIntervaloDatas();
-                        if (existeNoArrayDatas(datasTotal,intervalo1) && existeNoArrayDatas(datasTotal,intervalo2)) {
+                        if (existeNoArrayDatas(datasTotal,intervalo1) && existeNoArrayDatas(datasTotal, intervalo2)) {
                             int[] colunas = menuEscolherQtdDados();
-                            analiseComparativaTotaisCasos(intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
+                            System.out.print(analiseComparativaTotaisCasos(intervalo1, intervalo2, datasTotal, dadosTotal, colunas));
                             String diretorio = guardarOuSair();
                             if (!diretorio.equals("")) {
                                 imprimirFicheiroTotaisComparativos(diretorio, intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
@@ -614,7 +758,35 @@ public class Main {
         }
     }
 
-    public static void verPrevisoes(boolean[] jaLeuFicheiro, String[] datas, int[][] dados,double[][] matriz,String opcao) throws FileNotFoundException {
+    public static String verDadosComparativosNaoInterativo(String opcao, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal, String[] intervalo1, String[] intervalo2) {
+        String output = "";
+        int[] colunas = {1, 2, 3, 4, 5};
+        switch (opcao) {
+            case "1":
+                output += String.format("\nComparação de novos casos entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
+                do {
+                    if (existeNoArrayDatas(datasAcumulado, intervalo1) && existeNoArrayDatas(datasAcumulado, intervalo2)) {
+                        output += analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
+                    } else
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                } while (!existeNoArrayDatas(datasAcumulado,intervalo1) && !existeNoArrayDatas(datasAcumulado,intervalo2));
+                break;
+            case "2":
+                output += String.format("\nComparação de casos totais entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
+                do {
+                    if (existeNoArrayDatas(datasTotal, intervalo1) && existeNoArrayDatas(datasTotal, intervalo2)) {
+                        output += analiseComparativaTotaisCasos(intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
+                    } else {
+                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                    }
+                } while (!existeNoArrayDatas(datasTotal,intervalo1) && !existeNoArrayDatas(datasTotal,intervalo2));
+                break;
+        }
+        return output;
+    }
+
+    // ! 11-11-2020 & 2020-11-11
+    public static void verPrevisoes(boolean[] jaLeuFicheiro, String[] datas, int[][] dados, double[][] matriz, String opcao) throws FileNotFoundException {
         // ler matriz do ficheiro
         // veririficar se o dia que ele introduziu pertence ao ficheiro
         // Se nao existir, escolher o dia mais proximo
@@ -682,6 +854,7 @@ public class Main {
         double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
 
         // opção 1
+        output += "Previsões:\n";
         Date dataEscolhida = stringParaDateEConverterDatas(dataPrevisao);
         indexData1 = indexData(dataEscolhida, datas);
         String data;
@@ -690,48 +863,28 @@ public class Main {
 
             if (indexData1 == 0) {
                 data = datas[0];
-
-                // todo: guardar numa string, retornar e guardar no ficheiro
-                // mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe,colunas);
-                // String diretorio = guardarOuSair();
-                // if(!diretorio.equals("")){
-                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
-                // }
+                output += mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
             }
             if (existeNoArrayData(datas, dataPrevisao)) {
                 data = escolherDiaAnterior(indexData1, datas);
-
-                // todo: guardar numa string, retornar e guardar no ficheiro
-                // mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
-                // String diretorio = guardarOuSair();
-                // if(!diretorio.equals("")){
-                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
-                // }
+                output += mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
             } else if (!verificarDiaExiste(datas, dataPrevisao) && dataEscolhida.after(stringParaDateEConverterDatas(datas[datas.length - 1]))) {
                 data = escolherDiaMaisProximo(dataEscolhida, datas);
-
-                // todo: guardar numa string, retornar e guardar no ficheiro
-                // mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
-                // String diretorio=guardarOuSair();
-                // if(!diretorio.equals("")){
-                //     imprimirFicheiroPrevisaoDia(diretorio,dataEscolhe,data,colunas,matriz,dados,datas);
-                // }
+                output += mostrarPrevisaoDia(data, datas, dados, matriz, dataPrevisao, colunas);
             } else {
                 output += "\nERRO: Data inválida para fazer previsão (Não é possivel fazer previsão a datas anteriores da primeira do ficheiro introduzido).\n";
             }
         } else {
-            output += "ERRO: Data inválida.\n";
+            output += "\nERRO: Data inválida.\n";
         }
 
         // opção 2
-        String previsaoDiasAteMorte = previsaoDiasAteMorteNaoInterativo(matriz);
+        output += "\n";
+        output += previsaoDiasAteMorteNaoInterativo(matriz);
 
-        // todo: return
         return output;
     }
 
-
-    // todo teste
     public static void imprimirFicheiroAcumuladoDiarios(String diretorio, String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         String nomeFicheiro = diretorio + "/dados_novos_diarios_" + leituraDeDatas[0] + "_a_" + leituraDeDatas[1] + ".csv";
         PrintWriter ficheiroEscrita;
@@ -1289,11 +1442,13 @@ public class Main {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
-            System.out.println("| ------------------------------- |");
-            System.out.println("| Por favor, escolha uma opção:   |");
-            System.out.println("| 1. Carregar dados acumulados    |");
-            System.out.println("| 2. Carregar dados totais        |");
-            System.out.println("| ------------------------------- |");
+            System.out.println("+--------------------------------------+");
+            System.out.println("|                                      |");
+            System.out.println("|   Por favor, escolha uma opção:      |");
+            System.out.println("|     1. Carregar dados acumulados     |");
+            System.out.println("|     2. Carregar dados totais         |");
+            System.out.println("|                                      |");
+            System.out.println("+--------------------------------------+");
             System.out.println();
             System.out.print("> ");
 
@@ -1312,13 +1467,14 @@ public class Main {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
-            System.out.println("| ------------------------------- |");
-            System.out.println("| Por favor, escolha uma opção:   |");
-            System.out.println("| 1. Carregar dados acumulados    |");
-            System.out.println("| 2. Carregar dados totais        |");
-            System.out.println("| 3. Carregar matriz              |");
-            System.out.println("| 0. Voltar atrás                 |");
-            System.out.println("| ------------------------------- |");
+            System.out.println("+--------------------------------------+");
+            System.out.println("|                                      |");
+            System.out.println("|   Por favor, escolha uma opção:      |");
+            System.out.println("|     1. Carregar dados acumulados     |");
+            System.out.println("|     2. Carregar dados totais         |");
+            System.out.println("|     0. Voltar atrás                  |");
+            System.out.println("|                                      |");
+            System.out.println("+--------------------------------------+");
             System.out.println();
             System.out.print("> ");
 
@@ -1337,12 +1493,14 @@ public class Main {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
-            System.out.println("\n| ----------------------------- |");
-            System.out.println("| Por favor, escolha uma opção: |");
-            System.out.println("| 1. Visualizar novos casos     |");
-            System.out.println("| 2. Visualizar casos totais    |");
-            System.out.println("| 0. Voltar atrás               |");
-            System.out.println("| ----------------------------- | ");
+            System.out.println("+------------------------------------+");
+            System.out.println("|                                    |");
+            System.out.println("|   Por favor, escolha uma opção:    |");
+            System.out.println("|     1. Visualizar novos casos      |");
+            System.out.println("|     2. Visualizar casos totais     |");
+            System.out.println("|     0. Voltar atrás                |");
+            System.out.println("|                                    |");
+            System.out.println("+------------------------------------+");
             System.out.println();
             System.out.print("> ");
 
@@ -1360,12 +1518,14 @@ public class Main {
         String selecaoUtilizador;
         do {
             // Apresentação do menu
-            System.out.println("\n| ---------------------------------------------- |");
-            System.out.println("| Por favor, escolha uma opção:                  |");
-            System.out.println("| 1. Visualizar previsão para 1 dia              |");
-            System.out.println("| 2. Visualizar previsão dias até morte          |");
-            System.out.println("| 0. Voltar atrás                                |");
-            System.out.println("| ---------------------------------------------- |");
+            System.out.println("\n+------------------------------------------------+");
+            System.out.println("|                                                |");
+            System.out.println("|   Por favor, escolha uma opção:                |");
+            System.out.println("|     1. Visualizar previsão para 1 dia          |");
+            System.out.println("|     2. Visualizar previsão dias até morte      |");
+            System.out.println("|     0. Voltar atrás                            |");
+            System.out.println("|                                                |");
+            System.out.println("+------------------------------------------------+");
             System.out.print("\n> ");
 
             selecaoUtilizador = kbScanner.nextLine();
@@ -1384,15 +1544,17 @@ public class Main {
 
         do {
             todosInteiros = true;
-            System.out.println("\n| ------------------------------------------------------------------------------------- |");
-            System.out.println("| Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3) |");
-            System.out.println("| 1. Não Infetados                                                                      |");
-            System.out.println("| 2. Infetados                                                                          |");
-            System.out.println("| 3. Hospitalizações                                                                    |");
-            System.out.println("| 4. UCI                                                                                |");
-            System.out.println("| 5. Mortes                                                                             |");
-            System.out.println("| 0. Todos                                                                              |");
-            System.out.println("| ------------------------------------------------------------------------------------- |");
+            System.out.println("\n+--------------------------------------------------------------------------------------------+");
+            System.out.println("|                                                                                            |");
+            System.out.println("|   Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3)    |");
+            System.out.println("|     1. Não Infetados                                                                       |");
+            System.out.println("|     2. Infetados                                                                           |");
+            System.out.println("|     3. Hospitalizações                                                                     |");
+            System.out.println("|     4. UCI                                                                                 |");
+            System.out.println("|     5. Mortes                                                                              |");
+            System.out.println("|     0. Todos                                                                               |");
+            System.out.println("|                                                                                            |");
+            System.out.println("+-------------------------------------------------------------------------------------------+");
             System.out.print("\n> ");
             String tiposDados = kbScanner.nextLine();
 
@@ -1433,14 +1595,16 @@ public class Main {
 
         do {
             todosInteiros = true;
-            System.out.println("\n| ------------------------------------------------------------------------------------- |");
-            System.out.println("| Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3) |");
-            System.out.println("| 1. Infetados                                                                          |");
-            System.out.println("| 2. Hospitalizações                                                                    |");
-            System.out.println("| 3. UCI                                                                                |");
-            System.out.println("| 4. Mortes                                                                             |");
-            System.out.println("| 0. Todos                                                                              |");
-            System.out.println("| ------------------------------------------------------------------------------------- |");
+            System.out.println("\n+--------------------------------------------------------------------------------------------+");
+            System.out.println("|                                                                                            |");
+            System.out.println("|   Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3)    |");
+            System.out.println("|     1. Infetados                                                                           |");
+            System.out.println("|     2. Hospitalizações                                                                     |");
+            System.out.println("|     3. UCI                                                                                 |");
+            System.out.println("|     4. Mortes                                                                              |");
+            System.out.println("|     0. Todos                                                                               |");
+            System.out.println("|                                                                                            |");
+            System.out.println("+--------------------------------------------------------------------------------------------+");
             System.out.print("\n> ");
             String tiposDados = kbScanner.nextLine();
 
@@ -1478,19 +1642,22 @@ public class Main {
     public static String menu() {
         String selecaoUtilizador;
         // Apresentação do menu
-        System.out.println("\n| ------------------------------- |");
-        System.out.println("| Por favor, escolha uma opção:   |");
-        System.out.println("| 1. Carregar ficheiros           |");
-        System.out.println("| 2. Visualizar dados diários     |");
-        System.out.println("| 3. Visualizar dados semanais    |");
-        System.out.println("| 4. Visualizar dados mensais     |");
-        System.out.println("| 5. Comparar intervalo de datas  |");
-        System.out.println("| 6. Previsões sobre a pandemia   |");
-        System.out.println("| 0. Sair                         |");
-        System.out.println("| ------------------------------- |\n");
+        System.out.println("\n+-----------------------------------------+");
+        System.out.println("|                                         |");
+        System.out.println("|   Por favor, escolha uma opção:         |");
+        System.out.println("|     1. Carregar ficheiros               |");
+        System.out.println("|     2. Visualizar dados diários         |");
+        System.out.println("|     3. Visualizar dados semanais        |");
+        System.out.println("|     4. Visualizar dados mensais         |");
+        System.out.println("|     5. Comparar intervalo de datas      |");
+        System.out.println("|     6. Previsões sobre a pandemia       |");
+        System.out.println("|     0. Sair                             |");
+        System.out.println("|                                         |");
+        System.out.println("+-----------------------------------------+\n");
         System.out.print("> ");
 
         selecaoUtilizador = kbScanner.nextLine();
+        System.out.println();
         return selecaoUtilizador;
     }
 
@@ -1562,7 +1729,7 @@ public class Main {
     public static String selecionarMatriz() {
         String caminho;
         do {
-            System.out.print("\nInsira o caminho absoluto do ficheiro que contém a matriz: ");
+            System.out.print("Insira o caminho absoluto do ficheiro que contém a matriz: ");
             caminho = kbScanner.nextLine();
             if (!(new File(caminho)).isFile()) {
                 System.out.println("ERRO: Ficheiro não encontrado. Por favor, insira o caminho absoluto de um ficheiro válido.");
@@ -1732,8 +1899,7 @@ public class Main {
 
     //--------------------------------------------Analise Diária Novos Casos------------------------------------------//
 
-    public static void mostrarDadosDiarios(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
-
+    public static String mostrarDadosDiarios(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas) {
         int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]), datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]), datas);
 
@@ -1768,22 +1934,23 @@ public class Main {
             cabecalho += "\n";
             impressao += "\n";
 
-            System.out.printf(cabecalho, "");
+            String output = String.format(cabecalho, "");
             for (int i = 0; i <= indexData2 - indexData1; i++) {
                 int[] novosInfetados = dadosDiariosNovos(dados[1], leituraDeDatas, datas);
                 int[] novosHospitalizacoes = dadosDiariosNovos(dados[2], leituraDeDatas, datas);
                 int[] novosUCI = dadosDiariosNovos(dados[3], leituraDeDatas, datas);
                 int[] novosMortes = dadosDiariosNovos(dados[4], leituraDeDatas, datas);
                 if (novosInfetados[i] == -1 && novosHospitalizacoes[i] == -1 && novosUCI[i] == -1 && novosMortes[i] == -1) {
-                    System.out.printf(impressao, datas[i], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+                    output += String.format(impressao, datas[i], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
                 } else {
-                    System.out.printf(impressao, datas[i + indexData1], mostraSeExistir(colunas, 1, novosInfetados[i]), mostraSeExistir(colunas, 2, novosHospitalizacoes[i]), mostraSeExistir(colunas, 3, novosUCI[i]), mostraSeExistir(colunas, 4, novosMortes[i]));
+                    output += String.format(impressao, datas[i + indexData1], mostraSeExistir(colunas, 1, novosInfetados[i]), mostraSeExistir(colunas, 2, novosHospitalizacoes[i]), mostraSeExistir(colunas, 3, novosUCI[i]), mostraSeExistir(colunas, 4, novosMortes[i]));
                 }
             }
+            return output;
         }
 
 
-    public static int[] dadosDiariosNovos (int[] dados,String[] leituraDeDatas, String[] datas) {
+    public static int[] dadosDiariosNovos(int[] dados,String[] leituraDeDatas, String[] datas) {
         int indexData1 = indexData(stringParaDateEConverterDatas(leituraDeDatas[0]),datas);
         int indexData2 = indexData(stringParaDateEConverterDatas(leituraDeDatas[1]),datas);
         int indice = 0;
@@ -1803,7 +1970,7 @@ public class Main {
 
     //--------------------------------------------Analise Diária Total Casos------------------------------------------//
 
-    public static void mostrarDadosTotaisDiarios (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas) {
+    public static String mostrarDadosTotaisDiarios(String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas) {
         int indexData1 = indexData(stringParaDateEConverterDatas((leituraDeDatas[0])),datas);
         int indexData2 = indexData(stringParaDateEConverterDatas((leituraDeDatas[1])),datas);
 
@@ -1838,20 +2005,21 @@ public class Main {
         cabecalho += "\n";
         impressao += "\n";
 
-        System.out.printf(cabecalho, "" );
+        String output = String.format(cabecalho, "");
         for (int i = indexData1; i <= indexData2; i++) {
             int dadosInfetados = dados[1][i];
             int dadosHospitalizados = dados[2][i];
             int dadosUCI = dados[3][i];
             int dadosMortes = dados[4][i];
-            System.out.printf(impressao, datas[i], mostraSeExistir(colunas, 1, dadosInfetados),mostraSeExistir(colunas, 2, dadosHospitalizados),mostraSeExistir(colunas, 3, dadosUCI),mostraSeExistir(colunas, 4, dadosMortes));
+            output += String.format(impressao, datas[i], mostraSeExistir(colunas, 1, dadosInfetados),mostraSeExistir(colunas, 2, dadosHospitalizados),mostraSeExistir(colunas, 3, dadosUCI),mostraSeExistir(colunas, 4, dadosMortes));
         }
+        return output;
     }
 
 
     //--------------------------------------------Analise Semanal Novos Casos-----------------------------------------------------//
 
-    public static void mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroSemanas)  {
+    public static String mostrarDadosSemanais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroSemanas)  {
         // mostrar dados das semanas entre as datas pretendidas, ou seja, por exemplo: dados da 1 semn, dados da 2 semn, dados da 3 semn
         // 2020-04-01 2020-04-02 -> Não é uma semana completa
         // 2020-04-1 2020-04-17 -> mostra 2 semanas 1-15
@@ -1890,14 +2058,15 @@ public class Main {
             cabecalho += "\n";
             impressao += "\n";
 
-            System.out.printf(cabecalho , "" );
+            String output = String.format(cabecalho, "");
             for (int i = 0; i < numeroSemanas; i++) {
                 int[] novosInfetados = dadosSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
                 int[] novosHospitalizacoes = dadosSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] novosUCI = dadosSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] novosMortes = dadosSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
+                output += String.format(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
             }
+            return output;
         }
 
 
@@ -1976,12 +2145,13 @@ public class Main {
 
     //--------------------------------------------Analise Semanal Total Casos-----------------------------------------//
 
-    public static void mostrarDadosTotaisSemanais (String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas,int numeroSemanas){
+    public static String mostrarDadosTotaisSemanais(String[] leituraDeDatas,String[] datas, int[][] dados, int[] colunas,int numeroSemanas){
         int indexData1 = indexData(verificarSemanaSegunda(stringParaDateEConverterDatas((leituraDeDatas[0]))),datas);
         int indexData2 = indexData(verificarSemanaDomingo(stringParaDateEConverterDatas((leituraDeDatas[1]))),datas);
+        String output = "";
 
         if (numeroSemanas == -1) {
-            System.out.println("Introduza datas que contenham pelo menos 1 semana");
+            output += "Introduza datas que contenham pelo menos 1 semana";
         } else {
             String cabecalho = "Semana(s)               |";
             String impressao = "%s - %s |";
@@ -2014,15 +2184,16 @@ public class Main {
             cabecalho += "\n";
             impressao += "\n";
 
-            System.out.printf(cabecalho , "" );
+            output += String.format(cabecalho, "");
             for (int i = 0; i < numeroSemanas; i++) {
                 int[] totaisInfetados = dadosTotaisSemanaisNovos(dados[1],numeroSemanas,indexData2,indexData1);
                 int[] totaisHospitalizacoes = dadosTotaisSemanaisNovos(dados[2],numeroSemanas,indexData2,indexData1);
                 int[] totaisUCI = dadosTotaisSemanaisNovos(dados[3], numeroSemanas,indexData2,indexData1);
                 int[] totaisMortes = dadosTotaisSemanaisNovos(dados[4],numeroSemanas,indexData2,indexData1);
-                System.out.printf(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, totaisInfetados[i]),mostraSeExistir(colunas, 2, totaisHospitalizacoes[i]),mostraSeExistir(colunas, 3, totaisUCI[i]),mostraSeExistir(colunas, 4, totaisMortes[i]));
+                output += String.format(impressao, datas[indexData1+(7*i)],datas[(indexData1+(7*i))+6], mostraSeExistir(colunas, 1, totaisInfetados[i]),mostraSeExistir(colunas, 2, totaisHospitalizacoes[i]),mostraSeExistir(colunas, 3, totaisUCI[i]),mostraSeExistir(colunas, 4, totaisMortes[i]));
             }
         }
+        return output;
     }
 
     public static int[] dadosTotaisSemanaisNovos(int[] dados, int numeroSemanas, int indexData2, int indexData1) {
@@ -2042,7 +2213,7 @@ public class Main {
 
     // ------------------------------------------Analise Mensal Novos Casos-------------------------------------------------------//
 
-    public static void mostrarDadosMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroMeses) {
+    public static String mostrarDadosMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroMeses) {
         // 4 semanas -> 1 mes
         // Dados para mostrar = acumulado ult dia do mes - acumulado pri dia do mes
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
@@ -2050,53 +2221,53 @@ public class Main {
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-            String cabecalho = "Meses                   |";
-            String impressao = "%s - %s |";
+        String cabecalho = "Meses                   |";
+        String impressao = "%s - %s |";
 
-            for (int i = 1; i <= 4; i++) {
-                if (existeNoArray(colunas, i)) {
-                    switch (i) {
-                        case 1:
-                            cabecalho += "  Novos Infetados |";
-                            impressao += "  %15s |";
-                            break;
-                        case 2:
-                            cabecalho += "  Novas Hospitalizações |";
-                            impressao += "  %21.10s |";
-                            break;
-                        case 3:
-                            cabecalho += "  Novos UCI |";
-                            impressao += "  %9.10s |";
-                            break;
-                        case 4:
-                            cabecalho += "  Novas Mortes |";
-                            impressao += "  %12.10s |";
-                            break;
-                    }
-                } else {
-                    impressao += "%s";
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += "  Novos Infetados |";
+                        impressao += "  %15s |";
+                        break;
+                    case 2:
+                        cabecalho += "  Novas Hospitalizações |";
+                        impressao += "  %21.10s |";
+                        break;
+                    case 3:
+                        cabecalho += "  Novos UCI |";
+                        impressao += "  %9.10s |";
+                        break;
+                    case 4:
+                        cabecalho += "  Novas Mortes |";
+                        impressao += "  %12.10s |";
+                        break;
                 }
+            } else {
+                impressao += "%s";
             }
-
-            cabecalho += "\n";
-            impressao += "\n";
-            System.out.printf(cabecalho , "" );
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(primeiroDiaValido);
-            int numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-            int currIndex=indexData1;
-            for (int i = 0; i < numeroMeses; i++) {
-                int[] novosInfetados = dadosMensaisNovos(primeiroDiaValido, dados[1], numeroMeses, indexData2, indexData1);
-                int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
-                int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
-                int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
-                calendar.add(Calendar.MONTH,1);
-                currIndex+=numDias;
-                numDias=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-            }
-
         }
+
+        cabecalho += "\n";
+        impressao += "\n";
+        String output = String.format(cabecalho, "");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(primeiroDiaValido);
+        int numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int currIndex=indexData1;
+        for (int i = 0; i < numeroMeses; i++) {
+            int[] novosInfetados = dadosMensaisNovos(primeiroDiaValido, dados[1], numeroMeses, indexData2, indexData1);
+            int[] novosHospitalizacoes = dadosMensaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
+            int[] novosUCI = dadosMensaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
+            int[] novosMortes = dadosMensaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
+            output += String.format(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
+            calendar.add(Calendar.MONTH,1);
+            currIndex+=numDias;
+            numDias=calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        }
+        return output;
+    }
 
 
     public static int[] dadosMensaisNovos(Date primeiroDia, int[] dados, int numeroMeses, int index2, int index1) {
@@ -2141,11 +2312,10 @@ public class Main {
             data.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        return ((data.getTime()));
+        return data.getTime();
     }
 
     public static Date ultimoDiaMesValido(Date fim) {
-
         Calendar dataFinal = Calendar.getInstance();
 
         dataFinal.setTime(fim);
@@ -2159,59 +2329,59 @@ public class Main {
         return dataFinal.getTime();
     }
 
-    public static void mostrarDadosTotaisMensais(String[] leituraDeDatas, String[] datas, int[][] dados,int[] colunas,int numeroMeses) {
+    public static String mostrarDadosTotaisMensais(String[] leituraDeDatas, String[] datas, int[][] dados, int[] colunas, int numeroMeses) {
         int indexData1 = indexData(primeiroDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[0])), datas);
         int indexData2 = indexData(ultimoDiaMesValido(stringParaDateEConverterDatas(leituraDeDatas[1])), datas);
 
         Date primeiroDiaValido = stringParaDateEConverterDatas(datas[indexData1]);
 
-            String cabecalho = "Meses                   |";
-            String impressao = "%s - %s |";
+        String cabecalho = "Meses                   |";
+        String impressao = "%s - %s |";
 
-            for (int i = 1; i <= 4; i++) {
-                if (existeNoArray(colunas, i)) {
-                    switch (i) {
-                        case 1:
-                            cabecalho += "  Total Infetados |";
-                            impressao += "  %15s |";
-                            break;
-                        case 2:
-                            cabecalho += "  Total Hospitalizações |";
-                            impressao += "  %21.10s |";
-                            break;
-                        case 3:
-                            cabecalho += "  Total UCI |";
-                            impressao += "  %9.10s |";
-                            break;
-                        case 4:
-                            cabecalho += "  Total Mortes |";
-                            impressao += "  %12.10s |";
-                            break;
-                    }
-                } else {
-                    impressao += "%s";
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += "  Total Infetados |";
+                        impressao += "  %15s |";
+                        break;
+                    case 2:
+                        cabecalho += "  Total Hospitalizações |";
+                        impressao += "  %21.10s |";
+                        break;
+                    case 3:
+                        cabecalho += "  Total UCI |";
+                        impressao += "  %9.10s |";
+                        break;
+                    case 4:
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
+                        break;
                 }
-            }
-
-            cabecalho += "\n";
-            impressao += "\n";
-            System.out.printf(cabecalho , "" );
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(primeiroDiaValido);
-            int numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-            int currIndex=indexData1;
-            for (int i = 0; i < numeroMeses; i++) {
-                int[] novosInfetados = dadosMensaisTotaisNovos(primeiroDiaValido, dados[1], numeroMeses, indexData2, indexData1);
-                int[] novosHospitalizacoes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
-                int[] novosUCI = dadosMensaisTotaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
-                int[] novosMortes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
-                System.out.printf(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
-                calendar.add(Calendar.MONTH,1);
-                currIndex+=numDias;
-                numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+            } else {
+                impressao += "%s";
             }
         }
 
+        cabecalho += "\n";
+        impressao += "\n";
+        String output = String.format(cabecalho, "");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(primeiroDiaValido);
+        int numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        int currIndex=indexData1;
+        for (int i = 0; i < numeroMeses; i++) {
+            int[] novosInfetados = dadosMensaisTotaisNovos(primeiroDiaValido, dados[1], numeroMeses, indexData2, indexData1);
+            int[] novosHospitalizacoes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[2], numeroMeses, indexData2, indexData1);
+            int[] novosUCI = dadosMensaisTotaisNovos(primeiroDiaValido, dados[3], numeroMeses, indexData2, indexData1);
+            int[] novosMortes = dadosMensaisTotaisNovos(primeiroDiaValido, dados[4], numeroMeses, indexData2, indexData1);
+            output += String.format(impressao, datas[currIndex],datas[currIndex+numDias-1], mostraSeExistir(colunas, 1, novosInfetados[i]),mostraSeExistir(colunas, 2, novosHospitalizacoes[i]),mostraSeExistir(colunas, 3, novosUCI[i]),mostraSeExistir(colunas, 4, novosMortes[i]));
+            calendar.add(Calendar.MONTH,1);
+            currIndex += numDias;
+            numDias = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+        }
+        return output;
+    }
 
     public static int[] dadosMensaisTotaisNovos(Date data, int[] dados, int numeroMeses, int index2, int index1) {
         int[] dadosNovos = new int[numeroMeses];
@@ -2246,7 +2416,7 @@ public class Main {
 
     //-------------------------------------Analise Comparativa Novos Casos--------------------------------------------//
 
-    public static void analiseComparativaNovosCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
+    public static String analiseComparativaNovosCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
         long diasIntervalo1;
         long diasIntervalo2;
         // calcular intervalo de dias do intervalo1
@@ -2306,27 +2476,26 @@ public class Main {
         impressao += "\n";
         impressaoMediaEDesvio += "\n";
 
-        System.out.printf(cabecalho, "");
+        String output = String.format(cabecalho, "");
         int[][] comparacaoInfet = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[1], numeroDiasAComparar);
         int[][] comparacaoHosp = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[2], numeroDiasAComparar);
         int[][] comparacaoUCI = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[3], numeroDiasAComparar);
         int[][] comparacaoObi = comparacaoDadosDiariosNovos(indexData1, indexData2, dados[4], numeroDiasAComparar);
+        
         for (int j = 0; j < numeroDiasAComparar; j++) {
-
             if ((indexData1 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+                output += String.format("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
+                output += String.format("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
             }
             if ((indexData2 + j) - 1 < 0) {
-                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+                output += String.format("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
+                output += String.format("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
             }
 
-            System.out.printf("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
-            System.out.println(tracinhos);
-
+            output += String.format("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
+            output += tracinhos;
         }
 
         // media e desvio Padrão dos novos casos
@@ -2347,14 +2516,15 @@ public class Main {
         double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
         double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
 
-        System.out.printf("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
-        System.out.printf("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
-        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
-        System.out.println(tracinhos);
-        System.out.printf("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
-        System.out.printf("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
-        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
+        output += String.format("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
+        output += String.format("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
+        output += String.format("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
+        output += tracinhos;
+        output += String.format("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
+        output += String.format("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
+        output += String.format("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
 
+        return output;
     }
 
     public static int[][] comparacaoDadosDiariosNovos(int indexData1, int indexData2, int[] dados, int numeroDias) {
@@ -2400,7 +2570,7 @@ public class Main {
 
     //-------------------------------------Analise Comparativa Totais Casos-------------------------------------------//
 
-    public static void analiseComparativaTotaisCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
+    public static String analiseComparativaTotaisCasos(String[] intervalo1, String[] intervalo2, String[] datas, int[][] dados, int[] colunas) {
         long diasIntervalo1;
         long diasIntervalo2;
 
@@ -2461,27 +2631,26 @@ public class Main {
         impressao += "\n";
         impressaoMediaEDesvio += "\n";
 
-        System.out.printf(cabecalho, "");
+        String output = String.format(cabecalho, "");
         int[][] comparacaoInfet = comparacaoTotaisCasos(indexData1, indexData2, dados[1], numeroDiasAComparar);
         int[][] comparacaoHosp = comparacaoTotaisCasos(indexData1, indexData2, dados[2], numeroDiasAComparar);
         int[][] comparacaoUCI = comparacaoTotaisCasos(indexData1, indexData2, dados[3], numeroDiasAComparar);
         int[][] comparacaoObi = comparacaoTotaisCasos(indexData1, indexData2, dados[4], numeroDiasAComparar);
+        
         for (int j = 0; j < numeroDiasAComparar; j++) {
-
             if ((indexData1 + j) - 1 < 0) {
-                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+                output += String.format("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
+                output += String.format("%s 1ªIntervalo      " + impressao, datas[j + indexData1], mostraSeExistir(colunas, 1, comparacaoInfet[0][j]), mostraSeExistir(colunas, 2, comparacaoHosp[0][j]), mostraSeExistir(colunas, 3, comparacaoUCI[0][j]), mostraSeExistir(colunas, 4, comparacaoObi[0][j]));
             }
             if ((indexData2 + j) - 1 < 0) {
-                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
+                output += String.format("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, "Sem dados"), mostraSeExistir(colunas, 2, "Sem dados"), mostraSeExistir(colunas, 3, "Sem dados"), mostraSeExistir(colunas, 4, "Sem dados"));
             } else {
-                System.out.printf("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
+                output += String.format("%s 2ªIntervalo      " + impressao, datas[j + indexData2], mostraSeExistir(colunas, 1, comparacaoInfet[1][j]), mostraSeExistir(colunas, 2, comparacaoHosp[1][j]), mostraSeExistir(colunas, 3, comparacaoUCI[1][j]), mostraSeExistir(colunas, 4, comparacaoObi[1][j]));
             }
 
-            System.out.printf("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
-            System.out.println(tracinhos);
-
+            output += String.format("%sDiferença entre dados       " + impressao,"",mostraSeExistir(colunas, 1, comparacaoInfet[1][j]-comparacaoInfet[0][j]),mostraSeExistir(colunas, 2, comparacaoHosp[1][j]-comparacaoHosp[0][j]),mostraSeExistir(colunas, 3, comparacaoUCI[1][j]-comparacaoUCI[0][j]),mostraSeExistir(colunas, 4, comparacaoObi[1][j]-comparacaoObi[0][j]));
+            output += tracinhos;
         }
 
         // media e desvio Padrao dos totais casos
@@ -2502,14 +2671,15 @@ public class Main {
         double desvioObitos1 = desvioPadrao(comparacaoObi[0],mediaObitos1);
         double desvioObitos2 = desvioPadrao(comparacaoObi[0],mediaObitos2);
 
-        System.out.printf("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
-        System.out.printf("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
-        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
-        System.out.println(tracinhos);
-        System.out.printf("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
-        System.out.printf("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
-        System.out.printf("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
+        output += String.format("Media do 1ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado1)), mostraSeExistir(colunas, 2, mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp1)), mostraSeExistir(colunas, 3, mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI1)), mostraSeExistir(colunas, 4, mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos1)));
+        output += String.format("Media do 2ªIntervalo        " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2)), mostraSeExistir(colunas, 2, mediaHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2)), mostraSeExistir(colunas, 3, mediaUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2)), mostraSeExistir(colunas, 4, mediaObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2)));
+        output += String.format("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, mediaInfetado2-mediaInfetado1)),mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, mediaHosp2-mediaHosp1)),mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, mediaUCI2-mediaUCI1)),mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, mediaObitos2-mediaObitos1)));
+        output += tracinhos;
+        output += String.format("Desvio Padrão do 1ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet1)), mostraSeExistir(colunas, 2, desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp1)), mostraSeExistir(colunas, 3, desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI1)), mostraSeExistir(colunas, 4, desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos1)));
+        output += String.format("Desvio Padrão do 2ªIntervalo" + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2)), mostraSeExistir(colunas, 2, desvioHosp2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2)), mostraSeExistir(colunas, 3, desvioUCI2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2)), mostraSeExistir(colunas, 4, desvioObitos2) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2)));
+        output += String.format("Diferença entre dados       " + impressaoMediaEDesvio, mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, desvioInfet2-desvioInfet1)),mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, desvioHosp2-desvioHosp1)),mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, desvioUCI2-desvioUCI1)),mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, desvioObitos2-desvioObitos1)));
 
+        return output;
     }
 
     public static int[][] comparacaoTotaisCasos(int indexData1, int indexData2, int[] dados, int numeroDias) {
@@ -2595,7 +2765,7 @@ public class Main {
         return diaMaisProximo;
     }
 
-    public static void mostrarPrevisaoDia(String data, String[] datas, int[][] dados, double[][] matriz, String dataEscolhida,int[] colunas) {
+    public static String mostrarPrevisaoDia(String data, String[] datas, int[][] dados, double[][] matriz, String dataEscolhida, int[] colunas) {
         String[] intervalo = new String[NUMERO_DADOS_COMPARACAO];
         intervalo[0] = data;
         intervalo[1] = dataEscolhida;
@@ -2619,7 +2789,7 @@ public class Main {
                         impressao += "  %21.1f |";
                         break;
                     case 4:
-                        cabecalho += "     Total UCI   |";
+                        cabecalho += "       Total UCI |";
                         impressao += "  %14.1f |";
                         break;
                     case 5:
@@ -2641,9 +2811,13 @@ public class Main {
         double[][] matrizElevada = Matrizes.elevarMatriz(matriz, diasDiferenca);
         double[][] previsao = Matrizes.multiplicarMatrizes(matrizElevada, preencherArray(dados, index));
 
-        System.out.printf(cabecalho, "");
-        System.out.print("Previsão para o dia: " + dataEscolhida);
-        System.out.printf(impressao, mostraSeExistir(colunas,1,previsao[0][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,1,previsao[0][0])),mostraSeExistir(colunas,2,previsao[1][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,2,previsao[1][0])),mostraSeExistir(colunas,3,previsao[2][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,3,previsao[2][0])),mostraSeExistir(colunas,4,previsao[3][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,4,previsao[3][0])),mostraSeExistir(colunas,5,previsao[4][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,5,previsao[4][0])));
+        String output = "";
+
+        output += String.format(cabecalho, "");
+        output += "Previsão para o dia: " + dataEscolhida;
+        output += String.format(impressao, mostraSeExistir(colunas,1,previsao[0][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,1,previsao[0][0])),mostraSeExistir(colunas,2,previsao[1][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,2,previsao[1][0])),mostraSeExistir(colunas,3,previsao[2][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,3,previsao[2][0])),mostraSeExistir(colunas,4,previsao[3][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,4,previsao[3][0])),mostraSeExistir(colunas,5,previsao[4][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas,5,previsao[4][0])));
+
+        return output;
     }
 
     public static void previsaoDiasAteMorte(double[][] matriz) {
@@ -2687,7 +2861,7 @@ public class Main {
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
         String output = "\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n";
-        output += String.format("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+        output += String.format("Número de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
         return output;
     }
