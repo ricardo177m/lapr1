@@ -1,6 +1,7 @@
 package MSPGrupo04;
 
 public class Matrizes {
+    static final int NUMERO_ESTADOS_DIFERENTES =5;
     public static boolean compararMatrizes(double[][] matriz1, double[][] matriz2) {
         boolean flag = true;
 
@@ -166,5 +167,23 @@ public class Matrizes {
                 }
             }
         }
+    }
+
+    public static double[][] preencherArray(int[][] dados, int index) {
+        double[][] array = new double[NUMERO_ESTADOS_DIFERENTES][1];
+        for (int i = 0; i < array.length; i++) {
+            array[i][0] = (dados[i][index]);
+        }
+        return array;
+    }
+
+    public static double[][] matrizSemObito(double[][] matriz) {
+        double[][] matrizSemObito = new double[NUMERO_ESTADOS_DIFERENTES - 1][NUMERO_ESTADOS_DIFERENTES - 1];
+        for (int i = 0; i < matrizSemObito.length; i++) {
+            for (int j = 0; j < matrizSemObito[i].length; j++) {
+                matrizSemObito[i][j] = matriz[i][j];
+            }
+        }
+        return matrizSemObito;
     }
 }
