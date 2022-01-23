@@ -38,7 +38,7 @@ public class Main {
         // 4 - mortes
 
         // debug não interativo
-        args = new String[] {"-r", "1", "-di", "01-10-2021", "-df", "01-11-2021", "-di1", "01-10-2021", "-df1", "01-11-2021", "-di2", "01-11-2020", "-df2", "01-12-2020", "-T", "23-12-2021", "totaiscasos.csv", "acumulados.csv", "matriz.txt", "output.txt"};
+        // args = new String[] {"-r", "1", "-di", "01-10-2021", "-df", "01-11-2021", "-di1", "01-10-2021", "-df1", "01-11-2021", "-di2", "01-11-2020", "-df2", "01-12-2020", "-T", "23-12-2021", "totaiscasos.csv", "acumulados.csv", "matriz.txt", "output.txt"};
 
         // tests
         Tests.runTestes();
