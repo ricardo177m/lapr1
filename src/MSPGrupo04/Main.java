@@ -2074,8 +2074,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Novas Mortes";
-                            impressao += "  %12.10s";
+                            cabecalho += "  Novas Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -2145,8 +2145,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes";
-                        impressao += "  %12.10s";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
                         break;
                 }
             } else {
@@ -2198,8 +2198,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Novas Mortes";
-                            impressao += "  %12.10s";
+                            cabecalho += "  Novas Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -2324,8 +2324,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Total Mortes";
-                            impressao += "  %12.10s";
+                            cabecalho += "  Total Mortes |";
+                            impressao += "  %12.10s |";
                             break;
                     }
                 } else {
@@ -2392,8 +2392,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Novas Mortes";
-                        impressao += "  %12.10s";
+                        cabecalho += "  Novas Mortes |";
+                        impressao += "  %12.10s |";
                         break;
                 }
             } else {
@@ -2506,8 +2506,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes";
-                        impressao += "  %12.10s";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
                         break;
                 }
             } else {
@@ -2612,9 +2612,9 @@ public class Main {
                         tracinhos += "-------------";
                         break;
                     case 4:
-                        cabecalho += "  Novas Mortes";
-                        impressao += "  %12.10s";
-                        impressaoMediaEDesvio += "  %12.4f";
+                        cabecalho += "  Novas Mortes |";
+                        impressao += "  %12.10s |";
+                        impressaoMediaEDesvio += "  %12.4f |";
                         tracinhos += "--------------";
                         break;
                 }
@@ -2768,9 +2768,9 @@ public class Main {
                         tracinhos += "-------------";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes";
-                        impressao += "  %12.10s";
-                        impressaoMediaEDesvio += "  %12.4f";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.10s |";
+                        impressaoMediaEDesvio += "  %12.4f |";
                         tracinhos += "--------------";
                         break;
                 }
@@ -2947,8 +2947,8 @@ public class Main {
                         impressao += "  %14.1f |";
                         break;
                     case 5:
-                        cabecalho += "  Total Mortes";
-                        impressao += "  %12.1f";
+                        cabecalho += "  Total Mortes |";
+                        impressao += "  %12.1f |";
                         break;
                 }
             } else {
@@ -3011,8 +3011,8 @@ public class Main {
                         impressao += " %17.1f |";
                         break;
                     case 4:
-                        cabecalho += "        UCI";
-                        impressao += " %10.1f";
+                        cabecalho += "        UCI |";
+                        impressao += " %10.1f |";
                         break;
                 }
             } else {
