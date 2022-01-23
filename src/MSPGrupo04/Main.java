@@ -2683,7 +2683,7 @@ public class Main {
         double[][] inversaL = Matrizes.inversaL(matrizL);
         double[][] inversaU = Matrizes.inversaU(matrizU);
 
-        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
+        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaL,inversaU);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
         String output = "\n                                               |  Não Infetados  |  Infetados  |  Hospitalizações  |      UCI\n";
