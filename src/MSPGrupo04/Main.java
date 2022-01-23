@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
-import java.util.function.ToLongBiFunction;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,12 +37,11 @@ public class Main {
         // 3 - UCI
         // 4 - mortes
 
+        // debug não interativo
+        args = new String[] {"-r", "1", "-di", "01-10-2021", "-df", "01-11-2021", "-di1", "01-10-2021", "-df1", "01-11-2021", "-di2", "01-11-2020", "-df2", "01-12-2020", "-T", "23-12-2021", "totaiscasos.csv", "acumulados.csv", "matriz.txt", "output.txt"};
+
         // tests
-        // boolean test = true;
         Tests.runTestes();
-        
-        // if (test) return;
-        // end of tests
 
         String[] acumuladoDatas = new String[0];
         int[][] acumuladoDados = new int[0][0];
@@ -216,7 +214,25 @@ public class Main {
 
     public static String prepararOutput(int resolucaoTemporal, String[] totalDatas, int[][] totalDados, String[] acumuladoDatas, int[][] acumuladoDados, String[] intervaloDatas, String[] intervalo1, String[] intervalo2, String dataPrevisao, String fichTotal, String fichAcum, String fichMatriz) {
         String output = "Parâmetros:\n";
-        output += String.format("%-32s %s\n", " - Resolução temporal: ", resolucaoTemporal == -1 ? "<NÃO DEFINIDO>" : resolucaoTemporal);
+
+        String resolucaoTemporalStr = "";
+
+        switch (resolucaoTemporal) {
+            case 1:
+                resolucaoTemporalStr = "Diária";
+                break;
+            case 2:
+                resolucaoTemporalStr = "Semanal";
+                break;
+            case 3:
+                resolucaoTemporalStr = "Mensal";
+                break;
+            default:
+                resolucaoTemporalStr = "<NÃO DEFINIDO>";
+                break;
+        }
+
+        output += String.format("%-32s %s\n", " - Resolução temporal: ", resolucaoTemporalStr);
         output += String.format("%-32s %s\n", " - Data início visualização: ", intervaloDatas[0] == null ? "<NÃO DEFINIDO>" : intervaloDatas[0]);
         output += String.format("%-32s %s\n", " - Data fim visualização: ", intervaloDatas[1] == null ? "<NÃO DEFINIDO>" : intervaloDatas[1]);
         output += String.format("%-32s %s\n", " - Data início 1º intervalo: ", intervalo1[0] == null ? "<NÃO DEFINIDO>" : intervalo1[0]);
@@ -477,6 +493,7 @@ public class Main {
     public static String verDadosDiariosNaoInterativo(String opcao, String[] datasAcumulados, int[][] dadosAcumaldos, String[] datasTotais, int[][] dadosTotais, String[] leituraDatas) {
         String output = "";
         int[] colunas = {1, 2, 3, 4, 5};
+        boolean flag = true;
         switch (opcao) {
             case "1":
                 output += String.format("\nNovos casos diários entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
@@ -484,9 +501,10 @@ public class Main {
                     if (existeNoArrayDatas(datasAcumulados, leituraDatas)) {
                         output += mostrarDadosDiarios(leituraDatas, datasAcumulados, dadosAcumaldos, colunas);
                     } else {
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasAcumulados,leituraDatas));
+                } while (flag && !existeNoArrayDatas(datasAcumulados,leituraDatas));
 
                 break;
             case "2":
@@ -495,9 +513,10 @@ public class Main {
                     if (existeNoArrayDatas(datasTotais, leituraDatas)) {
                         output += mostrarDadosTotaisDiarios(leituraDatas, datasTotais, dadosTotais, colunas);
                     } else {
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasTotais,leituraDatas));
+                } while (flag && !existeNoArrayDatas(datasTotais,leituraDatas));
                 break;
         }
         return output;
@@ -569,6 +588,7 @@ public class Main {
         String output = "";
         int[] colunas = {1, 2, 3, 4, 5};
         int numeroSemanas = 0;
+        boolean flag = true;
         switch (opcao) {
             case "1":
                 output += String.format("\nNovos casos semanais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
@@ -578,12 +598,14 @@ public class Main {
                         if (numeroSemanas != -1 && numeroSemanas!=0) {
                             output += mostrarDadosSemanais(leituraDatas, datasAcumulado, dadosAcumulado, colunas, numeroSemanas);
                         } else {
-                            output += "Introduza datas que contenham pelo menos 1 semana.";
+                            output += "Introduza datas que contenham pelo menos 1 semana.\n";
+                            flag = false;
                         }
                     } else {
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroSemanas == -1 || numeroSemanas == 0);
+                } while (flag && (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroSemanas == -1 || numeroSemanas == 0));
                 break;
             case "2":
                 output += String.format("\nCasos totais semanais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
@@ -593,14 +615,17 @@ public class Main {
                         if (numeroSemanas !=-1 && numeroSemanas !=0) {
                             output += mostrarDadosTotaisSemanais(leituraDatas, datasTotal, dadosTotal, colunas,numeroSemanas);
                         } else {
-                            output += "Introduza datas que contenham pelo menos 1 semana.";
+                            output += "Introduza datas que contenham pelo menos 1 semana.\n";
+                            flag = false;
                         }
                     } else {
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas ==-1 || numeroSemanas==0);
+                } while (flag && (!existeNoArrayDatas(datasTotal,leituraDatas) || numeroSemanas == -1 || numeroSemanas == 0));
                 break;
         }
+        output += "\n";
         return output;
     }
 
@@ -668,6 +693,7 @@ public class Main {
         String output = "";
         int[] colunas = {1, 2, 3, 4, 5};
         int numeroMeses=0;
+        boolean flag = true;
         switch (opcao) {
             case "1":
                 output += String.format("\nNovos casos mensais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
@@ -678,11 +704,13 @@ public class Main {
                             output += mostrarDadosMensais(leituraDatas, datasAcumulado, dadosAcumulado, colunas, numeroMeses);
                         } else {
                             output += "Introduza datas que contenham pelo menos 1 mês.";
+                            flag = false;
                         }
                     } else {
                         output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroMeses == 0);
+                } while (flag && (!existeNoArrayDatas(datasAcumulado, leituraDatas) || numeroMeses == 0));
                 break;
             case "2":
                 output += String.format("\nCasos totais mensais entre %s e %s:\n\n", leituraDatas[0], leituraDatas[1]);
@@ -693,11 +721,13 @@ public class Main {
                             output += mostrarDadosTotaisMensais(leituraDatas, datasTotal, dadosTotal, colunas,numeroMeses);
                         } else {
                             output += "Introduza datas que contenham pelo menos 1 mês.";
+                            flag = false;
                         }
                     } else {
                         output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasTotal, leituraDatas) || numeroMeses == 0);
+                } while (flag && (!existeNoArrayDatas(datasTotal, leituraDatas) || numeroMeses == 0));
                 break;
         }
         return output;
@@ -761,27 +791,31 @@ public class Main {
     public static String verDadosComparativosNaoInterativo(String opcao, String[] datasAcumulado, int[][] dadosAcumulado, String[] datasTotal, int[][] dadosTotal, String[] intervalo1, String[] intervalo2) {
         String output = "";
         int[] colunas = {1, 2, 3, 4, 5};
+        boolean flag = true;
         switch (opcao) {
             case "1":
-                output += String.format("\nComparação de novos casos entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
+                output += String.format("\n\nComparação de novos casos entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
                 do {
                     if (existeNoArrayDatas(datasAcumulado, intervalo1) && existeNoArrayDatas(datasAcumulado, intervalo2)) {
                         output += analiseComparativaNovosCasos(intervalo1, intervalo2, datasAcumulado, dadosAcumulado, colunas);
                     } else
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
-                } while (!existeNoArrayDatas(datasAcumulado,intervalo1) && !existeNoArrayDatas(datasAcumulado,intervalo2));
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        flag = false;
+                } while (flag && (!existeNoArrayDatas(datasAcumulado,intervalo1) && !existeNoArrayDatas(datasAcumulado,intervalo2)));
                 break;
             case "2":
-                output += String.format("\nComparação de casos totais entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
+                output += String.format("\n\nComparação de casos totais entre os intervalos %s > %s e %s > %s\n\n", intervalo1[0], intervalo1[1], intervalo2[0], intervalo2[1]);
                 do {
                     if (existeNoArrayDatas(datasTotal, intervalo1) && existeNoArrayDatas(datasTotal, intervalo2)) {
                         output += analiseComparativaTotaisCasos(intervalo1, intervalo2, datasTotal, dadosTotal, colunas);
                     } else {
-                        output += "\nERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        output += "ERRO: Data(s) não existe(m) no ficheiro. Por favor, insira data(s) válida(s).\n";
+                        flag = false;
                     }
-                } while (!existeNoArrayDatas(datasTotal,intervalo1) && !existeNoArrayDatas(datasTotal,intervalo2));
+                } while (flag && (!existeNoArrayDatas(datasTotal,intervalo1) && !existeNoArrayDatas(datasTotal,intervalo2)));
                 break;
         }
+        output += "\n\n";
         return output;
     }
 
@@ -808,7 +842,7 @@ public class Main {
                             if ((indexData1 == 0)) {
                                 data = datas[0];
                                 int[] colunas = menuEscolherQtdDadosPrevisao();
-                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                System.out.print(mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
@@ -817,7 +851,7 @@ public class Main {
                             if (existeNoArrayData(datas, dataEscolhe)) {
                                 data = escolherDiaAnterior(indexData1, datas);
                                 int[] colunas = menuEscolherQtdDadosPrevisao();
-                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                System.out.print(mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
@@ -826,7 +860,7 @@ public class Main {
                                 Date data1 = stringParaDateEConverterDatas(dataEscolhe);
                                 data = escolherDiaMaisProximo(data1, datas);
                                 int[] colunas = menuEscolherQtdDadosPrevisao();
-                                mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas);
+                                System.out.print(mostrarPrevisaoDia(data, datas, dados, matriz, dataEscolhe, colunas));
                                 String diretorio = guardarOuSair();
                                 if (!diretorio.equals("")) {
                                     imprimirFicheiroPrevisaoDia(diretorio, dataEscolhe, data, colunas, matriz, dados, datas);
@@ -854,7 +888,7 @@ public class Main {
         double[][] matriz = lerDadosMatriz(matrizFicheiro, NUMERO_ESTADOS_DIFERENTES);
 
         // opção 1
-        output += "Previsões:\n";
+        output += "\nPrevisões:\n";
         Date dataEscolhida = stringParaDateEConverterDatas(dataPrevisao);
         indexData1 = indexData(dataEscolhida, datas);
         String data;
@@ -1923,8 +1957,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Novas Mortes |";
-                            impressao += "  %12.10s |";
+                            cabecalho += "  Novas Mortes";
+                            impressao += "  %12.10s";
                             break;
                     }
                 } else {
@@ -1994,8 +2028,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes |";
-                        impressao += "  %12.10s |";
+                        cabecalho += "  Total Mortes";
+                        impressao += "  %12.10s";
                         break;
                 }
             } else {
@@ -2047,8 +2081,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Novas Mortes |";
-                            impressao += "  %12.10s |";
+                            cabecalho += "  Novas Mortes";
+                            impressao += "  %12.10s";
                             break;
                     }
                 } else {
@@ -2173,8 +2207,8 @@ public class Main {
                             impressao += "  %9.10s |";
                             break;
                         case 4:
-                            cabecalho += "  Total Mortes |";
-                            impressao += "  %12.10s |";
+                            cabecalho += "  Total Mortes";
+                            impressao += "  %12.10s";
                             break;
                     }
                 } else {
@@ -2241,8 +2275,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Novas Mortes |";
-                        impressao += "  %12.10s |";
+                        cabecalho += "  Novas Mortes";
+                        impressao += "  %12.10s";
                         break;
                 }
             } else {
@@ -2355,8 +2389,8 @@ public class Main {
                         impressao += "  %9.10s |";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes |";
-                        impressao += "  %12.10s |";
+                        cabecalho += "  Total Mortes";
+                        impressao += "  %12.10s";
                         break;
                 }
             } else {
@@ -2461,10 +2495,10 @@ public class Main {
                         tracinhos += "-------------";
                         break;
                     case 4:
-                        cabecalho += "  Novas Mortes |";
-                        impressao += "  %12.10s |";
-                        impressaoMediaEDesvio += "  %12.4f |";
-                        tracinhos += "----------------";
+                        cabecalho += "  Novas Mortes";
+                        impressao += "  %12.10s";
+                        impressaoMediaEDesvio += "  %12.4f";
+                        tracinhos += "--------------\n";
                         break;
                 }
             } else {
@@ -2616,10 +2650,10 @@ public class Main {
                         tracinhos += "-------------";
                         break;
                     case 4:
-                        cabecalho += "  Total Mortes |";
-                        impressao += "  %12.10s |";
-                        impressaoMediaEDesvio += "  %12.4f |";
-                        tracinhos += "----------------";
+                        cabecalho += "  Total Mortes";
+                        impressao += "  %12.10s";
+                        impressaoMediaEDesvio += "  %12.4f";
+                        tracinhos += "--------------\n";
                         break;
                 }
             } else {
@@ -2771,7 +2805,7 @@ public class Main {
         intervalo[0] = data;
         intervalo[1] = dataEscolhida;
 
-        String cabecalho = "\n%32s |";
+        String cabecalho = "\n%30s |";
         String impressao = " |";
 
         for (int i = 1; i <= 5; i++) {
@@ -2839,7 +2873,7 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        System.out.print("\n                                               |   Não Infetados |   Infetados |   Hospitalizações |        UCI\n");
+        System.out.print("\n                                               |   Não Infetados |   Infetados |   Hospitalizações |         UCI\n");
         System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
     }
 
@@ -2861,7 +2895,7 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaL,inversaU);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        String output = "\n                                               |   Não Infetados |   Infetados |   Hospitalizações |       UCI\n";
+        String output = "                                               |   Não Infetados |   Infetados |   Hospitalizações |       UCI\n";
         output += String.format("Número de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
         return output;
