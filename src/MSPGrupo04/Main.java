@@ -875,7 +875,12 @@ public class Main {
                     } while (!verificarData1(dataEscolhe) && !verificarData2(dataEscolhe) || dataEscolhida.before(stringParaDateEConverterDatas(datas[0])));
                     break;
                 case "2":
-                    previsaoDiasAteMorte(matriz);
+                    int[] colunas = menuEscolherQtdDadosPrevisaoMortes();
+                    previsaoDiasAteMorte(matriz, colunas);
+                    String diretorio = guardarOuSair();
+                    if (!diretorio.equals("")) {
+                       imprimirFicheiroPrevisaoDiasAteMorte(diretorio, matriz, colunas);
+                    }
                     break;
             }
         } else {
@@ -1472,6 +1477,67 @@ public class Main {
         ficheiroEscrita.close();
     }
 
+    public static void imprimirFicheiroPrevisaoDiasAteMorte(String diretorio, double[][] matriz, int[] colunas) {
+        String nomeFicheiro = diretorio + "/dados_previstos_de_dias_ate_morte.csv";
+        PrintWriter ficheiroEscrita;
+        try {
+            ficheiroEscrita = new PrintWriter(nomeFicheiro, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("ERRO: Caminho especificado para criação de ficheiro inválido. Tente novamente.");
+            return;
+        }
+
+        double[][] matrizSemObi = matrizSemObito(matriz);
+        double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
+
+        double[][] matrizL = new double[matrizSemObi.length][matrizSemObi.length];
+        double[][] matrizU;
+        matrizU = Matrizes.preencherDiagonalMatriz(1, NUMERO_ESTADOS_DIFERENTES-1);
+
+        double[][] vetor = {{1,1,1,1},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+
+        Matrizes.crout(subtracaoIdenMatriz, matrizL, matrizU);
+
+        double[][] inversaL = Matrizes.inversaL(matrizL);
+        double[][] inversaU = Matrizes.inversaU(matrizU);
+
+        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
+        double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
+
+        String cabecalho = "";
+        String impressao = "";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += "Não Infetados,";
+                        impressao += previsaoDiasMorte[0][0] + ",";
+                        break;
+                    case 2:
+                        cabecalho += "Infetados,";
+                        impressao += previsaoDiasMorte[0][1] + ",";
+                        break;
+                    case 3:
+                        cabecalho += "Hospitalizações,";
+                        impressao += previsaoDiasMorte[0][2] + ",";
+                        break;
+                    case 4:
+                        cabecalho += "UCI,";
+                        impressao += previsaoDiasMorte[0][3] + ",";
+                        break;
+                }
+            }
+        }
+        cabecalho = cabecalho.substring(0, cabecalho.length() - 1);
+        impressao = impressao.substring(0, impressao.length() - 1);
+
+        ficheiroEscrita.println(cabecalho);
+        ficheiroEscrita.println(impressao);
+        System.out.println("Dados gravados no ficheiro com sucesso.");
+        ficheiroEscrita.close();
+    }
+
     //-------------------------------------------Menus da Aplicação---------------------------------------------------//
     public static String selecionarTipoFicheiroInicial() {
         String selecaoUtilizador;
@@ -1590,7 +1656,7 @@ public class Main {
             System.out.println("|     5. Mortes                                                                              |");
             System.out.println("|     0. Todos                                                                               |");
             System.out.println("|                                                                                            |");
-            System.out.println("+-------------------------------------------------------------------------------------------+");
+            System.out.println("+--------------------------------------------------------------------------------------------+");
             System.out.print("\n> ");
             String tiposDados = kbScanner.nextLine();
 
@@ -1619,6 +1685,56 @@ public class Main {
 
         if (dadosInteiros.length == 1 && dadosInteiros[0] == 0) {
             int[] array = {1, 2, 3, 4, 5};
+            return array;
+        } else {
+            return dadosInteiros;
+        }
+    }
+
+    public static int[] menuEscolherQtdDadosPrevisaoMortes () {
+        boolean todosInteiros;
+        int[] dadosInteiros;
+
+        do {
+            todosInteiros = true;
+            System.out.println("\n+--------------------------------------------------------------------------------------------+");
+            System.out.println("|                                                                                            |");
+            System.out.println("|   Introduza o(s) dado(s) que quer visualizar. Separe as opções por vírgula (Ex.: 1,2,3)    |");
+            System.out.println("|     1. Não Infetados                                                                       |");
+            System.out.println("|     2. Infetados                                                                           |");
+            System.out.println("|     3. Hospitalizações                                                                     |");
+            System.out.println("|     4. UCI                                                                                 |");
+            System.out.println("|     0. Todos                                                                               |");
+            System.out.println("|                                                                                            |");
+            System.out.println("+--------------------------------------------------------------------------------------------+");
+            System.out.print("\n> ");
+            String tiposDados = kbScanner.nextLine();
+
+            String[] dados = tiposDados.trim().split(",");
+            dadosInteiros = new int[dados.length];
+
+            try {
+                for (String opcao : dados) {
+                    if (Integer.parseInt(opcao) < 0 || Integer.parseInt(opcao) > 4) {
+                        todosInteiros = false;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                todosInteiros = false;
+            }
+
+            if (!todosInteiros) {
+                System.out.println("ERRO: Opções inválidas. Insira um conjunto de opções válido, separados apenas por vírgula (Ex.: 1,2,3).");
+            } else {
+                for (int i = 0; i < dados.length; i++) {
+                    dadosInteiros[i] = Integer.parseInt(dados[i]);
+                }
+            }
+        } while (!todosInteiros);
+
+
+        if (dadosInteiros.length == 1 && dadosInteiros[0] == 0) {
+            int[] array = {1, 2, 3, 4};
             return array;
         } else {
             return dadosInteiros;
@@ -2858,7 +2974,7 @@ public class Main {
         return output;
     }
 
-    public static void previsaoDiasAteMorte(double[][] matriz) {
+    public static void previsaoDiasAteMorte(double[][] matriz, int[] colunas) {
         double[][] matrizSemObi = matrizSemObito(matriz);
         double[][] subtracaoIdenMatriz = Matrizes.subtrairIdentidadeComMatriz(matrizSemObi);
 
@@ -2876,8 +2992,39 @@ public class Main {
         double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        System.out.print("\n                                               |   Não Infetados |   Infetados |   Hospitalizações |         UCI\n");
-        System.out.printf("Numero de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
+        String cabecalho = "\n%46s |";
+        String impressao = "Número de dias até cada estado chegar a morte  |";
+
+        for (int i = 1; i <= 4; i++) {
+            if (existeNoArray(colunas, i)) {
+                switch (i) {
+                    case 1:
+                        cabecalho += "   Não Infetados |";
+                        impressao += " %15.1f |";
+                        break;
+                    case 2:
+                        cabecalho += "   Infetados |";
+                        impressao += " %11.1f |";
+                        break;
+                    case 3:
+                        cabecalho += "   Hospitalizações |";
+                        impressao += " %17.1f |";
+                        break;
+                    case 4:
+                        cabecalho += "        UCI";
+                        impressao += " %10.1f";
+                        break;
+                }
+            } else {
+                impressao += "%s";
+            }
+        }
+
+        cabecalho += "\n";
+        impressao += "\n";
+
+        System.out.printf(cabecalho, "");
+        System.out.printf(impressao, mostraSeExistir(colunas, 1, previsaoDiasMorte[0][0]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 1, previsaoDiasMorte[0][0])), mostraSeExistir(colunas, 2, previsaoDiasMorte[0][1]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 2, previsaoDiasMorte[0][1])), mostraSeExistir(colunas, 3, previsaoDiasMorte[0][2]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 3, previsaoDiasMorte[0][2])), mostraSeExistir(colunas, 4, previsaoDiasMorte[0][3]) == "" ? "" : Double.parseDouble(mostraSeExistir(colunas, 4, previsaoDiasMorte[0][3])));
     }
 
     public static String previsaoDiasAteMorteNaoInterativo(double[][] matriz) {
@@ -2895,10 +3042,10 @@ public class Main {
         double[][] inversaL = Matrizes.inversaL(matrizL);
         double[][] inversaU = Matrizes.inversaU(matrizU);
 
-        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaL,inversaU);
+        double[][] matrizInversa = Matrizes.multiplicarMatrizes(inversaU,inversaL);
         double[][] previsaoDiasMorte = Matrizes.multiplicarMatrizes(vetor,matrizInversa);
 
-        String output = "                                               |   Não Infetados |   Infetados |   Hospitalizações |       UCI\n";
+        String output = "                                               |   Não Infetados |   Infetados |   Hospitalizações |        UCI\n";
         output += String.format("Número de dias até cada estado chegar a morte  | %15.1f | %11.1f | %17.1f | %10.1f\n", previsaoDiasMorte[0][0], previsaoDiasMorte[0][1], previsaoDiasMorte[0][2], previsaoDiasMorte[0][3]);
 
         return output;
